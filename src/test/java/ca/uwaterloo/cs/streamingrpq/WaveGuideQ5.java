@@ -5,51 +5,59 @@ import ca.uwaterloo.cs.streamingrpq.dfa.DFAEdge;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFANode;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import com.google.common.collect.ArrayListMultimap;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ListMultimap;
-import org.antlr.v4.runtime.misc.MultiMap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class WaveGuideExample {
+public class WaveGuideQ5 {
 
-    static String filename = "src/main/resources/diamondgraph.txt";
+    static String filename = "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/yago2s_full.tsv";
 
     public static void main(String[] args) {
-        TextStream stream = new TextStream();
+        Yago2sTSVStream stream = new Yago2sTSVStream();
 
         DFANode q0 = new DFANode(0);
         DFANode q1 = new DFANode(1);
         DFANode q2 = new DFANode(2);
+        DFANode q3 = new DFANode(3, true);
 
-        HashMultimap<Character, DFAEdge<Character>> dfaNodes = HashMultimap.create();
+
+        HashMultimap<String, DFAEdge<String>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
-        dfaNodes.put('a', new DFAEdge(q0, q1, 'a'));
+        dfaNodes.put("<isKnownFor>", new DFAEdge(q0, q1, "<isKnownFor>"));
 
         q1.addDownstreamNode(q0);
         q1.addUpstreamNode(q2);
-        dfaNodes.put('b', new DFAEdge(q1, q2, 'b'));
+        dfaNodes.put("<influences>", new DFAEdge(q1, q2, "<influences>"));
 
-        q2.addDownstreamNode(q1);
-        q2.addUpstreamNode(q1);
-        dfaNodes.put('a', new DFAEdge(q2, q1, 'a'));
+        q2.addDownstreamNode(q2);
+        q2.addUpstreamNode(q2);
+        dfaNodes.put("<influences>", new DFAEdge(q2, q2, "<influences>"));
+
+        q3.addDownstreamNode(q2);
+        q2.addUpstreamNode(q3);
+        dfaNodes.put("<isMarriedTo>", new DFAEdge(q2, q3, "<isMarriedTo>"));
+
+        q3.addDownstreamNode(q3);
+        q3.addUpstreamNode(q3);
+        dfaNodes.put("<isMarriedTo>", new DFAEdge(q3, q3, "<isMarriedTo>"));
+
 
         try {
             stream.open(filename);
-            InputTuple<Integer, Integer, Character> input = stream.next();
+            InputTuple<Integer, Integer, String> input = stream.next();
 
             while(input != null) {
                 //retrieve DFA nodes where transition is same as edge label
-                Set<DFAEdge<Character>> edges = dfaNodes.get(input.getLabel());
-                for(DFAEdge<Character> edge : edges) {
+                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
+                for(DFAEdge<String> edge : edges) {
                     // for each such node, push tuple for processing at the target node
                     Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
                     edge.getSource().prepend(tuple, edge.getTarget().getNodeId());

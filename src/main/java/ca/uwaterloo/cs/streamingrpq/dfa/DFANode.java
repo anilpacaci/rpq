@@ -21,8 +21,15 @@ public class DFANode {
     private Cache cache;
     private Queue<Tuple> queue;
 
+    private boolean isFinal;
+
     public DFANode(Integer nodeId) {
+        this(nodeId, false);
+    }
+
+    public DFANode(Integer nodeId, boolean isFinal) {
         this.nodeId = nodeId;
+        this.isFinal = isFinal;
         this.cache = new Cache();
         this.queue = new LinkedList<Tuple>();
 
@@ -70,8 +77,8 @@ public class DFANode {
 
         // add this new tuple to cache
         cache.put(tuple);
-        if(this.nodeId == 2 && tuple.getSourceState() == 0) {
-            System.out.println(tuple.getSource() + " " + tuple.getTarget());
+        if(this.isFinal && tuple.getSourceState() == 0) {
+            //System.out.println(tuple.getSource() + " " + tuple.getTarget());
         }
 
         // append to upstream nodes
