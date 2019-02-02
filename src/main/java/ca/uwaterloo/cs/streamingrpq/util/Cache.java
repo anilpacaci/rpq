@@ -18,7 +18,7 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class Cache {
+public class Cache<S> {
 
     IndexedCollection<Tuple> cache;
 

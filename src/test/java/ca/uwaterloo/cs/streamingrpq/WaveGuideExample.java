@@ -29,7 +29,7 @@ public class WaveGuideExample {
         DFANode q1 = new DFANode(1);
         DFANode q2 = new DFANode(2);
 
-        HashMultimap<Character, DFAEdge> dfaNodes = HashMultimap.create();
+        HashMultimap<Character, DFAEdge<Character>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
         dfaNodes.put('a', new DFAEdge(q0, q1, 'a'));
@@ -44,12 +44,12 @@ public class WaveGuideExample {
 
         try {
             stream.open(filename);
-            InputTuple input = stream.next();
+            InputTuple<Integer, Integer, Character> input = stream.next();
 
             while(input != null) {
                 //retrieve DFA nodes where transition is same as edge label
-                Set<DFAEdge> edges = dfaNodes.get(input.getLabel());
-                for(DFAEdge edge : edges) {
+                Set<DFAEdge<Character>> edges = dfaNodes.get(input.getLabel());
+                for(DFAEdge<Character> edge : edges) {
                     // for each such node, push tuple for processing at the target node
                     Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
                     edge.getSource().prepend(tuple, edge.getTarget().getNodeId());

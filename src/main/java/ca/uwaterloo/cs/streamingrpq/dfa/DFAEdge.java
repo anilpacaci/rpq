@@ -3,12 +3,12 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class DFAEdge {
+public class DFAEdge<L> {
 
     private DFANode source, target;
-    private Character label;
+    private L label;
 
-    public DFAEdge(DFANode source, DFANode target, Character label ){
+    public DFAEdge(DFANode source, DFANode target, L label ){
         this.source = source;
         this.target = target;
         this.label = label;
@@ -22,7 +22,7 @@ public class DFAEdge {
         return target;
     }
 
-    public Character getLabel() {
+    public L getLabel() {
         return label;
     }
 }

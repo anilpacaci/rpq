@@ -3,27 +3,27 @@ package ca.uwaterloo.cs.streamingrpq.input;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class InputTuple {
+public class InputTuple<S,T,L> {
 
-    private int source;
-    private int target;
-    private char label;
+    private S source;
+    private T target;
+    private L label;
 
-    public InputTuple(int source, int target, char label) {
+    public InputTuple(S source, T target, L label) {
         this.source = source;
         this.target = target;
         this.label = label;
     }
 
-    public int getSource() {
+    public S getSource() {
         return source;
     }
 
-    public int getTarget() {
+    public T getTarget() {
         return target;
     }
 
-    public char getLabel() {
+    public L getLabel() {
         return label;
     }
 }
