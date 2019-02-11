@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class WaveGuideQ5 {
 
-    static String filename = "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/yago2s_full.tsv";
+    static String filename = "/Volumes/RAM Disk/xaa";
 
     public static void main(String[] args) {
         Yago2sTSVStream stream = new Yago2sTSVStream();
@@ -56,13 +56,13 @@ public class WaveGuideQ5 {
 
             while(input != null) {
                 //retrieve DFA nodes where transition is same as edge label
-                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
-                for(DFAEdge<String> edge : edges) {
-                    // for each such node, push tuple for processing at the target node
-                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
-                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
-                    edge.getTarget().process(tuple);
-                }
+//                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
+//                for(DFAEdge<String> edge : edges) {
+//                    // for each such node, push tuple for processing at the target node
+//                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
+//                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
+//                    edge.getTarget().process(tuple);
+//                }
                 // incoming edge fully processed, move to next one
                 input = stream.next();
             }
