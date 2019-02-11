@@ -42,4 +42,26 @@ public class Tuple {
     public static final Attribute<Tuple, Integer> TUPLE_SOURCESTATE = new SimpleAttribute<Tuple, Integer>("sourceState") {
         public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.sourceState; }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Tuple)) {
+            return false;
+        }
+
+        Tuple tuple = (Tuple) o;
+
+        return tuple.source.equals(source) && tuple.target.equals(target) && tuple.sourceState.equals(sourceState);
+    }
+
+    //Idea from effective Java : Item 9
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + source;
+        result = 31 * result + target;
+        result = 31 * result + sourceState;
+        return result;
+    }
 }
