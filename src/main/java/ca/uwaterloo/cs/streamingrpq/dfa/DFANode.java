@@ -23,6 +23,8 @@ public class DFANode {
 
     private boolean isFinal;
 
+    private int resultCounter;
+
     public DFANode(Integer nodeId) {
         this(nodeId, false);
     }
@@ -79,6 +81,7 @@ public class DFANode {
         cache.put(tuple);
         if(this.isFinal && tuple.getSourceState() == 0) {
             //System.out.println(tuple.getSource() + " " + tuple.getTarget());
+            resultCounter++;
         }
 
         // append to upstream nodes
@@ -88,5 +91,7 @@ public class DFANode {
 
     }
 
-
+    public int getResultCounter() {
+        return resultCounter;
+    }
 }

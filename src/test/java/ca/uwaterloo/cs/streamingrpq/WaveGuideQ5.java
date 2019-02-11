@@ -31,23 +31,23 @@ public class WaveGuideQ5 {
         HashMultimap<String, DFAEdge<String>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
-        dfaNodes.put("<isKnownFor>", new DFAEdge(q0, q1, "<isKnownFor>"));
+        dfaNodes.put("<isCitizenOf>", new DFAEdge(q0, q1, "<isCitizenOf>"));
 
         q1.addDownstreamNode(q0);
         q1.addUpstreamNode(q2);
-        dfaNodes.put("<influences>", new DFAEdge(q1, q2, "<influences>"));
+        dfaNodes.put("<hasCapital>", new DFAEdge(q1, q2, "<hasCapital>"));
 
         q2.addDownstreamNode(q2);
         q2.addUpstreamNode(q2);
-        dfaNodes.put("<influences>", new DFAEdge(q2, q2, "<influences>"));
+        dfaNodes.put("<hasCapital>", new DFAEdge(q2, q2, "<hasCapital>"));
 
         q3.addDownstreamNode(q2);
         q2.addUpstreamNode(q3);
-        dfaNodes.put("<isMarriedTo>", new DFAEdge(q2, q3, "<isMarriedTo>"));
+        dfaNodes.put("<participatedIn>", new DFAEdge(q2, q3, "<participatedIn>"));
 
         q3.addDownstreamNode(q3);
         q3.addUpstreamNode(q3);
-        dfaNodes.put("<isMarriedTo>", new DFAEdge(q3, q3, "<isMarriedTo>"));
+        dfaNodes.put("<participatedIn>", new DFAEdge(q3, q3, "<participatedIn>"));
 
 
         try {
@@ -69,6 +69,8 @@ public class WaveGuideQ5 {
 
             // stream is over so we can close it and close the program
             stream.close();
+
+            System.out.println("total number of results: " + q3.getResultCounter());
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -25,9 +25,11 @@ public class Yago2sTSVStream {
         bufferedReader = new BufferedReader(new InputStreamReader(fileStream), 1024*1024*1024);
 
         Runnable counterRunnable = new Runnable() {
+            private int seconds = 0;
+
             @Override
             public void run() {
-                System.out.println(counter.get());
+                System.out.println("Second " + ++seconds + " : " + counter.getAndSet(0));
             }
         };
 
