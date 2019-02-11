@@ -32,7 +32,7 @@ public class DFANode {
     public DFANode(Integer nodeId, boolean isFinal) {
         this.nodeId = nodeId;
         this.isFinal = isFinal;
-        this.cache = new Cache();
+        this.cache = new Cache<Tuple>();
         this.queue = new LinkedList<Tuple>();
 
         this.upstreamNodes = new ArrayList<>();
@@ -93,5 +93,10 @@ public class DFANode {
 
     public int getResultCounter() {
         return resultCounter;
+    }
+
+    public List<Tuple> getResults() {
+        List<Tuple> results = cache.retrieveBySourceState(0);
+        return results;
     }
 }

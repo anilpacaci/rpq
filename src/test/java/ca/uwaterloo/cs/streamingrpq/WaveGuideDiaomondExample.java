@@ -27,7 +27,7 @@ public class WaveGuideDiaomondExample {
 
         DFANode q0 = new DFANode(0);
         DFANode q1 = new DFANode(1);
-        DFANode q2 = new DFANode(2);
+        DFANode q2 = new DFANode(2, true);
 
         HashMultimap<Character, DFAEdge<Character>> dfaNodes = HashMultimap.create();
 
@@ -57,9 +57,14 @@ public class WaveGuideDiaomondExample {
                 }
                 // incoming edge fully processed, move to next one
                 input = stream.next();
+
             }
 
             // stream is over so we can close it and close the program
+            System.out.println("total number of results: " + q2.getResultCounter());
+
+            q2.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
+
             stream.close();
 
         } catch (FileNotFoundException e) {

@@ -52,4 +52,12 @@ public class Cache<S> {
         resultSet.iterator().forEachRemaining(results::add);
         return results;
     }
+
+    public List<Tuple> retrieveBySourceState(Integer sourceState) {
+        Query<Tuple> query = equal(Tuple.TUPLE_SOURCESTATE, sourceState);
+        ResultSet<Tuple> resultSet = cache.retrieve(query);
+        List<Tuple> results = new ArrayList<Tuple>();
+        resultSet.iterator().forEachRemaining(results::add);
+        return results;
+    }
 }
