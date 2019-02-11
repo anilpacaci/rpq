@@ -17,7 +17,12 @@ import java.util.Set;
  */
 public class WaveGuideQ5 {
 
-    static String filename = "/Volumes/RAM Disk/xaa";
+//    static String filename = "/Volumes/RAM Disk/xaa";
+    static String filename = "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/yago2s_full.tsv";
+
+    private static String p0 = "<isCitizenOf>";
+    private static String p1 = "<hasCapital>";
+    private static String p2 = "<participatedIn>";
 
     public static void main(String[] args) {
         Yago2sTSVStream stream = new Yago2sTSVStream();
@@ -31,23 +36,23 @@ public class WaveGuideQ5 {
         HashMultimap<String, DFAEdge<String>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
-        dfaNodes.put("<isCitizenOf>", new DFAEdge(q0, q1, "<isCitizenOf>"));
+        dfaNodes.put(p0, new DFAEdge(q0, q1, p0));
 
         q1.addDownstreamNode(q0);
         q1.addUpstreamNode(q2);
-        dfaNodes.put("<hasCapital>", new DFAEdge(q1, q2, "<hasCapital>"));
+        dfaNodes.put(p1, new DFAEdge(q1, q2, p1));
 
         q2.addDownstreamNode(q2);
         q2.addUpstreamNode(q2);
-        dfaNodes.put("<hasCapital>", new DFAEdge(q2, q2, "<hasCapital>"));
+        dfaNodes.put(p1, new DFAEdge(q2, q2, p1));
 
         q3.addDownstreamNode(q2);
         q2.addUpstreamNode(q3);
-        dfaNodes.put("<participatedIn>", new DFAEdge(q2, q3, "<participatedIn>"));
+        dfaNodes.put(p2, new DFAEdge(q2, q3, p2));
 
         q3.addDownstreamNode(q3);
         q3.addUpstreamNode(q3);
-        dfaNodes.put("<participatedIn>", new DFAEdge(q3, q3, "<participatedIn>"));
+        dfaNodes.put(p2, new DFAEdge(q3, q3, p2));
 
 
         try {
