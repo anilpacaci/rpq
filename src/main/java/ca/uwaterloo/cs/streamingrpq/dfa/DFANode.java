@@ -51,6 +51,11 @@ public class DFANode {
         this.upstreamNodes.add(upstreamNode);
     }
 
+    /**
+     * Only to be called by the main program, on the source vertex of the state transition in the DFA
+     * @param tuple
+     * @param targetState
+     */
     public void prepend(Tuple tuple, Integer targetState) {
         // retrieve all existing paths of this state and see it can be extended
         List<Tuple> newPaths = cache.retrieveByTarget(tuple.getSource());

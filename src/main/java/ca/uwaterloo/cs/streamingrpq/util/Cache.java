@@ -12,8 +12,7 @@ import com.googlecode.cqengine.resultset.iterator.IteratorUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.googlecode.cqengine.query.QueryFactory.and;
-import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.*;
 
 /**
  * Created by anilpacaci on 2019-01-31.
@@ -39,6 +38,14 @@ public class Cache<S> {
 
     public List<Tuple> retrieveByTarget(Integer target) {
         Query<Tuple> query = equal(Tuple.TUPLE_TARGET, target);
+        ResultSet<Tuple> resultSet = cache.retrieve(query);
+        List<Tuple> results = new ArrayList<Tuple>();
+        resultSet.iterator().forEachRemaining(results::add);
+        return results;
+    }
+
+    public List<Tuple> retrieveByTarget(List<Integer> target) {
+        Query<Tuple> query = in(Tuple.TUPLE_TARGET, target);
         ResultSet<Tuple> resultSet = cache.retrieve(query);
         List<Tuple> results = new ArrayList<Tuple>();
         resultSet.iterator().forEachRemaining(results::add);

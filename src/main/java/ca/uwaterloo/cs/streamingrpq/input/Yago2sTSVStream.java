@@ -1,5 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+
 import java.io.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -9,27 +12,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Yago2sTSVStream {
 
 
-    FileInputStream fileStream;
+    FileReader fileStream;
     BufferedReader bufferedReader;
 
     ScheduledExecutorService executor;
 
-    AtomicInteger counter = new AtomicInteger(0);
+    Integer counter = new Integer(0);
 
     public boolean isOpen() {
         return false;
     }
 
     public void open(String filename) throws FileNotFoundException {
-        fileStream = new FileInputStream(filename);
-        bufferedReader = new BufferedReader(new InputStreamReader(fileStream), 1024*1024*1024);
+        fileStream = new FileReader(filename);
+        bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
         Runnable counterRunnable = new Runnable() {
             private int seconds = 0;
 
             @Override
             public void run() {
-                System.out.println("Second " + ++seconds + " : " + counter.getAndSet(0));
+                System.out.println("Second " + ++seconds + " : " + counter);
+                counter = 0;
             }
         };
 
@@ -49,9 +53,10 @@ public class Yago2sTSVStream {
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splits = line.split("\\t");
-                if(splits.length == 3) {
-                    tuple = new InputTuple(splits[0].hashCode(), splits[2].hashCode(), splits[1]);
+                String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
+                if(splitResults.length == 3) {
+//                    tuple = new InputTuple(1,2,3);
+                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1]);
                     break;
                 }
             }
@@ -61,8 +66,7 @@ public class Yago2sTSVStream {
         if (line == null) {
             return null;
         }
-        String[] splits = line.split("\\t");
-        counter.incrementAndGet();
+        counter++;
         return tuple;
     }
 }
