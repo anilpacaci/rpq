@@ -53,11 +53,9 @@ public class WaveGuideDiaomondExample {
                     // for each such node, push tuple for processing at the target node
                     Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
                     edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
-                    edge.getTarget().process(tuple);
                 }
                 // incoming edge fully processed, move to next one
                 input = stream.next();
-
             }
 
             // stream is over so we can close it and close the program
