@@ -27,8 +27,8 @@ public class Cache<S> {
         cache.addIndex(CompoundIndex.onAttributes(Tuple.TUPLE_SOURCE, Tuple.TUPLE_SOURCESTATE));
     }
 
-    public void put(Tuple tuple) {
-        cache.add(tuple);
+    public boolean put(Tuple tuple) {
+        return cache.add(tuple);
     }
 
     public boolean contains(Tuple tuple) {
@@ -54,6 +54,14 @@ public class Cache<S> {
 
     public List<Tuple> retrieveBySource(Integer source, Integer sourceState) {
         Query<Tuple> query = and(equal(Tuple.TUPLE_SOURCE, source), equal(Tuple.TUPLE_SOURCESTATE, sourceState));
+        ResultSet<Tuple> resultSet = cache.retrieve(query);
+        List<Tuple> results = new ArrayList<Tuple>();
+        resultSet.iterator().forEachRemaining(results::add);
+        return results;
+    }
+
+    public List<Tuple> retrieveBySource(List<Integer> source, Integer sourceState) {
+        Query<Tuple> query = and(in(Tuple.TUPLE_SOURCE, source), equal(Tuple.TUPLE_SOURCESTATE, sourceState));
         ResultSet<Tuple> resultSet = cache.retrieve(query);
         List<Tuple> results = new ArrayList<Tuple>();
         resultSet.iterator().forEachRemaining(results::add);

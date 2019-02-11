@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * Created by anilpacaci on 2019-01-31.
@@ -59,45 +60,52 @@ public class DFANode {
     public void prepend(Tuple tuple, Integer targetState) {
         // retrieve all existing paths of this state and see it can be extended
         List<Tuple> newPaths = cache.retrieveByTarget(tuple.getSource());
+
+        List<Tuple> target2Process = new ArrayList<>(newPaths.size() + 1);
+        target2Process.add(tuple);
         for(Tuple newPath : newPaths) {
             Tuple match = new Tuple(newPath.getSource(), tuple.getTarget(), newPath.getSourceState());
-            // we have match, we need to push it to upstream nodes for processing
-            upstreamNodes.stream().filter(upstreamNode -> upstreamNode.nodeId == targetState).forEach(upstreamNode -> upstreamNode.process(match));
+            target2Process.add(match);
         }
+
+        // we have match, we need to push it to upstream nodes for processing
+        upstreamNodes.stream().filter(upstreamNode -> upstreamNode.nodeId == targetState).forEach(upstreamNode -> upstreamNode.process(target2Process));
     }
 
-    public void append(Tuple tuple, Integer originatingState) {
+
+    public void append(List<Tuple> tuples, Integer originatingState) {
         // retrieve all the existing paths of this state that can extend the incoming path
-        List<Tuple> newPaths = cache.retrieveBySource(tuple.getTarget(), originatingState);
-        for(Tuple newPath: newPaths) {
-            process(new Tuple(tuple.getSource(), newPath.getTarget(), tuple.getSourceState()));
+        List<Tuple> tuplesToProcess = new ArrayList<>();
+
+        for(Tuple tuple : tuples) {
+                List<Tuple> newPaths = cache.retrieveBySource(tuple.getTarget(), originatingState);
+                newPaths.stream().forEach(newPath -> tuplesToProcess.add(new Tuple(tuple.getSource(), newPath.getTarget(), tuple.getSourceState())));
         }
 
-    }
-
-    public void process(Tuple tuple) {
-        //check incoming tuple has already been processes
-        if(cache.contains(tuple)) {
-            // this tuple already exists so move on
+        if(tuplesToProcess.isEmpty()) {
             return;
         }
 
-        // add this new tuple to cache
-        cache.put(tuple);
-        if(this.isFinal && tuple.getSourceState() == 0) {
-            //System.out.println(tuple.getSource() + " " + tuple.getTarget());
-            resultCounter++;
+        process(tuplesToProcess);
+    }
+
+    public void process(List<Tuple> tuples) {
+        // add all the tuples to the cache, if it exist in the cache it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
+        List<Tuple> noDuplicateTuples = tuples.stream().filter(t -> cache.put(t)).filter(t -> !t.getTarget().equals(t.getSource())).collect(Collectors.toList());
+
+        if(noDuplicateTuples.isEmpty()) {
+            return;
         }
 
         // append to upstream nodes
         for(DFANode upstream: upstreamNodes) {
-            upstream.append(tuple, this.nodeId);
+            upstream.append(noDuplicateTuples, this.nodeId);
         }
 
     }
 
     public int getResultCounter() {
-        return resultCounter;
+        return cache.retrieveBySourceState(0).size();
     }
 
     public List<Tuple> getResults() {
