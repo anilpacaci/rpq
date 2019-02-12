@@ -34,7 +34,7 @@ public class Yago2sInMemoryTSVStream {
         fileStream = new FileReader(filename);
         bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
-        tupleList = new ArrayList<>();
+        tupleList = new ArrayList<>(200000000);
 
         Runnable counterRunnable = new Runnable() {
             private int seconds = 0;
