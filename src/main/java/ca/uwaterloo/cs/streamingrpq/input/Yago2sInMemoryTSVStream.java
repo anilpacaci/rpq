@@ -52,6 +52,8 @@ public class Yago2sInMemoryTSVStream {
 
         String line = null;
         InputTuple tuple = null;
+
+        long startTime = System.currentTimeMillis();
         while((line = bufferedReader.readLine()) != null) {
             String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
             if(splitResults.length == 3) {
@@ -60,6 +62,11 @@ public class Yago2sInMemoryTSVStream {
                 edge[counter] = splitResults[1].hashCode();
 
                 counter++;
+
+                if(counter % 10000000 == 0) {
+                    System.out.println("10M in " + (System.currentTimeMillis() - startTime)/1000 + " s");
+                    startTime = System.currentTimeMillis();
+                }
             }
         }
 
