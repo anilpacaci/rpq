@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.dfa.DFANode;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import com.google.common.collect.HashMultimap;
 
 import java.io.FileNotFoundException;
@@ -18,14 +19,14 @@ import java.util.Set;
 public class WaveGuideQ5 {
 
 //    static String filename = "/Volumes/RAM Disk/xaa";
-    static String filename = "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/yago2s_full.tsv";
+    static String filename = "/mnt/ramdisk/yago2s_full_virtuoso.csv";
 
-    private static String p0 = "<isCitizenOf>";
-    private static String p1 = "<hasCapital>";
-    private static String p2 = "<participatedIn>";
+    private static String p0 = "http://yago-knowledge.org/resource/isCitizenOf";
+    private static String p1 = "http://yago-knowledge.org/resource/hasCapital";
+    private static String p2 = "http://yago-knowledge.org/resource/participatedIn";
 
     public static void main(String[] args) {
-        Yago2sTSVStream stream = new Yago2sTSVStream();
+        Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
 
         DFANode q0 = new DFANode(0);
         DFANode q1 = new DFANode(1);
@@ -61,13 +62,12 @@ public class WaveGuideQ5 {
 
             while(input != null) {
                 //retrieve DFA nodes where transition is same as edge label
-//                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
-//                for(DFAEdge<String> edge : edges) {
+                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
+                for(DFAEdge<String> edge : edges) {
 //                    // for each such node, push tuple for processing at the target node
-//                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
-//                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
-//                    edge.getTarget().process(tuple);
-//                }
+                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
+                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
+                }
                 // incoming edge fully processed, move to next one
                 input = stream.next();
             }
