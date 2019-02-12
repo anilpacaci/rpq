@@ -34,31 +34,31 @@ public class WaveGuideQ5 {
         DFANode q3 = new DFANode(3, true);
 
 
-        HashMultimap<String, DFAEdge<String>> dfaNodes = HashMultimap.create();
+        HashMultimap<Integer, DFAEdge<String>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
-        dfaNodes.put(p0, new DFAEdge(q0, q1, p0));
+        dfaNodes.put(p0.hashCode(), new DFAEdge(q0, q1, p0));
 
         q1.addDownstreamNode(q0);
         q1.addUpstreamNode(q2);
-        dfaNodes.put(p1, new DFAEdge(q1, q2, p1));
+        dfaNodes.put(p1.hashCode(), new DFAEdge(q1, q2, p1));
 
         q2.addDownstreamNode(q2);
         q2.addUpstreamNode(q2);
-        dfaNodes.put(p1, new DFAEdge(q2, q2, p1));
+        dfaNodes.put(p1.hashCode(), new DFAEdge(q2, q2, p1));
 
         q3.addDownstreamNode(q2);
         q2.addUpstreamNode(q3);
-        dfaNodes.put(p2, new DFAEdge(q2, q3, p2));
+        dfaNodes.put(p2.hashCode(), new DFAEdge(q2, q3, p2));
 
         q3.addDownstreamNode(q3);
         q3.addUpstreamNode(q3);
-        dfaNodes.put(p2, new DFAEdge(q3, q3, p2));
+        dfaNodes.put(p2.hashCode(), new DFAEdge(q3, q3, p2));
 
 
         try {
             stream.open(filename);
-            InputTuple<Integer, Integer, String> input = stream.next();
+            InputTuple<Integer, Integer, Integer> input = stream.next();
 
             while(input != null) {
                 //retrieve DFA nodes where transition is same as edge label

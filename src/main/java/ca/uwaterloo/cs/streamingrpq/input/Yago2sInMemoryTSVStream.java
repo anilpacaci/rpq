@@ -19,7 +19,9 @@ public class Yago2sInMemoryTSVStream {
     FileReader fileStream;
     BufferedReader bufferedReader;
 
-    List<InputTuple> tupleList;
+    int[] source;
+    int[] target;
+    int[] edge;
 
     ScheduledExecutorService executor;
 
@@ -34,7 +36,9 @@ public class Yago2sInMemoryTSVStream {
         fileStream = new FileReader(filename);
         bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
-        tupleList = new ArrayList<>(200000000);
+        source = new int[200000000];
+        target = new int[200000000];
+        edge = new int[200000000];
 
         Runnable counterRunnable = new Runnable() {
             private int seconds = 0;
@@ -51,8 +55,11 @@ public class Yago2sInMemoryTSVStream {
         while((line = bufferedReader.readLine()) != null) {
             String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
             if(splitResults.length == 3) {
-                tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1]);
-                tupleList.add(tuple);
+                source[counter] = splitResults[0].hashCode();
+                target[counter] = splitResults[2].hashCode();
+                edge[counter] = splitResults[1].hashCode();
+
+                counter++;
             }
         }
 
@@ -70,12 +77,12 @@ public class Yago2sInMemoryTSVStream {
     }
 
     public InputTuple next() {
-        if(index >= tupleList.size()) {
+        if(counter == 0) {
             return null;
         }
-        InputTuple tuple = tupleList.get(index);
+        counter--;
+        InputTuple tuple = new InputTuple(source[counter], target[counter], edge[counter]);
         index++;
-        counter++;
         return tuple;
     }
 }
