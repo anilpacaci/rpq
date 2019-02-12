@@ -1,0 +1,28 @@
+/home/apacaci/datasets/yago2s/turtle
+
+
+ld_dir ('/home/apacaci/datasets/yago2s/turtle', '*.ttl', 'yago');
+
+
+
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+rdf_loader_run (); &
+
+
+sparql select count(*) from <yago> where { ?s ?p ?o };
+select * {graph ?g {}}
+
+sparql SELECT  DISTINCT ?g WHERE  { GRAPH ?g {?s ?p ?o} } ORDER BY  ?g
+
+# Q14
+sparql select * from <yago> where { ?s <http://yago-knowledge.org/resource/isCitizenOf>/<http://yago-knowledge.org/resource/hasCapital>*/<http://yago-knowledge.org/resource/participatedIn>* ?o };
+
+2620991 Rows. -- 214563 msec.
