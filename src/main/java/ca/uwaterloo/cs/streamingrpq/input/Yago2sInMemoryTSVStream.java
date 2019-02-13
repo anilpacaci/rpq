@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +23,8 @@ public class Yago2sInMemoryTSVStream {
 
     ScheduledExecutorService executor;
 
-    Integer counter = new Integer(0);
-    Integer index = 0;
+    Integer bufferPointer = new Integer(0);
+    Integer counter = 0;
 
     public boolean isOpen() {
         return false;
@@ -57,13 +55,13 @@ public class Yago2sInMemoryTSVStream {
         while((line = bufferedReader.readLine()) != null) {
             String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
             if(splitResults.length == 3) {
-                source[counter] = splitResults[0].hashCode();
-                target[counter] = splitResults[2].hashCode();
-                edge[counter] = splitResults[1].hashCode();
+                source[bufferPointer] = splitResults[0].hashCode();
+                target[bufferPointer] = splitResults[2].hashCode();
+                edge[bufferPointer] = splitResults[1].hashCode();
 
-                counter++;
+                bufferPointer++;
 
-                if(counter % 10000000 == 0) {
+                if(bufferPointer % 10000000 == 0) {
                     System.out.println("10M in " + (System.currentTimeMillis() - startTime)/1000 + " s");
                     startTime = System.currentTimeMillis();
                 }
@@ -84,12 +82,12 @@ public class Yago2sInMemoryTSVStream {
     }
 
     public InputTuple next() {
-        if(counter == 0) {
+        if(bufferPointer == 0) {
             return null;
         }
-        counter--;
-        InputTuple tuple = new InputTuple(source[counter], target[counter], edge[counter]);
-        index++;
+        bufferPointer--;
+        InputTuple tuple = new InputTuple(source[bufferPointer], target[bufferPointer], edge[bufferPointer]);
+        counter++;
         return tuple;
     }
 }
