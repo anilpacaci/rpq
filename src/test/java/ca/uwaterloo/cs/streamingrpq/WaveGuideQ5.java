@@ -8,6 +8,12 @@ import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import com.google.common.collect.HashMultimap;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,14 +24,32 @@ import java.util.Set;
  */
 public class WaveGuideQ5 {
 
-//    static String filename = "/Volumes/RAM Disk/xaa";
-    static String filename = "/mnt/ramdisk/yago2s_full_virtuoso.csv";
-
-    private static String p0 = "http://yago-knowledge.org/resource/isCitizenOf";
-    private static String p1 = "http://yago-knowledge.org/resource/hasCapital";
-    private static String p2 = "http://yago-knowledge.org/resource/participatedIn";
-
     public static void main(String[] args) {
+
+        Parameters params = new Parameters();
+        FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
+                new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
+                        .configure(params.properties().setFileName(args[0]));
+
+        Configuration config = null;
+
+        try {
+            config = builder.getConfiguration();
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        if( !(config.containsKey("input.file") && config.containsKey("label.p") && config.containsKey("label.p1") && config.containsKey("label.p2")) ) {
+            // parameters file does not have all the required parameters
+            System.err.println("Parameters file does not have all required parameters");
+            return;
+        }
+
+        String filename = config.getString("input.file");
+        String p0 = config.getString("label.p");
+        String p1 = config.getString("label.p1");
+        String p2 = config.getString("label.p2");
+
         Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
 
         DFANode q0 = new DFANode(0);

@@ -19,6 +19,11 @@
             <artifactId>cqengine</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
 
     <build>
