@@ -1,9 +1,8 @@
 /home/apacaci/datasets/yago2s/turtle
 
+select * from DB.DBA.load_list;
 
-ld_dir ('/home/apacaci/datasets/yago2s/turtle', '*.ttl', 'yago');
-
-
+ld_dir ('/home/apacaci/datasets/yago2s/turtle', '/home/apacaci/datasets/yago2s/turtle/yagoMultilingualInstanceLabels.ttl', 'yago');
 
 rdf_loader_run (); &
 rdf_loader_run (); &
@@ -15,6 +14,7 @@ rdf_loader_run (); &
 rdf_loader_run (); &
 rdf_loader_run (); &
 rdf_loader_run (); &
+
 
 
 sparql select count(*) from <yago> where { ?s ?p ?o };

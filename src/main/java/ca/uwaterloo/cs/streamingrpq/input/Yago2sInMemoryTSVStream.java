@@ -23,8 +23,10 @@ public class Yago2sInMemoryTSVStream {
 
     ScheduledExecutorService executor;
 
-    Integer bufferPointer = new Integer(0);
+    Integer bufferPointer = 0;
+    Integer bufferSize = 0;
     Integer counter = 0;
+
 
     public boolean isOpen() {
         return false;
@@ -55,13 +57,13 @@ public class Yago2sInMemoryTSVStream {
         while((line = bufferedReader.readLine()) != null) {
             String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
             if(splitResults.length == 3) {
-                source[bufferPointer] = splitResults[0].hashCode();
-                target[bufferPointer] = splitResults[2].hashCode();
-                edge[bufferPointer] = splitResults[1].hashCode();
+                source[bufferSize] = splitResults[0].hashCode();
+                target[bufferSize] = splitResults[2].hashCode();
+                edge[bufferSize] = splitResults[1].hashCode();
 
-                bufferPointer++;
+                bufferSize++;
 
-                if(bufferPointer % 10000000 == 0) {
+                if(bufferSize % 10000000 == 0) {
                     System.out.println("10M in " + (System.currentTimeMillis() - startTime)/1000 + " s");
                     startTime = System.currentTimeMillis();
                 }
@@ -81,11 +83,19 @@ public class Yago2sInMemoryTSVStream {
         executor.shutdown();
     }
 
+    /**
+     * resets the index pointers so that buffered stream can be consumed again
+     */
+    public void reset() {
+        // just set buffer pointer to the top of the buffer
+        bufferPointer = 0;
+    }
+
     public InputTuple next() {
-        if(bufferPointer == 0) {
+        if(bufferPointer == bufferSize) {
             return null;
         }
-        bufferPointer--;
+        bufferPointer++;
         InputTuple tuple = new InputTuple(source[bufferPointer], target[bufferPointer], edge[bufferPointer]);
         counter++;
         return tuple;
