@@ -39,16 +39,16 @@ public class WaveGuideQ5 {
             e.printStackTrace();
         }
 
-        if( !(config.containsKey("input.file") && config.containsKey("label.p") && config.containsKey("label.p1") && config.containsKey("label.p2")) ) {
+        if( !(config.containsKey("input.file") && config.containsKey("p.label") && config.containsKey("p1.label") && config.containsKey("p2.label")) ) {
             // parameters file does not have all the required parameters
             System.err.println("Parameters file does not have all required parameters");
             return;
         }
 
         String filename = config.getString("input.file");
-        String p0 = config.getString("label.p");
-        String p1 = config.getString("label.p1");
-        String p2 = config.getString("label.p2");
+        String p0 = config.getString("p.label");
+        String p1 = config.getString("p1.label");
+        String p2 = config.getString("p2.label");
 
         Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
 
