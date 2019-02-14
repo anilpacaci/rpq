@@ -46,61 +46,66 @@ public class WaveGuideQ5 {
         }
 
         String filename = config.getString("input.file");
-        String p0 = config.getString("p.label");
-        String p1 = config.getString("p1.label");
-        String p2 = config.getString("p2.label");
+        Integer queryCount = config.getInt("query.count");
+        String[] queryNames = config.getStringArray("query.names");
+        String[] p0 = config.getStringArray("p.label");
+        String[] p1 = config.getStringArray("p1.label");
+        String[] p2 = config.getStringArray("p2.label");
 
         Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
 
-        DFANode q0 = new DFANode(0);
-        DFANode q1 = new DFANode(1);
-        DFANode q2 = new DFANode(2);
-        DFANode q3 = new DFANode(3, true);
-
-
-        HashMultimap<Integer, DFAEdge<String>> dfaNodes = HashMultimap.create();
-
-        q0.addUpstreamNode(q1);
-        dfaNodes.put(p0.hashCode(), new DFAEdge(q0, q1, p0));
-
-        q1.addDownstreamNode(q0);
-        q1.addUpstreamNode(q2);
-        dfaNodes.put(p1.hashCode(), new DFAEdge(q1, q2, p1));
-
-        q2.addDownstreamNode(q2);
-        q2.addUpstreamNode(q2);
-        dfaNodes.put(p1.hashCode(), new DFAEdge(q2, q2, p1));
-
-        q3.addDownstreamNode(q2);
-        q2.addUpstreamNode(q3);
-        dfaNodes.put(p2.hashCode(), new DFAEdge(q2, q3, p2));
-
-        q3.addDownstreamNode(q3);
-        q3.addUpstreamNode(q3);
-        dfaNodes.put(p2.hashCode(), new DFAEdge(q3, q3, p2));
-
-
         try {
             stream.open(filename);
-            InputTuple<Integer, Integer, Integer> input = stream.next();
 
-            while(input != null) {
-                //retrieve DFA nodes where transition is same as edge label
-                Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
-                for(DFAEdge<String> edge : edges) {
+            for (int i = 0; i < queryCount; i++) {
+                HashMultimap<Integer, DFAEdge<String>> dfaNodes = HashMultimap.create();
+
+                DFANode q0 = new DFANode(0);
+                DFANode q1 = new DFANode(1);
+                DFANode q2 = new DFANode(2);
+                DFANode q3 = new DFANode(3, true);
+
+                q0.addUpstreamNode(q1);
+                dfaNodes.put(p0[i].hashCode(), new DFAEdge(q0, q1, p0[i]));
+
+                q1.addDownstreamNode(q0);
+                q1.addUpstreamNode(q2);
+                dfaNodes.put(p1[i].hashCode(), new DFAEdge(q1, q2, p1[i]));
+
+                q2.addDownstreamNode(q2);
+                q2.addUpstreamNode(q2);
+                dfaNodes.put(p1[i].hashCode(), new DFAEdge(q2, q2, p1[i]));
+
+                q3.addDownstreamNode(q2);
+                q2.addUpstreamNode(q3);
+                dfaNodes.put(p2[i].hashCode(), new DFAEdge(q2, q3, p2[i]));
+
+                q3.addDownstreamNode(q3);
+                q3.addUpstreamNode(q3);
+                dfaNodes.put(p2[i].hashCode(), new DFAEdge(q3, q3, p2[i]));
+
+
+                InputTuple<Integer, Integer, Integer> input = stream.next();
+
+                while (input != null) {
+                    //retrieve DFA nodes where transition is same as edge label
+                    Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
+                    for (DFAEdge<String> edge : edges) {
 //                    // for each such node, push tuple for processing at the target node
-                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
-                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
+                        Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
+                        edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
+                    }
+                    // incoming edge fully processed, move to next one
+                    input = stream.next();
                 }
-                // incoming edge fully processed, move to next one
-                input = stream.next();
-            }
 
+                System.out.println("total number of results for" + queryNames[i] + " : " + q3.getResultCounter());
+
+                //reset the stream so we can reuse it for the next query
+                stream.reset();
+            }
             // stream is over so we can close it and close the program
             stream.close();
-
-            System.out.println("total number of results: " + q3.getResultCounter());
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
