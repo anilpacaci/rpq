@@ -92,7 +92,7 @@ public class Yago2sInMemoryTSVStream {
     }
 
     public InputTuple next() {
-        if(bufferPointer == bufferSize) {
+        if(bufferPointer == bufferSize - 1) {
             return null;
         }
         bufferPointer++;

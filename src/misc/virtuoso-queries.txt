@@ -23,6 +23,6 @@ select * {graph ?g {}}
 sparql SELECT  DISTINCT ?g WHERE  { GRAPH ?g {?s ?p ?o} } ORDER BY  ?g
 
 # Q14
-sparql select * from <yago> where { ?s <http://yago-knowledge.org/resource/isCitizenOf>/<http://yago-knowledge.org/resource/hasCapital>*/<http://yago-knowledge.org/resource/participatedIn>* ?o };
+sparql select * from <yago> where { ?s <http://yago-knowledge.org/resource/isKnownFor>/<http://yago-knowledge.org/resource/isMarriedTo>+/<http://yago-knowledge.org/resource/hasChild>+ ?o };
 
 2620991 Rows. -- 214563 msec.
