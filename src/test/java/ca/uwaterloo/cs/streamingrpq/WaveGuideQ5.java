@@ -13,6 +13,7 @@ import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.FileNotFoundException;
@@ -29,7 +30,9 @@ public class WaveGuideQ5 {
         Parameters params = new Parameters();
         FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
                 new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-                        .configure(params.properties().setFileName(args[0]));
+                        .configure(params.properties().setFileName(args[0])
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(','))
+        );
 
         Configuration config = null;
 
@@ -47,6 +50,7 @@ public class WaveGuideQ5 {
 
         String filename = config.getString("input.file");
         Integer queryCount = config.getInt("query.count");
+        Integer inputSize = config.getInt("input.size");
         String[] queryNames = config.getStringArray("query.names");
         String[] p0 = config.getStringArray("p.label");
         String[] p1 = config.getStringArray("p1.label");
@@ -55,7 +59,7 @@ public class WaveGuideQ5 {
         Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
 
         try {
-            stream.open(filename);
+            stream.open(filename, inputSize);
 
             for (int i = 0; i < queryCount; i++) {
                 HashMultimap<Integer, DFAEdge<String>> dfaNodes = HashMultimap.create();
@@ -99,7 +103,7 @@ public class WaveGuideQ5 {
                     input = stream.next();
                 }
 
-                System.out.println("total number of results for" + queryNames[i] + " : " + q3.getResultCounter());
+                System.out.println("total number of results for query " + queryNames[i] + " : " + q3.getResultCounter());
 
                 //reset the stream so we can reuse it for the next query
                 stream.reset();
