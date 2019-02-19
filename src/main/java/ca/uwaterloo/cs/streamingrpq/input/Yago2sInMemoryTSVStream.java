@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Yago2sInMemoryTSVStream {
 
+    public static final Integer MAX_STREAM_SIZE = 200000000;
+
 
     FileReader fileStream;
     BufferedReader bufferedReader;
@@ -33,12 +35,16 @@ public class Yago2sInMemoryTSVStream {
     }
 
     public void open(String filename) throws FileNotFoundException, IOException {
+        open(filename, MAX_STREAM_SIZE);
+    }
+
+    public void open(String filename, Integer maxSize) throws FileNotFoundException, IOException {
         fileStream = new FileReader(filename);
         bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
-        source = new int[200000000];
-        target = new int[200000000];
-        edge = new int[200000000];
+        source = new int[maxSize];
+        target = new int[maxSize];
+        edge = new int[maxSize];
 
         Runnable counterRunnable = new Runnable() {
             private int seconds = 0;
