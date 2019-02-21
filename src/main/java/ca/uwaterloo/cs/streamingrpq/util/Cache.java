@@ -44,8 +44,8 @@ public class Cache<S> {
         return results;
     }
 
-    public List<Tuple> retrieveByTarget(List<Integer> target) {
-        Query<Tuple> query = in(Tuple.TUPLE_TARGET, target);
+    public List<Tuple> retrieveBySourceStateAndTarget(Integer sourceState, Integer target) {
+        Query<Tuple> query = and(equal(Tuple.TUPLE_SOURCESTATE, sourceState), equal(Tuple.TUPLE_TARGET, target));
         ResultSet<Tuple> resultSet = cache.retrieve(query);
         List<Tuple> results = new ArrayList<Tuple>();
         resultSet.iterator().forEachRemaining(results::add);

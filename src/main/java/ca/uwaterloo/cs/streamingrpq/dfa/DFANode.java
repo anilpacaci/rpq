@@ -53,7 +53,8 @@ public class DFANode {
      */
     public void prepend(Tuple tuple, Integer targetState) {
         // retrieve all existing paths of this state and see it can be extended
-        List<Tuple> newPaths = cache.retrieveByTarget(tuple.getSource());
+        // we are only extending states starting from source state to save memory
+        List<Tuple> newPaths = cache.retrieveBySourceStateAndTarget(0, tuple.getSource());
 
         List<Tuple> target2Process = new ArrayList<>(newPaths.size() + 1);
         target2Process.add(tuple);
