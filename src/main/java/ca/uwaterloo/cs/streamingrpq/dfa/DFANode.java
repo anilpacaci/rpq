@@ -88,13 +88,16 @@ public class DFANode {
         // add all the tuples to the cache, if it exist in the cache it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
         List<Tuple> noDuplicateTuples = tuples.stream().filter(t -> cache.put(t)).filter(t -> !t.getTarget().equals(t.getSource())).collect(Collectors.toList());
 
-        if(noDuplicateTuples.isEmpty()) {
+        // we only need to extend paths that can start from the start state, so filter out paths that does not start from the start state
+        List<Tuple> prefixTuples = noDuplicateTuples.stream().filter(t -> t.getSourceState() == 0).collect(Collectors.toList());
+
+        if(prefixTuples.isEmpty()) {
             return;
         }
 
         // append to upstream nodes
         for(DFANode upstream: upstreamNodes) {
-            upstream.append(noDuplicateTuples, this.nodeId);
+            upstream.append(prefixTuples, this.nodeId);
         }
 
     }
