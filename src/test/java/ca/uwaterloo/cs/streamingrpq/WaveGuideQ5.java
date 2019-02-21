@@ -72,19 +72,15 @@ public class WaveGuideQ5 {
                 q0.addUpstreamNode(q1);
                 dfaNodes.put(p0[i].hashCode(), new DFAEdge(q0, q1, p0[i]));
 
-                q1.addDownstreamNode(q0);
                 q1.addUpstreamNode(q2);
                 dfaNodes.put(p1[i].hashCode(), new DFAEdge(q1, q2, p1[i]));
 
-                q2.addDownstreamNode(q2);
                 q2.addUpstreamNode(q2);
                 dfaNodes.put(p1[i].hashCode(), new DFAEdge(q2, q2, p1[i]));
 
-                q3.addDownstreamNode(q2);
                 q2.addUpstreamNode(q3);
                 dfaNodes.put(p2[i].hashCode(), new DFAEdge(q2, q3, p2[i]));
 
-                q3.addDownstreamNode(q3);
                 q3.addUpstreamNode(q3);
                 dfaNodes.put(p2[i].hashCode(), new DFAEdge(q3, q3, p2[i]));
 
