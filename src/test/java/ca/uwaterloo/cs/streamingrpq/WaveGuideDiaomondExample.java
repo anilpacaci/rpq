@@ -34,11 +34,9 @@ public class WaveGuideDiaomondExample {
         q0.addUpstreamNode(q1);
         dfaNodes.put('a', new DFAEdge(q0, q1, 'a'));
 
-        q1.addDownstreamNode(q0);
         q1.addUpstreamNode(q2);
         dfaNodes.put('b', new DFAEdge(q1, q2, 'b'));
 
-        q2.addDownstreamNode(q1);
         q2.addUpstreamNode(q1);
         dfaNodes.put('a', new DFAEdge(q2, q1, 'a'));
 

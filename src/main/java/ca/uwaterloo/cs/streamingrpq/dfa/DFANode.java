@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
  */
 public class DFANode {
 
-    private List<DFANode> downstreamNodes;
     private List<DFANode> upstreamNodes;
 
     private Integer nodeId;
@@ -37,15 +36,10 @@ public class DFANode {
         this.queue = new LinkedList<Tuple>();
 
         this.upstreamNodes = new ArrayList<>();
-        this.downstreamNodes = new ArrayList<>();
     }
 
     public Integer getNodeId() {
         return nodeId;
-    }
-
-    public void addDownstreamNode(DFANode downstreamNode) {
-        this.downstreamNodes.add(downstreamNode);
     }
 
     public void addUpstreamNode(DFANode upstreamNode) {
