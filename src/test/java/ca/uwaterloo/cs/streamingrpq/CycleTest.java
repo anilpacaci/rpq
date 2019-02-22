@@ -24,18 +24,27 @@ public class CycleTest {
         DFANode q0 = new DFANode(0);
         DFANode q1 = new DFANode(1);
         DFANode q2 = new DFANode(2);
-        DFANode q3 = new DFANode(3, true);
+        DFANode q3 = new DFANode(3);
+        DFANode q4 = new DFANode(4);
+        DFANode q5 = new DFANode(5, true);
+
 
         HashMultimap<Character, DFAEdge<Character>> dfaNodes = HashMultimap.create();
 
         q0.addUpstreamNode(q1);
-        dfaNodes.put('b', new DFAEdge(q0, q1, 'b'));
+        dfaNodes.put('a', new DFAEdge(q0, q1, 'a'));
 
         q1.addUpstreamNode(q2);
-        dfaNodes.put('c', new DFAEdge(q1, q2, 'c'));
+        dfaNodes.put('b', new DFAEdge(q1, q2, 'b'));
 
         q2.addUpstreamNode(q3);
-        dfaNodes.put('d', new DFAEdge(q2, q3, 'd'));
+        dfaNodes.put('b', new DFAEdge(q2, q3, 'b'));
+
+        q3.addUpstreamNode(q4);
+        dfaNodes.put('b', new DFAEdge(q3, q4, 'b'));
+
+        q4.addUpstreamNode(q5);
+        dfaNodes.put('c', new DFAEdge(q4, q5, 'c'));
 
         try {
             stream.open(filename);
@@ -54,9 +63,9 @@ public class CycleTest {
             }
 
             // stream is over so we can close it and close the program
-            System.out.println("total number of results: " + q3.getResultCounter());
+            System.out.println("total number of results: " + q5.getResultCounter());
 
-            q3.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
+            q5.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
 
             stream.close();
 
