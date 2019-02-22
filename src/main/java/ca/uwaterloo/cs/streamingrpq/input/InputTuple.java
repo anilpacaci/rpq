@@ -1,7 +1,5 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
-import ca.uwaterloo.cs.streamingrpq.core.TupleType;
-
 /**
  * Created by anilpacaci on 2019-01-31.
  */
@@ -56,4 +54,11 @@ public class InputTuple<S,T,L> {
         return this.type == TupleType.DELETE;
     }
 
+    /**
+     * Created by anilpacaci on 2019-02-22.
+     */
+    public static enum TupleType {
+        INSERT,
+        DELETE
+    }
 }

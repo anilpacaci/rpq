@@ -1,18 +1,15 @@
 package ca.uwaterloo.cs.streamingrpq;
 
-import ca.uwaterloo.cs.streamingrpq.core.Tuple;
+import ca.uwaterloo.cs.streamingrpq.core.SubPath;
+import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFAEdge;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFANode;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ListMultimap;
-import org.antlr.v4.runtime.misc.MultiMap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,46 +17,33 @@ import java.util.Set;
  */
 public class WaveGuideDiaomondExample {
 
-    static String filename = "src/main/resources/diamondgraph.txt";
+    static String filename = "src/main/resources/simplediamond.txt";
 
     public static void main(String[] args) {
         TextStream stream = new TextStream();
 
-        DFANode q0 = new DFANode(0);
-        DFANode q1 = new DFANode(1);
-        DFANode q2 = new DFANode(2, true);
 
-        HashMultimap<Character, DFAEdge<Character>> dfaNodes = HashMultimap.create();
-
-        q0.addUpstreamNode(q1);
-        dfaNodes.put('a', new DFAEdge(q0, q1, 'a'));
-
-        q1.addUpstreamNode(q2);
-        dfaNodes.put('b', new DFAEdge(q1, q2, 'b'));
-
-        q2.addUpstreamNode(q1);
-        dfaNodes.put('a', new DFAEdge(q2, q1, 'a'));
+        DFA<Character> diamond = new DFA<>();
+        diamond.addDFAEdge(0,1,'a');
+        diamond.addDFAEdge(1,2,'b');
+        diamond.addDFAEdge(2,1,'a');
+        diamond.setStartState(0);
+        diamond.setFinalState(2);
 
         try {
             stream.open(filename);
             InputTuple<Integer, Integer, Character> input = stream.next();
 
             while(input != null) {
-                //retrieve DFA nodes where transition is same as edge label
-                Set<DFAEdge<Character>> edges = dfaNodes.get(input.getLabel());
-                for(DFAEdge<Character> edge : edges) {
-                    // for each such node, push tuple for processing at the target node
-                    Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
-                    edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
-                }
+                diamond.processEdge(input);
                 // incoming edge fully processed, move to next one
                 input = stream.next();
             }
 
             // stream is over so we can close it and close the program
-            System.out.println("total number of results: " + q2.getResultCounter());
+            System.out.println("total number of results: " + diamond.getResultCounter());
 
-            q2.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
+            diamond.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
 
             stream.close();
 

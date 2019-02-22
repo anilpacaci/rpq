@@ -1,7 +1,5 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
-import ca.uwaterloo.cs.streamingrpq.core.TupleType;
-
 import java.io.*;
 
 /**
@@ -37,9 +35,9 @@ public class TextStream {
             return null;
         }
         String[] splits = line.split("\\s");
-        // assume first character is delete or insert
+        // assume first character is delete or processEdge
         return new InputTuple(Integer.parseInt(splits[1]), Integer.parseInt(splits[2]),
-                splits[3].charAt(0), splits[0].equals("+")? TupleType.INSERT:TupleType.DELETE);
+                splits[3].charAt(0), splits[0].equals("+")? InputTuple.TupleType.INSERT: InputTuple.TupleType.DELETE);
     }
 
 }
