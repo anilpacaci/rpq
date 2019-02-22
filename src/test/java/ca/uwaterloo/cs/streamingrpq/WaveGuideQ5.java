@@ -1,11 +1,10 @@
 package ca.uwaterloo.cs.streamingrpq;
 
-import ca.uwaterloo.cs.streamingrpq.core.Tuple;
+import ca.uwaterloo.cs.streamingrpq.core.SubPath;
+import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFAEdge;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFANode;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import com.google.common.collect.HashMultimap;
 import org.apache.commons.configuration2.Configuration;
@@ -62,44 +61,24 @@ public class WaveGuideQ5 {
             stream.open(filename, inputSize);
 
             for (int i = 0; i < queryCount; i++) {
-                HashMultimap<Integer, DFAEdge<String>> dfaNodes = HashMultimap.create();
-
-                DFANode q0 = new DFANode(0);
-                DFANode q1 = new DFANode(1);
-                DFANode q2 = new DFANode(2);
-                DFANode q3 = new DFANode(3, true);
-
-                q0.addUpstreamNode(q1);
-                dfaNodes.put(p0[i].hashCode(), new DFAEdge(q0, q1, p0[i]));
-
-                q1.addUpstreamNode(q2);
-                dfaNodes.put(p1[i].hashCode(), new DFAEdge(q1, q2, p1[i]));
-
-                q2.addUpstreamNode(q2);
-                dfaNodes.put(p1[i].hashCode(), new DFAEdge(q2, q2, p1[i]));
-
-                q2.addUpstreamNode(q3);
-                dfaNodes.put(p2[i].hashCode(), new DFAEdge(q2, q3, p2[i]));
-
-                q3.addUpstreamNode(q3);
-                dfaNodes.put(p2[i].hashCode(), new DFAEdge(q3, q3, p2[i]));
-
+                DFA<Integer> q5 = new DFA<>();
+                q5.addDFAEdge(0,1, p0[i].hashCode());
+                q5.addDFAEdge(1,2, p1[i].hashCode());
+                q5.addDFAEdge(2,2, p1[i].hashCode());
+                q5.addDFAEdge(2,3, p2[i].hashCode());
+                q5.addDFAEdge(3,3, p2[i].hashCode());
+                q5.setFinalState(3);
 
                 InputTuple<Integer, Integer, Integer> input = stream.next();
 
                 while (input != null) {
                     //retrieve DFA nodes where transition is same as edge label
-                    Set<DFAEdge<String>> edges = dfaNodes.get(input.getLabel());
-                    for (DFAEdge<String> edge : edges) {
-//                    // for each such node, push tuple for processing at the target node
-                        Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getSource().getNodeId());
-                        edge.getSource().prepend(tuple, edge.getTarget().getNodeId());
-                    }
+                    q5.processEdge(input);
                     // incoming edge fully processed, move to next one
                     input = stream.next();
                 }
 
-                System.out.println("total number of results for query " + queryNames[i] + " : " + q3.getResultCounter());
+                System.out.println("total number of results for query " + queryNames[i] + " : " + q5.getResultCounter());
 
                 //reset the stream so we can reuse it for the next query
                 stream.reset();
