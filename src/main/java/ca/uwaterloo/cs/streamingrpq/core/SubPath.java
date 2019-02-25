@@ -37,12 +37,24 @@ public class SubPath {
         return counter;
     }
 
+    public void setCounter(int count) {
+        this.counter = count;
+    }
+
     public void increment() {
         counter++;
     }
 
+    public void increment(int increment) {
+        this.counter += increment;
+    }
+
     public void decrement() {
         counter--;
+    }
+
+    public void decrement(int decrement) {
+        this.counter -= decrement;
     }
 
     public static final Attribute<SubPath, Integer> TUPLE_SOURCE = new SimpleAttribute<SubPath, Integer>("source") {
@@ -77,5 +89,12 @@ public class SubPath {
         result = 31 * result + target;
         result = 31 * result + sourceState;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("<").append(source).
+                append(",").append(target).append(">  from ").
+                append(sourceState).append(", count: ").append(counter).toString();
     }
 }

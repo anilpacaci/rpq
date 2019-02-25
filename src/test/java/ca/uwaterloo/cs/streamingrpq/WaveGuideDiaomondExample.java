@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class WaveGuideDiaomondExample {
 
-    static String filename = "src/main/resources/simplediamond.txt";
+    static String filename = "src/main/resources/diamondgraph.txt";
 
     public static void main(String[] args) {
         TextStream stream = new TextStream();
