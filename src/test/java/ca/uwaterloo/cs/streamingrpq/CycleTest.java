@@ -29,6 +29,7 @@ public class CycleTest {
         cycleTestDFA.addDFAEdge(2, 3, 'b');
         cycleTestDFA.addDFAEdge(3, 4, 'b');
         cycleTestDFA.addDFAEdge(4, 5, 'c');
+        cycleTestDFA.setStartState(0);
         cycleTestDFA.setFinalState(5);
 
         try {

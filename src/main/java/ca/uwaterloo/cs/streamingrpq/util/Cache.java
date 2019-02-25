@@ -55,15 +55,18 @@ public class Cache<S> {
     public boolean removeOrDecrement(SubPath subPath) {
         Query<SubPath> query = and(equal(SubPath.TUPLE_SOURCE, subPath.getSource()), equal(SubPath.TUPLE_SOURCESTATE, subPath.getSourceState()), equal(SubPath.TUPLE_TARGET, subPath.getTarget()));
         // note that subpath has to exists
-        SubPath existing = cache.retrieve(query).uniqueResult();
-        existing.decrement();
-        if(existing.getCounter() == 0) {
-            // remove the entry from the cache
-            cache.remove(subPath);
-            return true;
+        try {
+            SubPath existing = cache.retrieve(query).uniqueResult();
+            existing.decrement();
+            if(existing.getCounter() == 0) {
+                // remove the entry from the cache
+                cache.remove(subPath);
+                return true;
+            }
+        } catch (NoSuchObjectException e) {
+            throw e;
         }
         return false;
-
     }
 
     public boolean contains(SubPath subPath) {
