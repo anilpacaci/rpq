@@ -57,6 +57,10 @@ public class SubPath {
         this.counter -= decrement;
     }
 
+    public boolean isCycle() {
+        return this.source.equals(this.target);
+    }
+
     public static final Attribute<SubPath, Integer> TUPLE_SOURCE = new SimpleAttribute<SubPath, Integer>("source") {
         public Integer getValue(SubPath subPath, QueryOptions queryOptions) { return subPath.source; }
     };

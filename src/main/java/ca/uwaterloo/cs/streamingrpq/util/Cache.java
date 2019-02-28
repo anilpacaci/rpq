@@ -64,7 +64,7 @@ public class Cache<S> {
                 return true;
             }
         } catch (NoSuchObjectException e) {
-            throw e;
+            return false;
         }
         return false;
     }

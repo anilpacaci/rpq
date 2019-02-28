@@ -70,13 +70,14 @@ public class DFANode {
         List<SubPath> newPaths = cache.retrieveBySourceStateAndTarget(0, subPath.getSource());
 
 
-        newPaths.stream().filter(t -> (t.getSource().equals(t.getTarget()) && t.getSourceState().equals(this.getNodeId()) )).forEach(t -> System.out.println(t));
 
         List<SubPath> target2Process = new ArrayList<>(newPaths.size() + 1);
         target2Process.add(subPath);
         for (SubPath newPath : newPaths) {
-            SubPath match = new SubPath(newPath.getSource(), subPath.getTarget(), newPath.getSourceState());
-            target2Process.add(match);
+            if(!(newPath.getSource().equals(subPath.getTarget()) && newPath.getSourceState().equals(subPath.getSource()))) {
+                SubPath match = new SubPath(newPath.getSource(), subPath.getTarget(), newPath.getSourceState());
+                target2Process.add(match);
+            }
         }
 
         // we have match, we need to push it to downstream nodes for processing
@@ -88,17 +89,19 @@ public class DFANode {
     }
 
     public void extendInsert(List<SubPath> subPaths, Integer originatingState) {
-        //detect cycles
-        List<SubPath> noCycles = subPaths.stream().filter(t -> !t.getTarget().equals(t.getSource())).collect(Collectors.toList());
         // retrieve all the existing paths of this state that can extend the incoming path
         List<SubPath> subPathsToProcesses = new ArrayList<>();
 
-        for(SubPath subPath : noCycles) {
+        for(SubPath subPath : subPaths) {
                 List<SubPath> newPaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
                 newPaths.stream().forEach(newPath -> {
-                    SubPath extendedNewPath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
-                    // because we join these two paths, total number of paths is the multiplication
-                    subPathsToProcesses.add(extendedNewPath);
+                    if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
+                        SubPath extendedNewPath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
+                        // because we join these two paths, total number of paths is the multiplication
+                        if(!cache.contains(extendedNewPath)) {
+                            subPathsToProcesses.add(extendedNewPath);
+                        }
+                    }
                 });
         }
 
@@ -110,16 +113,18 @@ public class DFANode {
     }
 
     public void extendDelete(List<SubPath> subPaths, Integer originatingState) {
-        List<SubPath> noCycles = subPaths.stream().filter(t -> !t.getTarget().equals(t.getSource())).collect(Collectors.toList());
-
         // retrieve all the existing paths of this state that can extend the incoming path
         List<SubPath> subPathsToProcesses = new ArrayList<>();
 
-        for(SubPath subPath : noCycles) {
+        for(SubPath subPath : subPaths) {
             List<SubPath> removePaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
             removePaths.stream().forEach(newPath -> {
-                SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
-                subPathsToProcesses.add(extendedRemovePath);
+                if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
+                    SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
+                    if(!cache.contains(extendedRemovePath)) {
+                        subPathsToProcesses.add(extendedRemovePath);
+                    }
+                }
             });
         }
 
@@ -138,6 +143,8 @@ public class DFANode {
 
         // we only need to extend paths that can start from the start state, so filter out paths that does not start from the start state
         List<SubPath> prefixSubPaths = noDuplicateSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toList());
+
+        // get rid of cycles if this is a final state as well
 
         if(prefixSubPaths.isEmpty()) {
             return;
