@@ -71,6 +71,22 @@ public class DFANode {
     }
 
     /**
+     * Populates the insertion buffer for this NFA node
+     * @param subPaths
+     */
+    public void propagateInsertion(Collection<SubPath> subPaths) {
+        this.insertionBuffer.addAll(subPaths);
+    }
+
+    /**
+     * Populates the deletion buffer for this NFA Node
+     * @param subPaths
+     */
+    public void propagateDeletion(Collection<SubPath> subPaths) {
+        this.deletionBuffer.addAll(subPaths);
+    }
+
+    /**
      * Only to be called by the main program, on the source vertex of the state transition in the DFA
      * @param subPath
      * @param targetState
@@ -93,9 +109,9 @@ public class DFANode {
 
         // we have match, we need to push it to downstream nodes for processing
         if (isDeletion) {
-            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.processDelete(target2Process));
+            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.propagateDeletion(target2Process));
         } else {
-            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.processInsert(target2Process));
+            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.propagateInsertion(target2Process));
         }
     }
 
