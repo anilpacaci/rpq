@@ -17,7 +17,8 @@ public class DFANode {
     private Integer nodeId;
 
     private Cache cache;
-    private Queue<SubPath> queue;
+    private Set<SubPath> deletionBuffer;
+    private Set<SubPath> insertionBuffer;
 
     private boolean isFinal;
 
@@ -38,7 +39,8 @@ public class DFANode {
         this.nodeId = nodeId;
         this.isFinal = isFinal;
         this.cache = new Cache<SubPath>();
-        this.queue = new LinkedList<SubPath>();
+        this.deletionBuffer = new HashSet<>();
+        this.insertionBuffer = new HashSet<>();
 
         this.downstreamNodes = new ArrayList<>();
     }
@@ -57,6 +59,15 @@ public class DFANode {
 
     public void setFinal(boolean aFinal) {
         isFinal = aFinal;
+    }
+
+
+    /**
+     * Runs an iteration of propagation. In each iteration, subpath in the queue are checked for extension, and extended paths are propagated to downstream nodes
+     * @return true iteration resulted in subpaths to be propagated
+     */
+    public boolean iterate() {
+        return false;
     }
 
     /**
@@ -91,6 +102,10 @@ public class DFANode {
     public void extendInsert(List<SubPath> subPaths, Integer originatingState) {
         // retrieve all the existing paths of this state that can extend the incoming path
         List<SubPath> subPathsToProcesses = new ArrayList<>();
+
+        //TODO: need to check whether the buffer has duplicates, then remove duplicates before extension
+        // so when 1-5 edge is added, on q1, there will be an edge transition coming from state 0, and subpath of extension of 4-4 to 4-1 coming from state 2.
+        // it should be considered only once. so state 1 will get two 4-1 from state 0, and only one is considered. Similar to waveguide's delta-reduce
 
         for(SubPath subPath : subPaths) {
                 List<SubPath> newPaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
