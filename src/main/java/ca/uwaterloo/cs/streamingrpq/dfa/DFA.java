@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.dfa;
 
 import ca.uwaterloo.cs.streamingrpq.core.SubPath;
+import ca.uwaterloo.cs.streamingrpq.core.SubPathExtension;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import com.google.common.collect.HashMultimap;
 
@@ -56,22 +57,36 @@ public class DFA<L> extends DFANode {
             }
         }
 
+        boolean changed = true;
+
+        while(changed) {
+            // perform an iteration of process
+            changed = dfaNodes.values().stream().map(dfaNode -> dfaNode.process(tuple.isDeletion())).reduce(false, (a,b) -> a || b);
+
+            // if changed, perform iteration of extend
+            if(changed) {
+                changed = dfaNodes.values().stream().map(dfaNode -> dfaNode.extend(tuple.isDeletion())).reduce(false, (a,b) -> a || b);
+            }
+
+            // run extend on this DFA machine so that result set is updated
+            this.extend(tuple.isDeletion());
+        }
+
     }
 
-    public void extendInsert(List<SubPath> subPaths, Integer originatingState) {
-        subPaths.stream().forEach(s -> {
-            if(s.getSourceState() == this.startState) {
-                this.results.add(s);
+    public boolean extend(boolean isDeletion) {
+        this.extendBuffer.stream().forEach(s -> {
+            if(s.getSubPath().getSourceState() == this.startState) {
+                if(isDeletion) {
+                    this.results.remove(s.getSubPath());
+                } else {
+                    this.results.add(s.getSubPath());
+                }
             }
         });
-    }
+        this.extendBuffer.clear();
 
-    public void extendDelete(List<SubPath> subPaths, Integer originatingState) {
-        subPaths.stream().forEach(s -> {
-            if(s.getSourceState() == this.startState) {
-                this.results.remove(s);
-            }
-        });
+        return false;
     }
 
     public int getResultCounter() {
