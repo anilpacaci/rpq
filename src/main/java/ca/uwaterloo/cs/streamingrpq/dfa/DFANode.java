@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.dfa;
 
 import ca.uwaterloo.cs.streamingrpq.core.SubPath;
+import ca.uwaterloo.cs.streamingrpq.core.SubPathExtension;
 import ca.uwaterloo.cs.streamingrpq.util.Cache;
 
 import java.util.*;
@@ -17,8 +18,9 @@ public class DFANode {
     private Integer nodeId;
 
     private Cache cache;
-    private Set<SubPath> deletionBuffer;
-    private Set<SubPath> insertionBuffer;
+    // assumption is that we do edge at a time processing, so it is either all insert or all delete
+    protected Set<SubPath> processBuffer;
+    protected Set<SubPathExtension> extendBuffer;
 
     private boolean isFinal;
 
@@ -39,8 +41,8 @@ public class DFANode {
         this.nodeId = nodeId;
         this.isFinal = isFinal;
         this.cache = new Cache<SubPath>();
-        this.deletionBuffer = new HashSet<>();
-        this.insertionBuffer = new HashSet<>();
+        this.processBuffer = new HashSet<>();
+        this.extendBuffer = new HashSet<>();
 
         this.downstreamNodes = new ArrayList<>();
     }
@@ -61,29 +63,20 @@ public class DFANode {
         isFinal = aFinal;
     }
 
-
-    /**
-     * Runs an iteration of propagation. In each iteration, subpath in the queue are checked for extension, and extended paths are propagated to downstream nodes
-     * @return true iteration resulted in subpaths to be propagated
-     */
-    public boolean iterate() {
-        return false;
-    }
-
     /**
      * Populates the insertion buffer for this NFA node
      * @param subPaths
      */
-    public void propagateInsertion(Collection<SubPath> subPaths) {
-        this.insertionBuffer.addAll(subPaths);
+    public void pushToProcessBuffer(Collection<SubPath> subPaths) {
+        this.processBuffer.addAll(subPaths);
     }
 
     /**
      * Populates the deletion buffer for this NFA Node
      * @param subPaths
      */
-    public void propagateDeletion(Collection<SubPath> subPaths) {
-        this.deletionBuffer.addAll(subPaths);
+    public void pushToExtendBuffer(Collection<SubPath> subPaths, Integer originatingState) {
+        subPaths.stream().forEach(s -> this.extendBuffer.add(new SubPathExtension(s, originatingState)));
     }
 
     /**
@@ -96,8 +89,6 @@ public class DFANode {
         // we are only extending states starting from source state to save memory
         List<SubPath> newPaths = cache.retrieveBySourceStateAndTarget(0, subPath.getSource());
 
-
-
         List<SubPath> target2Process = new ArrayList<>(newPaths.size() + 1);
         target2Process.add(subPath);
         for (SubPath newPath : newPaths) {
@@ -108,99 +99,58 @@ public class DFANode {
         }
 
         // we have match, we need to push it to downstream nodes for processing
-        if (isDeletion) {
-            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.propagateDeletion(target2Process));
-        } else {
-            downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.propagateInsertion(target2Process));
-        }
+        downstreamNodes.stream().filter(downstreamNode -> downstreamNode.nodeId.equals(targetState)).forEach(downstreamNode -> downstreamNode.pushToProcessBuffer(target2Process));
     }
 
-    public void extendInsert(List<SubPath> subPaths, Integer originatingState) {
+
+    /**
+     * Extends the all the subpaths progapated into the buffer and schedules them for processing
+     * @return true if there is an element pushed to process buffer, processing should continue
+     */
+    public boolean extend(boolean isDeletion) {
         // retrieve all the existing paths of this state that can extend the incoming path
         List<SubPath> subPathsToProcesses = new ArrayList<>();
 
-        //TODO: need to check whether the buffer has duplicates, then remove duplicates before extension
-        // so when 1-5 edge is added, on q1, there will be an edge transition coming from state 0, and subpath of extension of 4-4 to 4-1 coming from state 2.
-        // it should be considered only once. so state 1 will get two 4-1 from state 0, and only one is considered. Similar to waveguide's delta-reduce
-
-        for(SubPath subPath : subPaths) {
-                List<SubPath> newPaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
-                newPaths.stream().forEach(newPath -> {
-                    if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
-                        SubPath extendedNewPath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
-                        // because we join these two paths, total number of paths is the multiplication
-                        if(!cache.contains(extendedNewPath)) {
-                            subPathsToProcesses.add(extendedNewPath);
-                        }
-                    }
-                });
-        }
-
-        if(subPathsToProcesses.isEmpty()) {
-            return;
-        }
-
-        processInsert(subPathsToProcesses);
-    }
-
-    public void extendDelete(List<SubPath> subPaths, Integer originatingState) {
-        // retrieve all the existing paths of this state that can extend the incoming path
-        List<SubPath> subPathsToProcesses = new ArrayList<>();
-
-        for(SubPath subPath : subPaths) {
+        for(SubPathExtension subPathExtension : this.extendBuffer) {
+            SubPath subPath= subPathExtension.getSubPath();
+            Integer originatingState = subPathExtension.getOriginatingState();
             List<SubPath> removePaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
             removePaths.stream().forEach(newPath -> {
                 if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
                     SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
-                    if(!cache.contains(extendedRemovePath)) {
-                        subPathsToProcesses.add(extendedRemovePath);
-                    }
+                    subPathsToProcesses.add(extendedRemovePath);
                 }
             });
         }
 
-        if(subPathsToProcesses.isEmpty()) {
-            return;
-        }
+        this.pushToProcessBuffer(subPathsToProcesses);
+        this.extendBuffer.clear();
 
-        processDelete(subPathsToProcesses);
+        return !subPathsToProcesses.isEmpty();
     }
 
-    protected void processInsert(List<SubPath> subPaths) {
+    /**
+     * Process all the extended subpaths and propagates the newly added/deleted ones
+     * @param isDeletion
+     * @return true if there is a new insertion/deletion to state cache, and new subpath is propagated
+     */
+    public boolean process(boolean isDeletion) {
         // add all the subPaths to the cache, if it exist in the cache it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
-        List<SubPath> noDuplicateSubPaths = subPaths.stream()
-                .filter(t -> !( t.getSource().equals(t.getTarget()) && t.getSourceState().equals(this.getNodeId()) ))
-                .filter(t -> cache.insertOrIncrement(t)).collect(Collectors.toList());
-
-        // we only need to extend paths that can start from the start state, so filter out paths that does not start from the start state
-        List<SubPath> prefixSubPaths = noDuplicateSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toList());
-
-        // get rid of cycles if this is a final state as well
-
-        if(prefixSubPaths.isEmpty()) {
-            return;
+        List<SubPath> removedSubPaths;
+        if(isDeletion) {
+            removedSubPaths = this.processBuffer.stream().filter(t -> cache.removeOrDecrement(t)).collect(Collectors.toList());
+        } else {
+            removedSubPaths = this.processBuffer.stream().filter(t -> cache.insertOrIncrement(t)).collect(Collectors.toList());
         }
-
-        // extendInsert to downstream nodes
-        for(DFANode downstream: downstreamNodes) {
-            downstream.extendInsert(prefixSubPaths, this.nodeId);
-        }
-    }
-
-    protected void processDelete(List<SubPath> subPaths) {
-        // add all the subPaths to the cache, if it exist in the cache it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
-        List<SubPath> removedSubPaths = subPaths.stream().filter(t -> cache.removeOrDecrement(t)).collect(Collectors.toList());
-
         List<SubPath> prefixSubPaths = removedSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toList());
-
-        if(prefixSubPaths.isEmpty()) {
-            return;
-        }
 
         // extendDelete to downstream nodes
         for(DFANode downstream: downstreamNodes) {
-            downstream.extendDelete(prefixSubPaths, this.nodeId);
+            downstream.pushToExtendBuffer(prefixSubPaths, this.nodeId);
         }
 
+        this.processBuffer.clear();
+
+        return !prefixSubPaths.isEmpty();
     }
 }
