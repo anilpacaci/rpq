@@ -72,6 +72,9 @@ public class DFA<L> extends DFANode {
             this.extend(tuple.isDeletion());
         }
 
+        // iterations are completed, merge delta to the state cache
+        dfaNodes.values().stream().forEach(dfaNode -> dfaNode.mergeDelta());
+
     }
 
     public boolean extend(boolean isDeletion) {

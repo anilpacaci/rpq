@@ -18,6 +18,7 @@ public class DFANode {
     private Integer nodeId;
 
     private Cache cache;
+    private Cache deltaCache;
     // assumption is that we do edge at a time processing, so it is either all insert or all delete
     protected Set<SubPath> processBuffer;
     protected Set<SubPathExtension> extendBuffer;
@@ -41,6 +42,7 @@ public class DFANode {
         this.nodeId = nodeId;
         this.isFinal = isFinal;
         this.cache = new Cache<SubPath>();
+        this.deltaCache = new Cache<SubPath>();
         this.processBuffer = new HashSet<>();
         this.extendBuffer = new HashSet<>();
 
@@ -89,6 +91,8 @@ public class DFANode {
         // we are only extending states starting from source state to save memory
         List<SubPath> newPaths = cache.retrieveBySourceStateAndTarget(0, subPath.getSource());
 
+        // do not extend cycles
+        newPaths = newPaths.stream().filter(s -> !s.getSource().equals(s.getTarget())).collect(Collectors.toList());
         List<SubPath> target2Process = new ArrayList<>(newPaths.size() + 1);
         target2Process.add(subPath);
         for (SubPath newPath : newPaths) {
@@ -112,9 +116,14 @@ public class DFANode {
         List<SubPath> subPathsToProcesses = new ArrayList<>();
 
         for(SubPathExtension subPathExtension : this.extendBuffer) {
-            SubPath subPath= subPathExtension.getSubPath();
+            SubPath subPath = subPathExtension.getSubPath();
             Integer originatingState = subPathExtension.getOriginatingState();
+            if(subPath.getSource().equals(subPath.getTarget())) {
+                // do not extend cycles
+                continue;
+            }
             List<SubPath> removePaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
+            //eliminate cycles, then add new emerging ones that do not exists before
             removePaths.stream().forEach(newPath -> {
                 if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
                     SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
@@ -140,7 +149,8 @@ public class DFANode {
         if(isDeletion) {
             removedSubPaths = this.processBuffer.stream().filter(t -> cache.removeOrDecrement(t)).collect(Collectors.toList());
         } else {
-            removedSubPaths = this.processBuffer.stream().filter(t -> cache.insertOrIncrement(t)).collect(Collectors.toList());
+            removedSubPaths = this.processBuffer.stream().filter(t -> !cache.contains(t) && !deltaCache.contains(t)).collect(Collectors.toList());
+            this.processBuffer.stream().forEach(t -> deltaCache.insertOrIncrement(t));
         }
         List<SubPath> prefixSubPaths = removedSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toList());
 
@@ -152,5 +162,16 @@ public class DFANode {
         this.processBuffer.clear();
 
         return !prefixSubPaths.isEmpty();
+    }
+
+    /**
+     * Merge delta cache to the state cache at the end
+     */
+    public void mergeDelta() {
+        List<SubPath> deltaPaths = deltaCache.retrieveAll();
+        deltaPaths.stream().forEach(s -> {
+            s.setCounter(1); cache.insertOrIncrement(s);
+        });
+        deltaCache.removeAll();
     }
 }

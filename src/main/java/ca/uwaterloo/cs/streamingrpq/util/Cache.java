@@ -12,6 +12,7 @@ import com.googlecode.cqengine.resultset.common.NonUniqueObjectException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
 
@@ -112,5 +113,14 @@ public class Cache<S> {
         List<SubPath> results = new ArrayList<SubPath>();
         resultSet.iterator().forEachRemaining(results::add);
         return results;
+    }
+
+    public List<SubPath> retrieveAll() {
+        List<SubPath> results = cache.stream().collect(Collectors.toList());
+        return results;
+    }
+
+    public void removeAll() {
+        cache.clear();
     }
 }
