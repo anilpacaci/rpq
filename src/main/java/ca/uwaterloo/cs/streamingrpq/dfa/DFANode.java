@@ -20,7 +20,7 @@ public class DFANode {
     private Cache cache;
     private Cache deltaCache;
     // assumption is that we do edge at a time processing, so it is either all insert or all delete
-    protected Set<SubPath> processBuffer;
+    protected List<SubPath> processBuffer;
     protected Set<SubPathExtension> extendBuffer;
 
     private boolean isFinal;
@@ -43,7 +43,7 @@ public class DFANode {
         this.isFinal = isFinal;
         this.cache = new Cache<SubPath>();
         this.deltaCache = new Cache<SubPath>();
-        this.processBuffer = new HashSet<>();
+        this.processBuffer = new ArrayList<>();
         this.extendBuffer = new HashSet<>();
 
         this.downstreamNodes = new ArrayList<>();
@@ -96,10 +96,8 @@ public class DFANode {
         List<SubPath> target2Process = new ArrayList<>(newPaths.size() + 1);
         target2Process.add(subPath);
         for (SubPath newPath : newPaths) {
-            if(!(newPath.getSource().equals(subPath.getTarget()) && newPath.getSourceState().equals(subPath.getSource()))) {
-                SubPath match = new SubPath(newPath.getSource(), subPath.getTarget(), newPath.getSourceState());
-                target2Process.add(match);
-            }
+            SubPath match = new SubPath(newPath.getSource(), subPath.getTarget(), newPath.getSourceState());
+            target2Process.add(match);
         }
 
         // we have match, we need to push it to downstream nodes for processing
@@ -125,10 +123,8 @@ public class DFANode {
             List<SubPath> removePaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
             //eliminate cycles, then add new emerging ones that do not exists before
             removePaths.stream().forEach(newPath -> {
-                if(!(subPath.getSource().equals(newPath.getTarget()) && subPath.getSourceState().equals(this.getNodeId()))) {
-                    SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
-                    subPathsToProcesses.add(extendedRemovePath);
-                }
+                SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
+                subPathsToProcesses.add(extendedRemovePath);
             });
         }
 
@@ -149,10 +145,9 @@ public class DFANode {
         if(isDeletion) {
             removedSubPaths = this.processBuffer.stream().filter(t -> cache.removeOrDecrement(t)).collect(Collectors.toList());
         } else {
-            removedSubPaths = this.processBuffer.stream().filter(t -> !cache.contains(t) && !deltaCache.contains(t)).collect(Collectors.toList());
-            this.processBuffer.stream().forEach(t -> deltaCache.insertOrIncrement(t));
+            removedSubPaths = this.processBuffer.stream().filter(t -> cache.insertOrIncrement(t)).collect(Collectors.toList());
         }
-        List<SubPath> prefixSubPaths = removedSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toList());
+        Set<SubPath> prefixSubPaths = removedSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toSet());
 
         // extendDelete to downstream nodes
         for(DFANode downstream: downstreamNodes) {
