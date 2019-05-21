@@ -85,7 +85,7 @@ public class Tuple {
     public String toString() {
         return new StringBuilder().append("<").append(source).
                 append(",").append(target).append(">  to: ").
-                append(targetState).toString();
+                append(targetState).append(" predecessor: ").append(predecessors.size()).toString();
     }
 
     public void addPredecessor(ProductNode predecessor) {

@@ -20,4 +20,9 @@ public class QueuePair {
     public ProductNode getProductNode() {
         return productNode;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(this.tuple.toString()).append(" -> pre: ").append(this.productNode.toString()).toString();
+    }
 }

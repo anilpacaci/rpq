@@ -59,6 +59,13 @@ public class DFA<L> extends DFANode {
             ProductNode sourceNode = new ProductNode(input.getSource(), edge.getSource().getNodeId());
             ProductNode targetNode = new ProductNode(input.getTarget(), edge.getTarget().getNodeId());
 
+            // update set of existing edges
+            if(input.isDeletion()) {
+                edges.remove(sourceNode, targetNode);
+            } else {
+                edges.put(sourceNode, targetNode);
+            }
+
             // if source state is 0 -> create a single edge tuple and add it to the queue
             if(edge.getSource().getNodeId() == this.startState) {
                 Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getTarget().getNodeId());
@@ -76,6 +83,31 @@ public class DFA<L> extends DFANode {
         }
 
         if (input.isDeletion()) {
+            while(!queue.isEmpty()) {
+                QueuePair candidate = queue.poll();
+                Tuple candidateTuple = candidate.getTuple();
+                ProductNode predecessor = candidate.getProductNode();
+                delta.removePredecessor(candidateTuple, predecessor);
+
+                if(delta.getPredecessor(candidateTuple).isEmpty()) {
+                    if(candidateTuple.getTargetState().equals(finalState)) {
+                        // remove the result
+                        this.results.remove(candidateTuple);
+                    }
+
+                    // remove the path from Delta
+                    delta.remove(candidateTuple);
+
+                    ProductNode targetNode = new ProductNode(candidateTuple.getTarget(), candidateTuple.getTargetState());
+                    Collection<ProductNode> extensionEdges = edges.get(targetNode);
+
+                    for(ProductNode extensionEdgeTarget : extensionEdges) {
+                        // extend the newly added tuple with an existing edge
+                        Tuple tuple = new Tuple(candidateTuple.getSource(), extensionEdgeTarget.getVertex(), extensionEdgeTarget.getState());
+                        queue.offer(new QueuePair(tuple, targetNode));
+                    }
+                }
+            }
 
         }
         else {
@@ -83,13 +115,18 @@ public class DFA<L> extends DFANode {
                 QueuePair candidate = queue.poll();
                 Tuple candidateTuple = candidate.getTuple();
                 ProductNode predecessor = candidate.getProductNode();
+
                 if (!delta.contains(candidateTuple)) {
                     if(candidateTuple.getTargetState().equals(finalState)) {
-                        // a new result
+                        // new result
+                        results.add(candidateTuple);
                     }
+
                     delta.add(candidateTuple);
+
                     ProductNode targetNode = new ProductNode(candidateTuple.getTarget(), candidateTuple.getTargetState());
                     Collection<ProductNode> extensionEdges = edges.get(targetNode);
+
                     for(ProductNode extensionEdgeTarget : extensionEdges) {
                         // extend the newly added tuple with an existing edge
                         Tuple tuple = new Tuple(candidateTuple.getSource(), extensionEdgeTarget.getVertex(), extensionEdgeTarget.getState());
