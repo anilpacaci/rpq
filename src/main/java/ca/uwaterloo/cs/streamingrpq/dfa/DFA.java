@@ -1,9 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq.dfa;
 
-import ca.uwaterloo.cs.streamingrpq.core.SubPath;
-import ca.uwaterloo.cs.streamingrpq.core.SubPathExtension;
+import ca.uwaterloo.cs.streamingrpq.data.Delta;
+import ca.uwaterloo.cs.streamingrpq.data.ProductNode;
+import ca.uwaterloo.cs.streamingrpq.data.QueuePair;
+import ca.uwaterloo.cs.streamingrpq.data.Tuple;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import java.util.*;
 
@@ -14,7 +17,9 @@ public class DFA<L> extends DFANode {
 
     private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
     private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();
-    private HashSet<SubPath> results = new HashSet<>();
+    private HashSet<Tuple> results = new HashSet<>();
+    private Delta delta = new Delta();
+    private Multimap<ProductNode, ProductNode> edges = HashMultimap.create();
     private Integer finalState;
     private Integer startState;
 
@@ -44,59 +49,67 @@ public class DFA<L> extends DFANode {
         dfaNodes.get(finalState).addDownstreamNode(this);
     }
 
-    public void processEdge(InputTuple<Integer, Integer, L> tuple) {
-        Set<DFAEdge<L>> edges = dfaEdegs.get(tuple.getLabel());
+    public void processEdge(InputTuple<Integer, Integer, L> input) {
+        Queue<QueuePair> queue = new LinkedList<>();
 
-        for(DFAEdge<L> edge : edges) {
-            // for each such node, push subPath for processing at the target node
-            SubPath subPath = new SubPath(tuple.getSource(), tuple.getTarget(), edge.getSource().getNodeId());
-            if(tuple.isDeletion()) {
-                edge.getSource().processEdge(subPath, edge.getTarget().getNodeId(), true);
-            } else {
-                edge.getSource().processEdge(subPath, edge.getTarget().getNodeId(), false);
-            }
-        }
+        Set<DFAEdge<L>> dfaEdges = dfaEdegs.get(input.getLabel());
 
-        boolean changed = true;
+        for(DFAEdge<L> edge : dfaEdges) {
+            // for each such node, add raw edge to the edges
+            ProductNode sourceNode = new ProductNode(input.getSource(), edge.getSource().getNodeId());
+            ProductNode targetNode = new ProductNode(input.getTarget(), edge.getTarget().getNodeId());
 
-        while(changed) {
-            // perform an iteration of process
-            changed = dfaNodes.values().stream().map(dfaNode -> dfaNode.process(tuple.isDeletion())).reduce(false, (a,b) -> a || b);
-
-            // if changed, perform iteration of extend
-            if(changed) {
-                changed = dfaNodes.values().stream().map(dfaNode -> dfaNode.extend(tuple.isDeletion())).reduce(false, (a,b) -> a || b);
+            // if source state is 0 -> create a single edge tuple and add it to the queue
+            if(edge.getSource().getNodeId() == this.startState) {
+                Tuple tuple = new Tuple(input.getSource(), input.getTarget(), edge.getTarget().getNodeId());
+                queue.offer(new QueuePair(tuple, sourceNode));
             }
 
-            // run extend on this DFA machine so that result set is updated
-            this.extend(tuple.isDeletion());
+            // query Delta to get all existing tuples that can be extended
+            List<Tuple> prefixes = delta.retrieveByTargetAndTargetState(sourceNode.getVertex(), sourceNode.getState());
+            for(Tuple prefix : prefixes) {
+                // extend the prefix path with the new edge
+                Tuple candidate = new Tuple(prefix.getSource(), targetNode.getVertex(), targetNode.getState());
+                queue.offer(new QueuePair(candidate, sourceNode));
+            }
+
         }
 
-        // iterations are completed, merge delta to the state cache
-        dfaNodes.values().stream().forEach(dfaNode -> dfaNode.mergeDelta());
+        if (input.isDeletion()) {
 
-    }
-
-    public boolean extend(boolean isDeletion) {
-        this.extendBuffer.stream().forEach(s -> {
-            if(s.getSubPath().getSourceState() == this.startState) {
-                if(isDeletion) {
-                    this.results.remove(s.getSubPath());
-                } else {
-                    this.results.add(s.getSubPath());
+        }
+        else {
+            while (!queue.isEmpty()) {
+                QueuePair candidate = queue.poll();
+                Tuple candidateTuple = candidate.getTuple();
+                ProductNode predecessor = candidate.getProductNode();
+                if (!delta.contains(candidateTuple)) {
+                    if(candidateTuple.getTargetState().equals(finalState)) {
+                        // a new result
+                    }
+                    delta.add(candidateTuple);
+                    ProductNode targetNode = new ProductNode(candidateTuple.getTarget(), candidateTuple.getTargetState());
+                    Collection<ProductNode> extensionEdges = edges.get(targetNode);
+                    for(ProductNode extensionEdgeTarget : extensionEdges) {
+                        // extend the newly added tuple with an existing edge
+                        Tuple tuple = new Tuple(candidateTuple.getSource(), extensionEdgeTarget.getVertex(), extensionEdgeTarget.getState());
+                        queue.offer(new QueuePair(tuple, targetNode));
+                    }
                 }
+                // add predecessor edge to the tuple in the delta
+                delta.addPredecessor(candidateTuple, predecessor);
             }
-        });
-        this.extendBuffer.clear();
 
-        return false;
+        }
     }
+
+    // TODO: implementations of InsertRAPQ and DeleteRAPQ
 
     public int getResultCounter() {
         return results.size();
     }
 
-    public Collection<SubPath> getResults() {
+    public Collection<Tuple> getResults() {
         return results;
     }
 }

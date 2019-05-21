@@ -1,8 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.dfa;
 
-import ca.uwaterloo.cs.streamingrpq.core.SubPath;
+import ca.uwaterloo.cs.streamingrpq.data.Tuple;
 import ca.uwaterloo.cs.streamingrpq.core.SubPathExtension;
-import ca.uwaterloo.cs.streamingrpq.util.Cache;
+import ca.uwaterloo.cs.streamingrpq.data.Delta;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,10 +17,10 @@ public class DFANode {
 
     private Integer nodeId;
 
-    private Cache cache;
-    private Cache deltaCache;
+    private Delta delta;
+    private Delta edges;
     // assumption is that we do edge at a time processing, so it is either all insert or all delete
-    protected List<SubPath> processBuffer;
+    protected List<Tuple> processBuffer;
     protected Set<SubPathExtension> extendBuffer;
 
     private boolean isFinal;
@@ -41,8 +41,8 @@ public class DFANode {
     public DFANode(Integer nodeId, boolean isFinal) {
         this.nodeId = nodeId;
         this.isFinal = isFinal;
-        this.cache = new Cache<SubPath>();
-        this.deltaCache = new Cache<SubPath>();
+        this.delta = new Delta<Tuple>();
+        this.edges = new Delta<Tuple>();
         this.processBuffer = new ArrayList<>();
         this.extendBuffer = new HashSet<>();
 
@@ -67,36 +67,36 @@ public class DFANode {
 
     /**
      * Populates the insertion buffer for this NFA node
-     * @param subPaths
+     * @param tuples
      */
-    public void pushToProcessBuffer(Collection<SubPath> subPaths) {
-        this.processBuffer.addAll(subPaths);
+    public void pushToProcessBuffer(Collection<Tuple> tuples) {
+        this.processBuffer.addAll(tuples);
     }
 
     /**
      * Populates the deletion buffer for this NFA Node
-     * @param subPaths
+     * @param tuples
      */
-    public void pushToExtendBuffer(Collection<SubPath> subPaths, Integer originatingState) {
-        subPaths.stream().forEach(s -> this.extendBuffer.add(new SubPathExtension(s, originatingState)));
+    public void pushToExtendBuffer(Collection<Tuple> tuples, Integer originatingState) {
+        tuples.stream().forEach(s -> this.extendBuffer.add(new SubPathExtension(s, originatingState)));
     }
 
     /**
      * Only to be called by the main program, on the source vertex of the state transition in the DFA
-     * @param subPath
+     * @param tuple
      * @param targetState
      */
-    public void processEdge(SubPath subPath, Integer targetState, boolean isDeletion) {
+    public void processEdge(Tuple tuple, Integer targetState, boolean isDeletion) {
         // retrieve all existing paths of this state and see it can be extended
         // we are only extending states starting from source state to save memory
-        List<SubPath> newPaths = cache.retrieveBySourceStateAndTarget(0, subPath.getSource());
+        List<Tuple> newPaths = delta.retrieveByTargetAndTargetState(0, tuple.getSource());
 
         // do not extend cycles
         newPaths = newPaths.stream().filter(s -> !s.getSource().equals(s.getTarget())).collect(Collectors.toList());
-        List<SubPath> target2Process = new ArrayList<>(newPaths.size() + 1);
-        target2Process.add(subPath);
-        for (SubPath newPath : newPaths) {
-            SubPath match = new SubPath(newPath.getSource(), subPath.getTarget(), newPath.getSourceState());
+        List<Tuple> target2Process = new ArrayList<>(newPaths.size() + 1);
+        target2Process.add(tuple);
+        for (Tuple newPath : newPaths) {
+            Tuple match = new Tuple(newPath.getSource(), tuple.getTarget(), newPath.getTargetState());
             target2Process.add(match);
         }
 
@@ -111,19 +111,19 @@ public class DFANode {
      */
     public boolean extend(boolean isDeletion) {
         // retrieve all the existing paths of this state that can extend the incoming path
-        List<SubPath> subPathsToProcesses = new ArrayList<>();
+        List<Tuple> subPathsToProcesses = new ArrayList<>();
 
         for(SubPathExtension subPathExtension : this.extendBuffer) {
-            SubPath subPath = subPathExtension.getSubPath();
+            Tuple tuple = subPathExtension.getTuple();
             Integer originatingState = subPathExtension.getOriginatingState();
-            if(subPath.getSource().equals(subPath.getTarget())) {
+            if(tuple.getSource().equals(tuple.getTarget())) {
                 // do not extend cycles
                 continue;
             }
-            List<SubPath> removePaths = cache.retrieveBySource(subPath.getTarget(), originatingState);
+            List<Tuple> removePaths = delta.retrieveBySource(tuple.getTarget(), originatingState);
             //eliminate cycles, then add new emerging ones that do not exists before
             removePaths.stream().forEach(newPath -> {
-                SubPath extendedRemovePath = new SubPath(subPath.getSource(), newPath.getTarget(), subPath.getSourceState());
+                Tuple extendedRemovePath = new Tuple(tuple.getSource(), newPath.getTarget(), tuple.getTargetState());
                 subPathsToProcesses.add(extendedRemovePath);
             });
         }
@@ -137,35 +137,35 @@ public class DFANode {
     /**
      * Process all the extended subpaths and propagates the newly added/deleted ones
      * @param isDeletion
-     * @return true if there is a new insertion/deletion to state cache, and new subpath is propagated
+     * @return true if there is a new insertion/deletion to state delta, and new subpath is propagated
      */
     public boolean process(boolean isDeletion) {
-        // add all the subPaths to the cache, if it exist in the cache it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
-        List<SubPath> removedSubPaths;
+        // add all the subPaths to the delta, if it exist in the delta it will return false, then remove the cyclic ones (because we do not want to traverse cycle again)
+        List<Tuple> removedTuples;
         if(isDeletion) {
-            removedSubPaths = this.processBuffer.stream().filter(t -> cache.removeOrDecrement(t)).collect(Collectors.toList());
+            removedTuples = this.processBuffer.stream().filter(t -> delta.removeOrDecrement(t)).collect(Collectors.toList());
         } else {
-            removedSubPaths = this.processBuffer.stream().filter(t -> cache.insertOrIncrement(t)).collect(Collectors.toList());
+            removedTuples = this.processBuffer.stream().filter(t -> delta.insertOrIncrement(t)).collect(Collectors.toList());
         }
-        Set<SubPath> prefixSubPaths = removedSubPaths.stream().filter(t -> t.getSourceState().equals(0)).collect(Collectors.toSet());
+        Set<Tuple> prefixTuples = removedTuples.stream().filter(t -> t.getTargetState().equals(0)).collect(Collectors.toSet());
 
         // extendDelete to downstream nodes
         for(DFANode downstream: downstreamNodes) {
-            downstream.pushToExtendBuffer(prefixSubPaths, this.nodeId);
+            downstream.pushToExtendBuffer(prefixTuples, this.nodeId);
         }
 
         this.processBuffer.clear();
 
-        return !prefixSubPaths.isEmpty();
+        return !prefixTuples.isEmpty();
     }
 
     /**
-     * Merge delta cache to the state cache at the end
+     * Merge delta delta to the state delta at the end
      */
     public void mergeDelta() {
-        List<SubPath> deltaPaths = deltaCache.retrieveAll();
+        List<Tuple> deltaPaths = deltaCache.retrieveAll();
         deltaPaths.stream().forEach(s -> {
-            s.setCounter(1); cache.insertOrIncrement(s);
+            s.setCounter(1); delta.insertOrIncrement(s);
         });
         deltaCache.removeAll();
     }
