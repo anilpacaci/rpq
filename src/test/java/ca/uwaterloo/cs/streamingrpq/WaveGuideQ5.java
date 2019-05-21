@@ -1,12 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq;
 
-import ca.uwaterloo.cs.streamingrpq.core.SubPath;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
-import ca.uwaterloo.cs.streamingrpq.dfa.DFAEdge;
-import ca.uwaterloo.cs.streamingrpq.dfa.DFANode;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
-import com.google.common.collect.HashMultimap;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -17,7 +13,6 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
 
 /**
  * Created by anilpacaci on 2019-01-31.

@@ -1,22 +1,22 @@
 package ca.uwaterloo.cs.streamingrpq.core;
 
-import com.googlecode.cqengine.query.simple.In;
+import ca.uwaterloo.cs.streamingrpq.data.Tuple;
 
 /**
  * Created by anilpacaci on 2019-03-02.
  */
 public class SubPathExtension {
-    private SubPath subPath;
+    private Tuple tuple;
 
     private Integer originatingState;
 
-    public SubPathExtension(SubPath subPath, Integer originatingState) {
-        this.subPath = subPath;
+    public SubPathExtension(Tuple tuple, Integer originatingState) {
+        this.tuple = tuple;
         this.originatingState = originatingState;
     }
 
-    public SubPath getSubPath() {
-        return subPath;
+    public Tuple getTuple() {
+        return tuple;
     }
 
     public Integer getOriginatingState() {
@@ -25,6 +25,6 @@ public class SubPathExtension {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(subPath.toString()).append(", originatingState: ").append(originatingState).toString();
+        return new StringBuilder().append(tuple.toString()).append(", originatingState: ").append(originatingState).toString();
     }
 }
