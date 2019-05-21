@@ -40,4 +40,10 @@ public class ProductNode {
         result = 31 * result + vertex;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("<").append(this.vertex)
+                .append(",").append(this.state).append(">").toString();
+    }
 }

@@ -54,6 +54,11 @@ public class InputTuple<S,T,L> {
         return this.type == TupleType.DELETE;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder("<").append(this.source).append(",").append(this.target).append(",").append(this.label).append(",").append(this.type).append(">").toString();
+    }
+
     /**
      * Created by anilpacaci on 2019-02-22.
      */
