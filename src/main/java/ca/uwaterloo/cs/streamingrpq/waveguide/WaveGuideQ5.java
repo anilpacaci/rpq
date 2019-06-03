@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
+import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import org.apache.commons.configuration2.Configuration;
@@ -46,45 +47,47 @@ public class WaveGuideQ5 {
         String filename = config.getString("input.file");
         Integer queryCount = config.getInt("query.count");
         Integer inputSize = config.getInt("input.size");
+        String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
         String[] p0 = config.getStringArray("p.label");
         String[] p1 = config.getStringArray("p1.label");
         String[] p2 = config.getStringArray("p2.label");
 
-        Yago2sTSVStream stream = new Yago2sTSVStream();
+        TextStream stream;
 
-        try {
-            stream.open(filename, inputSize);
-
-            for (int i = 0; i < queryCount; i++) {
-                DFA<Integer> q5 = new DFA<>();
-                q5.addDFAEdge(0,1, p0[i].hashCode());
-                q5.addDFAEdge(1,2, p1[i].hashCode());
-                q5.addDFAEdge(2,2, p1[i].hashCode());
-                q5.addDFAEdge(2,3, p2[i].hashCode());
-                q5.addDFAEdge(3,3, p2[i].hashCode());
-                q5.setFinalState(3);
-
-                InputTuple<Integer, Integer, Integer> input = stream.next();
-
-                while (input != null) {
-                    //retrieve DFA nodes where transition is same as edge label
-                    q5.processEdge(input);
-                    // incoming edge fully processed, move to next one
-                    input = stream.next();
-                }
-
-                System.out.println("total number of results for query " + queryNames[i] + " : " + q5.getResultCounter());
-
-                //reset the stream so we can reuse it for the next query
-                stream.reset();
-            }
-            // stream is over so we can close it and close the program
-            stream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(streamType.equals("inmemory")) {
+            stream = new Yago2sInMemoryTSVStream();
+        } else {
+            stream = new Yago2sTSVStream();
         }
+        
+        stream.open(filename, inputSize);
+
+        for (int i = 0; i < queryCount; i++) {
+            DFA<Integer> q5 = new DFA<>();
+            q5.addDFAEdge(0,1, p0[i].hashCode());
+            q5.addDFAEdge(1,2, p1[i].hashCode());
+            q5.addDFAEdge(2,2, p1[i].hashCode());
+            q5.addDFAEdge(2,3, p2[i].hashCode());
+            q5.addDFAEdge(3,3, p2[i].hashCode());
+            q5.setFinalState(3);
+
+            InputTuple<Integer, Integer, Integer> input = stream.next();
+
+            while (input != null) {
+                //retrieve DFA nodes where transition is same as edge label
+                q5.processEdge(input);
+                // incoming edge fully processed, move to next one
+                input = stream.next();
+            }
+
+            System.out.println("total number of results for query " + queryNames[i] + " : " + q5.getResultCounter());
+
+            //reset the stream so we can reuse it for the next query
+            stream.reset();
+        }
+        // stream is over so we can close it and close the program
+        stream.close();
+
     }
 }

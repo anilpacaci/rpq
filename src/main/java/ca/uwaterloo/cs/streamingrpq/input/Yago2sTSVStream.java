@@ -9,11 +9,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Yago2sTSVStream {
+public class Yago2sTSVStream implements TextStream{
 
 
     FileReader fileStream;
     BufferedReader bufferedReader;
+
+    String filename;
 
     ScheduledExecutorService executor;
 
@@ -25,12 +27,17 @@ public class Yago2sTSVStream {
         return false;
     }
 
-    public void open(String filename, int maxSize) throws FileNotFoundException {
+    public void open(String filename, int maxSize) {
         open(filename);
     }
 
-    public void open(String filename) throws FileNotFoundException {
-        fileStream = new FileReader(filename);
+    public void open(String filename) {
+        this.filename = filename;
+        try {
+            fileStream = new FileReader(filename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
         Runnable counterRunnable = new Runnable() {
@@ -44,13 +51,18 @@ public class Yago2sTSVStream {
         };
 
         executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(counterRunnable, 0, 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
 
     }
 
-    public void close() throws IOException {
-        bufferedReader.close();
-        fileStream.close();
+    public void close() {
+        try {
+            bufferedReader.close();
+            fileStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         executor.shutdown();
     }
 
@@ -78,6 +90,10 @@ public class Yago2sTSVStream {
     }
 
     public void reset() {
+        close();
+
+        open(this.filename);
+
         localCounter = 0;
         globalCounter = 0;
     }
