@@ -12,43 +12,53 @@ import java.util.Set;
  */
 public class Tuple {
 
-    Integer source;
-    Integer target;
-    Integer sourceState;
-    Integer targetState;
-    Set<ProductNode> predecessors;
+    ProductNode targetNode;
 
-    public Tuple(Integer source, Integer target, Integer sourceState, Integer targetState) {
+    int source;
+    int sourceState;
+
+    private int hash = 0;
+
+    public Tuple(int source, int sourceState, ProductNode targetNode) {
+        this.targetNode = targetNode;
         this.source = source;
-        this.target = target;
         this.sourceState = sourceState;
-        this.targetState = targetState;
-        predecessors = new HashSet<>();
     }
 
-    public Tuple(Integer source, Integer target, Integer targetState) {
+    public Tuple(int source, int target, int sourceState, int targetState) {
+        this(source, sourceState, new ProductNode(target, targetState));
+    }
+
+    public Tuple(int source, int target, int targetState) {
         this(source, target, 0, targetState);
     }
 
-    public Integer getSource() {
+    public Tuple(int source, ProductNode targetNode) {
+        this(source, 0, targetNode);
+    }
+
+    public int getSource() {
         return source;
     }
 
-    public Integer getTarget() {
-        return target;
+    public int getTarget() {
+        return targetNode.vertex;
     }
 
-    public Integer getTargetState() {
-        return targetState;
+    public int getTargetState() {
+        return targetNode.state;
     }
 
+    public ProductNode getTargetNode() {
+        return targetNode;
+    }
 
     public static final Attribute<Tuple, Integer> TUPLE_SOURCE = new SimpleAttribute<Tuple, Integer>("source") {
         public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.source; }
     };
 
     public static final Attribute<Tuple, Integer> TUPLE_TARGET = new SimpleAttribute<Tuple, Integer>("target") {
-        public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.target; }
+        public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.targetNode.state; }
     };
 
     public static final Attribute<Tuple, Integer> TUPLE_SOURCESTATE = new SimpleAttribute<Tuple, Integer>("sourceState") {
@@ -56,7 +66,7 @@ public class Tuple {
     };
 
     public static final Attribute<Tuple, Integer> TUPLE_TARGETSTATE = new SimpleAttribute<Tuple, Integer>("targetState") {
-        public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.targetState; }
+        public Integer getValue(Tuple tuple, QueryOptions queryOptions) { return tuple.targetNode.vertex; }
     };
 
     @Override
@@ -68,27 +78,26 @@ public class Tuple {
 
         Tuple tuple = (Tuple) o;
 
-        return tuple.source.equals(source) && tuple.target.equals(target) && tuple.targetState.equals(targetState);
+        return tuple.source == source && tuple.targetNode.equals(targetNode);
     }
 
     // implementation from effective Java : Item 9
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + source;
-        result = 31 * result + target;
-        result = 31 * result + targetState;
-        return result;
+        int h = hash;
+        if(h == 0) {
+            h = 17;
+            h = 31 * h + source;
+            h = 31 * h + targetNode.hashCode();
+            hash = h;
+        }
+        return h;
     }
 
     @Override
     public String toString() {
         return new StringBuilder().append("<").append(source).
-                append(",").append(target).append(">  to: ").
-                append(targetState).append(" predecessor: ").append(predecessors.size()).toString();
-    }
-
-    public void addPredecessor(ProductNode predecessor) {
-        this.predecessors.add(predecessor);
+                append(",").append(targetNode.vertex).append(">  to: ").
+                append(targetNode.state).toString();
     }
 }

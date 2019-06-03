@@ -5,19 +5,21 @@ package ca.uwaterloo.cs.streamingrpq.data;
  */
 public class ProductNode {
 
-    Integer vertex;
-    Integer state;
+    int vertex;
+    int state;
 
-    public ProductNode(Integer vertex, Integer state) {
+    private int hash = 0;
+
+    public ProductNode(int vertex, int state) {
         this.vertex = vertex;
         this.state = state;
     }
 
-    public Integer getVertex() {
+    public int getVertex() {
         return vertex;
     }
 
-    public Integer getState() {
+    public int getState() {
         return state;
     }
 
@@ -35,10 +37,14 @@ public class ProductNode {
     // implementation from effective Java : Item 9
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + state;
-        result = 31 * result + vertex;
-        return result;
+        int h = hash;
+        if (h == 0) {
+            h = 17;
+            h = 31 * h + state;
+            h = 31 * h + vertex;
+            hash = h;
+        }
+        return h;
     }
 
     @Override
