@@ -17,10 +17,16 @@ public class Yago2sTSVStream {
 
     ScheduledExecutorService executor;
 
-    Integer counter = new Integer(0);
+    Integer localCounter = 0;
+    Integer globalCounter = 0;
+
 
     public boolean isOpen() {
         return false;
+    }
+
+    public void open(String filename, int maxSize) throws FileNotFoundException {
+        open(filename);
     }
 
     public void open(String filename) throws FileNotFoundException {
@@ -32,8 +38,8 @@ public class Yago2sTSVStream {
 
             @Override
             public void run() {
-                System.out.println("Second " + ++seconds + " : " + counter);
-                counter = 0;
+                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
+                localCounter = 0;
             }
         };
 
@@ -66,7 +72,13 @@ public class Yago2sTSVStream {
         if (line == null) {
             return null;
         }
-        counter++;
+        localCounter++;
+        globalCounter++;
         return tuple;
+    }
+
+    public void reset() {
+        localCounter = 0;
+        globalCounter = 0;
     }
 }
