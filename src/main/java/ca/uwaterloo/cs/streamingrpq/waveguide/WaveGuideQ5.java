@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq;
+package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;

@@ -12,14 +12,14 @@ import java.util.*;
  */
 public class DFA<L> extends DFANode {
 
-    public static final int EXPECTED_NODES = 10000000;
+    public static final int EXPECTED_NODES = 20000000;
     public static final int EXPECTED_NEIGHBOURS = 12;
 
 
     private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
     private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();
     private HashSet<Tuple> results = new HashSet<>();
-    private Delta delta = new Delta(10000000, 12);
+    private Delta delta = new Delta(40000000, 12);
     private GraphEdges<ProductNode> edges = new GraphEdges<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
     private Integer finalState;
     private Integer startState;
