@@ -70,8 +70,8 @@ public class Yago2sInMemoryTSVStream {
 
                 bufferSize++;
 
-                if(bufferSize % 10000000 == 0) {
-                    System.out.println((bufferSize / 10000000) + " in " + (System.currentTimeMillis() - startTime)/1000 + " s");
+                if(bufferSize % 1000000 == 0) {
+                    System.out.println((bufferSize / 1000000) + "M in " + (System.currentTimeMillis() - startTime)/1000 + " s");
                     startTime = System.currentTimeMillis();
                 }
             }
@@ -96,6 +96,8 @@ public class Yago2sInMemoryTSVStream {
     public void reset() {
         // just set buffer pointer to the top of the buffer
         bufferPointer = 0;
+        localCounter = 0;
+        globalCounter = 0;
     }
 
     public InputTuple next() {

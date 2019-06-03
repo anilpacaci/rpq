@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.waveguide;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -50,7 +51,7 @@ public class WaveGuideQ5 {
         String[] p1 = config.getStringArray("p1.label");
         String[] p2 = config.getStringArray("p2.label");
 
-        Yago2sInMemoryTSVStream stream = new Yago2sInMemoryTSVStream();
+        Yago2sTSVStream stream = new Yago2sTSVStream();
 
         try {
             stream.open(filename, inputSize);
