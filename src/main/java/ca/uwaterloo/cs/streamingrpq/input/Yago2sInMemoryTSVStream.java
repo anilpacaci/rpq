@@ -70,7 +70,7 @@ public class Yago2sInMemoryTSVStream {
                 bufferSize++;
 
                 if(bufferSize % 10000000 == 0) {
-                    System.out.println("10M in " + (System.currentTimeMillis() - startTime)/1000 + " s");
+                    System.out.println((bufferSize / 10000000) + " in " + (System.currentTimeMillis() - startTime)/1000 + " s");
                     startTime = System.currentTimeMillis();
                 }
             }
