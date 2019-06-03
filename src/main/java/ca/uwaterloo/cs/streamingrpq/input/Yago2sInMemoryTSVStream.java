@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Yago2sInMemoryTSVStream {
+public class Yago2sInMemoryTSVStream implements TextStream{
 
     public static final Integer MAX_STREAM_SIZE = 200000000;
 
@@ -35,12 +35,16 @@ public class Yago2sInMemoryTSVStream {
         return false;
     }
 
-    public void open(String filename) throws FileNotFoundException, IOException {
+    public void open(String filename)  {
         open(filename, MAX_STREAM_SIZE);
     }
 
-    public void open(String filename, Integer maxSize) throws FileNotFoundException, IOException {
-        fileStream = new FileReader(filename);
+    public void open(String filename, int maxSize) {
+        try {
+            fileStream = new FileReader(filename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         bufferedReader = new BufferedReader(fileStream, 1024*1024);
 
         source = new int[maxSize];
@@ -61,7 +65,12 @@ public class Yago2sInMemoryTSVStream {
         InputTuple tuple = null;
 
         long startTime = System.currentTimeMillis();
-        while((line = bufferedReader.readLine()) != null) {
+        while(true) {
+            try {
+                if (!((line = bufferedReader.readLine()) != null)) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
             if(splitResults.length == 3) {
                 source[bufferSize] = splitResults[0].hashCode();
@@ -84,9 +93,13 @@ public class Yago2sInMemoryTSVStream {
 
     }
 
-    public void close() throws IOException {
-        bufferedReader.close();
-        fileStream.close();
+    public void close() {
+        try {
+            bufferedReader.close();
+            fileStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         executor.shutdown();
     }
 
