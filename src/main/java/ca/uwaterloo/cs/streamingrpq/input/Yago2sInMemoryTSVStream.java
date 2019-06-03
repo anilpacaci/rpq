@@ -27,7 +27,8 @@ public class Yago2sInMemoryTSVStream {
 
     Integer bufferPointer = 0;
     Integer bufferSize = 0;
-    Integer counter = 0;
+    Integer localCounter = 0;
+    Integer globalCounter = 0;
 
 
     public boolean isOpen() {
@@ -51,8 +52,8 @@ public class Yago2sInMemoryTSVStream {
 
             @Override
             public void run() {
-                System.out.println("Second " + ++seconds + " : " + counter);
-                counter = 0;
+                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
+                localCounter = 0;
             }
         };
 
@@ -103,7 +104,8 @@ public class Yago2sInMemoryTSVStream {
         }
         bufferPointer++;
         InputTuple tuple = new InputTuple(source[bufferPointer], target[bufferPointer], edge[bufferPointer]);
-        counter++;
+        localCounter++;
+        globalCounter++;
         return tuple;
     }
 }
