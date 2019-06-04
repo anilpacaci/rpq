@@ -116,4 +116,12 @@ public class DFA<L> extends DFANode {
     public Collection<Tuple> getResults() {
         return results;
     }
+
+    public int getGraphEdgeCount() {
+        return edges.getEdgeCount();
+    }
+
+    public int getDeltaTupleCount() {
+        return delta.getTupleCount();
+    }
 }

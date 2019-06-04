@@ -60,7 +60,7 @@ public class WaveGuideQ5 {
         } else {
             stream = new Yago2sTSVStream();
         }
-        
+
         stream.open(filename, inputSize);
 
         for (int i = 0; i < queryCount; i++) {
@@ -82,6 +82,8 @@ public class WaveGuideQ5 {
             }
 
             System.out.println("total number of results for query " + queryNames[i] + " : " + q5.getResultCounter());
+            System.out.println("Edges: " + q5.getGraphEdgeCount());
+            System.out.println("Delta: " + q5.getDeltaTupleCount());
 
             //reset the stream so we can reuse it for the next query
             stream.reset();
