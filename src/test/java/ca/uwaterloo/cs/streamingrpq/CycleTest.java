@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class CycleTest {
     static String filename = "src/main/resources/cycle.txt";
 
     public static void main(String[] args) {
-        TextStream stream = new TextStream();
+        TextStream stream = new Yago2sTSVStream();
 
         DFA<Character> cycleTestDFA = new DFA();
 
@@ -27,28 +28,22 @@ public class CycleTest {
         cycleTestDFA.setStartState(0);
         cycleTestDFA.setFinalState(5);
 
-        try {
-            stream.open(filename);
-            InputTuple<Integer, Integer, Character> input = stream.next();
+        stream.open(filename);
+        InputTuple<Integer, Integer, Character> input = stream.next();
 
-            while(input != null) {
-                //retrieve DFA nodes where transition is same as edge label
-                cycleTestDFA.processEdge(input);
-                // incoming edge fully processed, move to next one
-                input = stream.next();
-            }
-
-            // stream is over so we can close it and close the program
-            System.out.println("total number of results: " + cycleTestDFA.getResultCounter());
-
-            cycleTestDFA.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
-
-            stream.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        while(input != null) {
+            //retrieve DFA nodes where transition is same as edge label
+            cycleTestDFA.processEdge(input);
+            // incoming edge fully processed, move to next one
+            input = stream.next();
         }
+
+        // stream is over so we can close it and close the program
+        System.out.println("total number of results: " + cycleTestDFA.getResultCounter());
+
+        cycleTestDFA.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
+
+        stream.close();
+
     }
 }
