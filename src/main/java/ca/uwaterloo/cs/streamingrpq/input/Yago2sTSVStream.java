@@ -66,7 +66,7 @@ public class Yago2sTSVStream implements TextStream{
         executor.shutdown();
     }
 
-    public InputTuple next() {
+    public InputTuple<Integer, Integer, String> next() {
         String line = null;
         InputTuple tuple = null;
         try {
