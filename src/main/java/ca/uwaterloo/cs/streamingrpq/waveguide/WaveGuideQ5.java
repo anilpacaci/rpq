@@ -70,6 +70,7 @@ public class WaveGuideQ5 {
             q5.addDFAEdge(2,2, p1[i].hashCode());
             q5.addDFAEdge(2,3, p2[i].hashCode());
             q5.addDFAEdge(3,3, p2[i].hashCode());
+            q5.setStartState(0);
             q5.setFinalState(3);
 
             InputTuple<Integer, Integer, Integer> input = stream.next();
