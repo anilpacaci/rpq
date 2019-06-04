@@ -27,5 +27,13 @@ public class GraphEdges<N> {
         return nodes.containsEntry(source, target);
     }
 
+    public int getNodeCount() {
+        return nodes.size();
+    }
+
+    public int getEdgeCount() {
+        return nodes.values().size();
+    }
+
 }
 

@@ -34,4 +34,8 @@ public class Delta {
         return targetNodes.containsEntry(tuple.getTargetNode(), tuple.getSource());
     }
 
+    public int getTupleCount() {
+        return targetNodes.values().size();
+    }
+
 }
