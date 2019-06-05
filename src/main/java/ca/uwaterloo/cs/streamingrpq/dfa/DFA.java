@@ -3,7 +3,6 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 import ca.uwaterloo.cs.streamingrpq.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 import java.util.*;
 
@@ -18,9 +17,15 @@ public class DFA<L> extends DFANode {
 
     private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
     private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();
-    private HashSet<Tuple> results = new HashSet<>();
-    private Delta delta = new Delta(40000000, 12);
+    private HashSet<RSPQTuple> results = new HashSet<>();
+
+    // algoithm specific data structures
+    private DFST delta = new DFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
     private GraphEdges<ProductNode> edges = new GraphEdges<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+    private Markings<ProductNode, RSPQTuple> markings = new Markings<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+    private boolean[][] containmentMark;
+
+
     private Integer finalState;
     private Integer startState;
 
@@ -51,7 +56,7 @@ public class DFA<L> extends DFANode {
     }
 
     public void processEdge(InputTuple<Integer, Integer, L> input) {
-        Queue<QueuePair> queue = new LinkedList<>();
+        Queue<QueuePair<RSPQTuple, ProductNode>> queue = new LinkedList<>();
 
         Set<DFAEdge<L>> dfaEdges = dfaEdegs.get(input.getLabel());
 
@@ -66,24 +71,24 @@ public class DFA<L> extends DFANode {
 
             // if source state is 0 -> create a single edge tuple and add it to the queue
             if(edge.getSource().getNodeId() == this.startState) {
-                Tuple tuple = new Tuple(input.getSource(), targetNode);
-                queue.offer(new QueuePair(tuple, sourceNode));
+                RSPQTuple tuple = new RSPQTuple(input.getSource(), targetNode, null);
+                queue.offer(new QueuePair<RSPQTuple, ProductNode>(tuple, sourceNode));
             }
 
             // query Delta to get all existing tuples that can be extended
-            Collection<Integer> prefixes = delta.retrieveByTarget(sourceNode);
-            for(Integer source : prefixes) {
+            Collection<RSPQTuple> prefixes = delta.retrieveByTarget(sourceNode);
+            for(RSPQTuple source : prefixes) {
                 // extend the prefix path with the new edge
-                Tuple candidate = new Tuple(source, targetNode);
-                queue.offer(new QueuePair(candidate, sourceNode));
+                RSPQTuple candidate = new RSPQTuple(source.getSource(), targetNode, source);
+                queue.offer(new QueuePair<RSPQTuple, ProductNode>(candidate, sourceNode));
             }
 
         }
 
 
         while (!queue.isEmpty()) {
-            QueuePair candidate = queue.poll();
-            Tuple candidateTuple = candidate.getTuple();
+            QueuePair<RSPQTuple, ProductNode> candidate = queue.poll();
+            RSPQTuple candidateTuple = candidate.getTuple();
             ProductNode predecessor = candidate.getProductNode();
 
             if (!delta.contains(candidateTuple)) {
@@ -98,7 +103,7 @@ public class DFA<L> extends DFANode {
 
                 for(ProductNode extensionEdgeTarget : extensionEdges) {
                     // extend the newly added tuple with an existing edge
-                    Tuple tuple = new Tuple(candidateTuple.getSource(), extensionEdgeTarget);
+                    RSPQTuple tuple = new RSPQTuple(candidateTuple.getSource(), extensionEdgeTarget);
                     queue.offer(new QueuePair(tuple, candidateTuple.getTargetNode()));
                 }
             }
@@ -107,13 +112,34 @@ public class DFA<L> extends DFANode {
 
     }
 
+    private void ExtendPrefixPath(RSPQTuple prefixPath, ProductNode node) {
+
+        if(prefixPath.containsCM(node.getVertex(), node.getState())) {
+            // return as this is clearly a cycle
+        } else if( !hasContainment(prefixPath.getFirstCM(node.getVertex()), node.getState()) ) {
+            // TODO: no containment, UNMARK
+        } else if (markings.contains(node)) {
+            // target node is marked, so extend it
+            this.markings.addCrossEdge(node, prefixPath);
+        } else {
+            // TODO path is indeed extended and DFST is populated
+        }
+    }
+
+    private boolean hasContainment(Integer stateQ, Integer stateT) {
+        if(stateQ == null) {
+            return true;
+        }
+        return !this.containmentMark[stateQ][stateT];
+    }
+
     // TODO: implementations of InsertRAPQ and DeleteRAPQ
 
     public int getResultCounter() {
         return results.size();
     }
 
-    public Collection<Tuple> getResults() {
+    public Collection<RSPQTuple> getResults() {
         return results;
     }
 

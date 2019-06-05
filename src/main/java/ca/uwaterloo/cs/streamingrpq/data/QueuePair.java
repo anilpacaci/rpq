@@ -3,21 +3,21 @@ package ca.uwaterloo.cs.streamingrpq.data;
 /**
  * Created by anilpacaci on 2019-05-18.
  */
-public class QueuePair {
+public class QueuePair<T extends Tuple, N> {
 
-    Tuple tuple;
-    ProductNode productNode;
+    T tuple;
+    N productNode;
 
-    public QueuePair(Tuple tuple, ProductNode productNode) {
+    public QueuePair(T tuple, N productNode) {
         this.tuple = tuple;
         this.productNode = productNode;
     }
 
-    public Tuple getTuple() {
+    public T getTuple() {
         return tuple;
     }
 
-    public ProductNode getProductNode() {
+    public N getProductNode() {
         return productNode;
     }
 

@@ -1,21 +1,21 @@
 package ca.uwaterloo.cs.streamingrpq.core;
 
-import ca.uwaterloo.cs.streamingrpq.data.Tuple;
+import ca.uwaterloo.cs.streamingrpq.data.RAPQTuple;
 
 /**
  * Created by anilpacaci on 2019-03-02.
  */
 public class SubPathExtension {
-    private Tuple tuple;
+    private RAPQTuple tuple;
 
     private Integer originatingState;
 
-    public SubPathExtension(Tuple tuple, Integer originatingState) {
+    public SubPathExtension(RAPQTuple tuple, Integer originatingState) {
         this.tuple = tuple;
         this.originatingState = originatingState;
     }
 
-    public Tuple getTuple() {
+    public RAPQTuple getTuple() {
         return tuple;
     }
 
