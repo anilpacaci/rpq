@@ -13,6 +13,7 @@ public class WaveGuideQueries {
         q5.addDFAEdge(3,3, predicate2);
         q5.setStartState(0);
         q5.setFinalState(3);
+        q5.optimize();
 
         return q5;
     }
@@ -25,6 +26,7 @@ public class WaveGuideQueries {
         q6.addDFAEdge(3,1, predicate0);
         q6.setStartState(0);
         q6.setFinalState(3);
+        q6.optimize();
 
         return q6;
     }

@@ -26,7 +26,7 @@ public class DFA<L> extends DFANode {
     private boolean[][] containmentMark;
 
 
-    private Integer finalState;
+    private Set<Integer> finalState = new HashSet<>();
     private Integer startState;
 
     public void addDFAEdge(Integer source, Integer target, L label) {
@@ -50,7 +50,7 @@ public class DFA<L> extends DFANode {
     }
 
     public void setFinalState(Integer finalState) {
-        this.finalState = finalState;
+        this.finalState.add(finalState);
         dfaNodes.get(finalState).setFinal(true);
         dfaNodes.get(finalState).addDownstreamNode(this);
     }
@@ -131,6 +131,94 @@ public class DFA<L> extends DFANode {
             return true;
         }
         return !this.containmentMark[stateQ][stateT];
+    }
+
+    /**
+     * Optimization procedure for the autamaton, including minimization, containment relationship
+     * MUST be called after automaton is constructed
+     */
+    public void optimize() {
+        this.containmentMark = new boolean[dfaNodes.size()][dfaNodes.size()];
+        int alphabetSize = dfaEdegs.keySet().size();
+
+        // once we construct the minimized DFA, we can easily compute the sufflix language containment relationship
+        // Algorithm S of Wood'95
+        Map<StatePair, List<StatePair>> stateLists = new HashMap<>();
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                stateLists.put(StatePair.createInstance(s,t), new ArrayList<>());
+            }
+        }
+        // first create a transition matrix for the DFA
+        int[][] transitionMatrix = new int[dfaNodes.size()][alphabetSize];
+        for(int i = 0; i < dfaNodes.size(); i++) {
+            for(int j = 0; j < alphabetSize; j++) {
+                transitionMatrix[i][j] = -1;
+            }
+        }
+        Iterator<L> edgeIterator = dfaEdegs.keySet().iterator();
+        for(int j = 0 ; j < alphabetSize; j++) {
+            Set<DFAEdge<L>> edges = dfaEdegs.get(edgeIterator.next());
+            for (DFAEdge<L> edge : edges) {
+                transitionMatrix[edge.getSource().getNodeId()][j] = edge.getTarget().getNodeId();
+            }
+        }
+
+        // initialize: line 1 of Algorithm S
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                // for s \in S-F and t \in F
+                if(!finalState.contains(s) && finalState.contains(t)) {
+                    containmentMark[s][t] = true;
+                }
+            }
+        }
+
+        // line 2-7 of Algorithm S0
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                // for s,t \in ((SxS) - ((S-F)xF))
+                if(finalState.contains(s) || !finalState.contains(t)) {
+                    // implement line 3,
+                    boolean isMarked = false;
+                    Queue<StatePair> markQueue = new ArrayDeque<>();
+                    for(int j = 0; j < alphabetSize; j++) {
+                        if(transitionMatrix[s][j] == transitionMatrix[t][j] && transitionMatrix[s][j] != -1) {
+                            isMarked = true;
+                            markQueue.add(StatePair.createInstance(s,t));
+                        }
+                    }
+
+                    // recursively mark all the pairs on the list of pairs that are marked in this step
+                    // line 5 of the Algorithm S
+                    while(!markQueue.isEmpty()) {
+                        StatePair pair = markQueue.poll();
+                        List<StatePair> pairList = stateLists.get(pair);
+                        for(StatePair candidate : pairList) {
+                            if(!containmentMark[candidate.stateS][candidate.stateT]) {
+                                markQueue.add(candidate);
+                                containmentMark[candidate.stateS][candidate.stateT] = true;
+                            }
+                        }
+                    }
+
+                    // if there is no marked, then populate the lists
+                    // line 6 of Algorithm S
+                    if(!isMarked) {
+                        for(int j = 0; j < alphabetSize; j++) {
+                            int sEndpoint = transitionMatrix[s][j];
+                            int tEndpoint = transitionMatrix[t][j];
+                            if(sEndpoint != -1 && tEndpoint != -1 && sEndpoint != tEndpoint) {
+                                // Line 7 of Algorithm S
+                                stateLists.get(StatePair.createInstance(sEndpoint, tEndpoint)).add(StatePair.createInstance(s,t));
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
     }
 
     // TODO: implementations of InsertRAPQ and DeleteRAPQ
