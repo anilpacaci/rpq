@@ -29,8 +29,8 @@ public class RSPQTuple implements Tuple {
         this.sourceState = sourceState;
     }
 
-    public RSPQTuple(int source, ProductNode targetNode, RSPQTuple parent) {
-        this(source, 0, targetNode, parent);
+    public RSPQTuple(int source, ProductNode targetNode) {
+        this(source, 0, targetNode, null);
     }
 
     @Override
@@ -63,6 +63,13 @@ public class RSPQTuple implements Tuple {
 
     public int getFirstCM(int vertex) {
         return firstMarkings.get(vertex);
+    }
+
+    public RSPQTuple extend(ProductNode node) {
+        RSPQTuple extension = new RSPQTuple(this.source, 0, node, this);
+        extension.currentMarkings.put(node.getVertex(), node.getState());
+        extension.firstMarkings.putIfAbsent(node.getVertex(), node.getState());
+        return extension;
     }
 
     @Override

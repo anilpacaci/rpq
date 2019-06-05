@@ -71,16 +71,15 @@ public class DFA<L> extends DFANode {
 
             // if source state is 0 -> create a single edge tuple and add it to the queue
             if(edge.getSource().getNodeId() == this.startState) {
-                RSPQTuple tuple = new RSPQTuple(input.getSource(), targetNode, null);
+                RSPQTuple tuple = new RSPQTuple(input.getSource(), targetNode);
                 queue.offer(new QueuePair<RSPQTuple, ProductNode>(tuple, sourceNode));
             }
 
             // query Delta to get all existing tuples that can be extended
             Collection<RSPQTuple> prefixes = delta.retrieveByTarget(sourceNode);
-            for(RSPQTuple source : prefixes) {
+            for(RSPQTuple prefix : prefixes) {
                 // extend the prefix path with the new edge
-                RSPQTuple candidate = new RSPQTuple(source.getSource(), targetNode, source);
-                queue.offer(new QueuePair<RSPQTuple, ProductNode>(candidate, sourceNode));
+                queue.offer(new QueuePair<RSPQTuple, ProductNode>(prefix, sourceNode));
             }
 
         }
@@ -90,23 +89,7 @@ public class DFA<L> extends DFANode {
             QueuePair<RSPQTuple, ProductNode> candidate = queue.poll();
             RSPQTuple candidateTuple = candidate.getTuple();
             ProductNode predecessor = candidate.getProductNode();
-
-            if (!delta.contains(candidateTuple)) {
-                if(candidateTuple.getTargetState() == finalState) {
-                    // new result
-                    results.add(candidateTuple);
-                }
-
-                delta.addTuple(candidateTuple);
-
-                Collection<ProductNode> extensionEdges = edges.getNeighbours(candidateTuple.getTargetNode());
-
-                for(ProductNode extensionEdgeTarget : extensionEdges) {
-                    // extend the newly added tuple with an existing edge
-                    RSPQTuple tuple = new RSPQTuple(candidateTuple.getSource(), extensionEdgeTarget);
-                    queue.offer(new QueuePair(tuple, candidateTuple.getTargetNode()));
-                }
-            }
+            
 
         }
 
@@ -123,6 +106,13 @@ public class DFA<L> extends DFANode {
             this.markings.addCrossEdge(node, prefixPath);
         } else {
             // TODO path is indeed extended and DFST is populated
+            // check if Delta contains the target node. Any leaf added for the first time is added as a marked node.
+            if(!delta.contains(node)) {
+                markings.addMarking(node);
+            }
+
+            RSPQTuple newPath = prefixPath.extend(node);
+
         }
     }
 

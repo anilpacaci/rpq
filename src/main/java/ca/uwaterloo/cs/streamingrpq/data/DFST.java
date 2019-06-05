@@ -34,6 +34,10 @@ public class DFST {
         return targetNodes.containsEntry(tuple.getTargetNode(), tuple);
     }
 
+    public boolean contains(ProductNode node) {
+        return targetNodes.containsKey(node);
+    }
+
     public int getTupleCount() {
         return targetNodes.values().size();
     }
