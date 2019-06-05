@@ -19,7 +19,7 @@ import java.io.IOException;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class WaveGuideQ5 {
+public class WaveGuideQueryRunner {
 
     public static void main(String[] args) {
 
@@ -64,27 +64,21 @@ public class WaveGuideQ5 {
         stream.open(filename, inputSize);
 
         for (int i = 0; i < queryCount; i++) {
-            DFA<Integer> q5 = new DFA<>();
-            q5.addDFAEdge(0,1, p0[i].hashCode());
-            q5.addDFAEdge(1,2, p1[i].hashCode());
-            q5.addDFAEdge(2,2, p1[i].hashCode());
-            q5.addDFAEdge(2,3, p2[i].hashCode());
-            q5.addDFAEdge(3,3, p2[i].hashCode());
-            q5.setStartState(0);
-            q5.setFinalState(3);
+
+            DFA<Integer> queryDFA = WaveGuideQueries.query6(p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
 
             InputTuple<Integer, Integer, Integer> input = stream.next();
 
             while (input != null) {
                 //retrieve DFA nodes where transition is same as edge label
-                q5.processEdge(input);
+                queryDFA.processEdge(input);
                 // incoming edge fully processed, move to next one
                 input = stream.next();
             }
 
-            System.out.println("total number of results for query " + queryNames[i] + " : " + q5.getResultCounter());
-            System.out.println("Edges: " + q5.getGraphEdgeCount());
-            System.out.println("Delta: " + q5.getDeltaTupleCount());
+            System.out.println("total number of results for query " + queryNames[i] + " : " + queryDFA.getResultCounter());
+            System.out.println("Edges: " + queryDFA.getGraphEdgeCount());
+            System.out.println("Delta: " + queryDFA.getDeltaTupleCount());
 
             //reset the stream so we can reuse it for the next query
             stream.reset();
