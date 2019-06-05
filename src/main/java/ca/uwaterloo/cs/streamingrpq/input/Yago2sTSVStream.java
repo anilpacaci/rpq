@@ -74,7 +74,7 @@ public class Yago2sTSVStream implements TextStream{
                 String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1]);
+                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1].hashCode());
                     break;
                 }
             }
