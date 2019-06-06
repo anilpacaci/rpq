@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq;
+package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
@@ -25,6 +25,7 @@ public class WaveGuideDiaomondExample {
         diamond.addDFAEdge(2,1,"a");
         diamond.setStartState(0);
         diamond.setFinalState(2);
+        diamond.optimize();
 
         stream.open(filename);
         InputTuple<Integer, Integer, String> input = stream.next();

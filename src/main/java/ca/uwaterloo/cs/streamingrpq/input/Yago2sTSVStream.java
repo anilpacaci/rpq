@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.input;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import com.googlecode.cqengine.query.simple.In;
 
 import java.io.*;
 import java.util.concurrent.Executors;
@@ -74,7 +75,8 @@ public class Yago2sTSVStream implements TextStream{
                 String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1].hashCode());
+//                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1].hashCode());
+                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
                     break;
                 }
             }

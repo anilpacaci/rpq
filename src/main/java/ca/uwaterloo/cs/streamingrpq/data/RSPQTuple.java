@@ -22,11 +22,24 @@ public class RSPQTuple implements Tuple {
 
     private int hash = 0;
 
-    public RSPQTuple(int source, int sourceState, ProductNode targetNode, RSPQTuple parent) {
+    private RSPQTuple(int source, int sourceState, ProductNode targetNode, RSPQTuple parent) {
         this.parentNode = parent;
         this.targetNode = targetNode;
         this.source = source;
         this.sourceState = sourceState;
+
+        if(parent == null) {
+            firstMarkings = new HashMap<>();
+            currentMarkings = HashMultimap.create();
+            currentMarkings.put(source, sourceState);
+            firstMarkings.putIfAbsent(source, sourceState);
+        } else {
+            firstMarkings = new HashMap<>(parent.firstMarkings);
+            currentMarkings = HashMultimap.create(parent.currentMarkings);
+        }
+
+        currentMarkings.put(targetNode.getVertex(), targetNode.getState());
+        firstMarkings.putIfAbsent(targetNode.getVertex(), targetNode.getState());
     }
 
     public RSPQTuple(int source, ProductNode targetNode) {
@@ -61,14 +74,12 @@ public class RSPQTuple implements Tuple {
         return currentMarkings.containsEntry(target, targetState);
     }
 
-    public int getFirstCM(int vertex) {
+    public Integer getFirstCM(int vertex) {
         return firstMarkings.get(vertex);
     }
 
     public RSPQTuple extend(ProductNode node) {
         RSPQTuple extension = new RSPQTuple(this.source, 0, node, this);
-        extension.currentMarkings.put(node.getVertex(), node.getState());
-        extension.firstMarkings.putIfAbsent(node.getVertex(), node.getState());
         return extension;
     }
 
@@ -83,7 +94,6 @@ public class RSPQTuple implements Tuple {
 
         return tuple.source == source &&
                 tuple.targetNode.equals(targetNode) &&
-                tuple.parentNode.equals(parentNode) &&
                 tuple.firstMarkings.equals(firstMarkings) &&
                 tuple.currentMarkings.equals(currentMarkings);
     }
@@ -96,7 +106,6 @@ public class RSPQTuple implements Tuple {
             h = 17;
             h = 31 * h + source;
             h = 31 * h + targetNode.hashCode();
-            h = 31 * h + parentNode.hashCode();
             h = 31 * h + firstMarkings.hashCode();
             h = 31 * h + currentMarkings.hashCode();
             hash = h;
@@ -106,8 +115,8 @@ public class RSPQTuple implements Tuple {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("<").append(source).
-                append(",").append(targetNode.vertex).append(">  to: ").
+        return new StringBuilder().append("").append(source).
+                append(" -> ").append(targetNode.vertex).append(",").
                 append(targetNode.state).toString();
     }
 }
