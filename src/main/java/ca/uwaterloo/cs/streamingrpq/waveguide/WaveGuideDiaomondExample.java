@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
+import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 
@@ -16,7 +17,7 @@ public class WaveGuideDiaomondExample {
     static String filename = "src/main/resources/diamondgraph.txt";
 
     public static void main(String[] args) {
-        TextStream stream = new Yago2sTSVStream();
+        TextStream stream = new SimpleTextStream();
 
 
         DFA<String> diamond = new DFA<>();
@@ -41,7 +42,7 @@ public class WaveGuideDiaomondExample {
         System.out.println("Edges: " + diamond.getGraphEdgeCount());
         System.out.println("Delta: " + diamond.getDeltaTupleCount());
 
-        diamond.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
+        diamond.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getLeft() + " --> " + t.getRight());});
 
         stream.close();
 

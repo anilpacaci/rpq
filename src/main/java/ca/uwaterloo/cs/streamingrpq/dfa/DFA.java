@@ -3,8 +3,11 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 import ca.uwaterloo.cs.streamingrpq.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by anilpacaci on 2019-02-22.
@@ -17,7 +20,7 @@ public class DFA<L> extends DFANode {
 
     private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
     private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();
-    private HashSet<RSPQTuple> results = new HashSet<>();
+    private Multimap<Integer, Integer> results = HashMultimap.create();
 
     // algoithm specific data structures
     private DFST delta = new DFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
@@ -120,7 +123,7 @@ public class DFA<L> extends DFANode {
 
             // add to result set of final node is there
             if(finalState.contains(targetNode.getState())) {
-                results.add(newPath);
+                results.put(newPath.getSource(), newPath.getTarget());
             }
 
             Collection<ProductNode> extensionEdges = edges.getNeighbours(targetNode);
@@ -256,8 +259,8 @@ public class DFA<L> extends DFANode {
         return results.size();
     }
 
-    public Collection<RSPQTuple> getResults() {
-        return results;
+    public Collection<Pair<Integer, Integer>> getResults() {
+        return results.entries().stream().map(e -> Pair.of(e.getKey(), e.getValue())).collect(Collectors.toList());
     }
 
     public int getGraphEdgeCount() {
