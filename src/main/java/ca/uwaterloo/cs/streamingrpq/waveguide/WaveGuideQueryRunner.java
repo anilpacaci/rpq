@@ -25,6 +25,7 @@ import java.util.concurrent.*;
 public class WaveGuideQueryRunner {
 
     private static Logger logger = LoggerFactory.getLogger(WaveGuideQueryRunner.class);
+    private static ExecutorService executor;
 
     public static void main(String[] args) {
 
@@ -48,9 +49,6 @@ public class WaveGuideQueryRunner {
             logger.error("Parameters file does not have all required parameters");
             return;
         }
-
-        //Single threaded executor to run the experiment
-        ExecutorService executor = Executors.newSingleThreadExecutor();
 
 
         String filename = config.getString("input.file");
@@ -85,6 +83,7 @@ public class WaveGuideQueryRunner {
             }
 
 
+            executor = Executors.newSingleThreadExecutor();
             SingleThreadedRun task = new SingleThreadedRun(queryNames[i], stream, queryDFA);
             Future run = executor.submit(task);
             try {
@@ -94,6 +93,8 @@ public class WaveGuideQueryRunner {
                 logger.error("Task interrupted", e);
             }
 
+            //shut down the executor
+            executor.shutdownNow();
             //reset the stream so we can reuse it for the next query
             stream.reset();
         }
