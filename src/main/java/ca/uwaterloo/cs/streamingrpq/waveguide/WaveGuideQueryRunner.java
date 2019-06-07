@@ -12,14 +12,19 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.*;
 
 /**
  * Created by anilpacaci on 2019-01-31.
  */
 public class WaveGuideQueryRunner {
+
+    private static Logger logger = LoggerFactory.getLogger(WaveGuideQueryRunner.class);
 
     public static void main(String[] args) {
 
@@ -40,13 +45,18 @@ public class WaveGuideQueryRunner {
 
         if( !(config.containsKey("input.file") && config.containsKey("p.label") && config.containsKey("p1.label") && config.containsKey("p2.label")) ) {
             // parameters file does not have all the required parameters
-            System.err.println("Parameters file does not have all required parameters");
+            logger.error("Parameters file does not have all required parameters");
             return;
         }
+
+        //Single threaded executor to run the experiment
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
 
         String filename = config.getString("input.file");
         Integer queryCount = config.getInt("query.count");
         Integer inputSize = config.getInt("input.size");
+        Integer timeout = config.getInt("query.timeout", 10);
         String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
         String[] p0 = config.getStringArray("p.label");
@@ -67,18 +77,14 @@ public class WaveGuideQueryRunner {
 
             DFA<Integer> queryDFA = WaveGuideQueries.query6(p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
 
-            InputTuple<Integer, Integer, Integer> input = stream.next();
-
-            while (input != null) {
-                //retrieve DFA nodes where transition is same as edge label
-                queryDFA.processEdge(input);
-                // incoming edge fully processed, move to next one
-                input = stream.next();
+            SingleThreadedRun task = new SingleThreadedRun(queryNames[i], stream, queryDFA);
+            Future run = executor.submit(task);
+            try {
+                run.get(timeout, TimeUnit.MINUTES);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                run.cancel(true);
+                logger.error("Task interrupted", e);
             }
-
-            System.out.println("total number of results for query " + queryNames[i] + " : " + queryDFA.getResultCounter());
-            System.out.println("Edges: " + queryDFA.getGraphEdgeCount());
-            System.out.println("Delta: " + queryDFA.getDeltaTupleCount());
 
             //reset the stream so we can reuse it for the next query
             stream.reset();
