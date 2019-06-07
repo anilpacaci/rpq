@@ -14,9 +14,13 @@ import java.util.stream.Collectors;
  */
 public class DFA<L> extends DFANode {
 
-    public static final int EXPECTED_NODES = 50000000;
-    public static final int EXPECTED_NEIGHBOURS = 12;
+    private int EXPECTED_NODES = 50000000;
+    private int EXPECTED_NEIGHBOURS = 12;
 
+
+    public DFA(int capacity) {
+        EXPECTED_NODES = capacity;
+    }
 
     private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
     private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();

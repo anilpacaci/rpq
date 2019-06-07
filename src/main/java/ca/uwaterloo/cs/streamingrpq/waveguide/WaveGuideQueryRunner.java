@@ -57,6 +57,9 @@ public class WaveGuideQueryRunner {
         Integer queryCount = config.getInt("query.count");
         Integer inputSize = config.getInt("input.size");
         Integer timeout = config.getInt("query.timeout", 10);
+        Integer maxSize = config.getInt("query.maxsize");
+        Integer queryNumber = config.getInt("query.number", 5);
+
         String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
         String[] p0 = config.getStringArray("p.label");
@@ -74,8 +77,13 @@ public class WaveGuideQueryRunner {
         stream.open(filename, inputSize);
 
         for (int i = 0; i < queryCount; i++) {
+            DFA<Integer> queryDFA;
+            if(queryNumber.equals(6)) {
+                queryDFA = WaveGuideQueries.query6(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+            } else {
+                queryDFA = WaveGuideQueries.query5(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+            }
 
-            DFA<Integer> queryDFA = WaveGuideQueries.query6(p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
 
             SingleThreadedRun task = new SingleThreadedRun(queryNames[i], stream, queryDFA);
             Future run = executor.submit(task);
