@@ -30,4 +30,20 @@ public class WaveGuideQueries {
 
         return q6;
     }
+
+    public static <L> DFA<L> restrictedRE(int maxSize, L predicate0, L predicate1) {
+        DFA<L> q6 = new DFA<L>(maxSize);
+        q6.addDFAEdge(0,0, predicate0);
+        q6.addDFAEdge(0,1, predicate1);
+        q6.addDFAEdge(1,1, predicate1);
+        q6.addDFAEdge(1,2, predicate0);
+        q6.addDFAEdge(2,2, predicate0);
+
+        q6.setStartState(0);
+        q6.setFinalState(1);
+        q6.setFinalState(2);
+        q6.optimize();
+
+        return q6;
+    }
 }

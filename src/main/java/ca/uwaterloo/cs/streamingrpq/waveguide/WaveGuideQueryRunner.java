@@ -56,7 +56,7 @@ public class WaveGuideQueryRunner {
         Integer inputSize = config.getInt("input.size");
         Integer timeout = config.getInt("query.timeout", 10);
         Integer maxSize = config.getInt("query.maxsize");
-        Integer queryNumber = config.getInt("query.number", 5);
+        Integer queryNumber = config.getInt("query.number");
 
         String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
@@ -78,8 +78,10 @@ public class WaveGuideQueryRunner {
             DFA<Integer> queryDFA;
             if(queryNumber.equals(6)) {
                 queryDFA = WaveGuideQueries.query6(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
-            } else {
+            } else if(queryNumber.equals(5)) {
                 queryDFA = WaveGuideQueries.query5(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+            } else {
+                queryDFA = WaveGuideQueries.restrictedRE(maxSize, p0[i].hashCode(), p1[i].hashCode());
             }
 
 
