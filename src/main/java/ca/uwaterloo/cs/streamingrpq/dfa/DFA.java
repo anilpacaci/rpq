@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class DFA<L> extends DFANode {
 
-    public static final int EXPECTED_NODES = 20000000;
+    public static final int EXPECTED_NODES = 50000000;
     public static final int EXPECTED_NEIGHBOURS = 12;
 
 
@@ -58,7 +58,7 @@ public class DFA<L> extends DFANode {
         dfaNodes.get(finalState).addDownstreamNode(this);
     }
 
-    public void processEdge(InputTuple<Integer, Integer, L> input) {
+    public void processEdge(InputTuple<Integer, Integer, L> input) throws NoSpaceException {
         Queue<QueuePair<RSPQTuple, ProductNode>> queue = new LinkedList<>();
 
         Set<DFAEdge<L>> dfaEdges = dfaEdegs.get(input.getLabel());
@@ -99,7 +99,7 @@ public class DFA<L> extends DFANode {
 
     }
 
-    private Collection<QueuePair<RSPQTuple, ProductNode>> extendPrefixPath(RSPQTuple prefixPath, ProductNode targetNode) {
+    private Collection<QueuePair<RSPQTuple, ProductNode>> extendPrefixPath(RSPQTuple prefixPath, ProductNode targetNode) throws NoSpaceException {
 
         ArrayDeque<QueuePair<RSPQTuple, ProductNode>> candidates = new ArrayDeque<>();
 

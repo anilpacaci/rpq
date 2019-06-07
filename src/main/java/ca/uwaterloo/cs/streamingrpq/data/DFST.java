@@ -11,13 +11,17 @@ import java.util.Collection;
 public class DFST {
 
     private HashMultimap<ProductNode, RSPQTuple> targetNodes;
+    private int capacity;
 
     public DFST(int capacity, int expectedKeys) {
         targetNodes =  HashMultimap.create(capacity, expectedKeys);
+        this.capacity = capacity;
     }
 
-    public void addTuple(RSPQTuple tuple) {
-
+    public void addTuple(RSPQTuple tuple) throws NoSpaceException {
+        if(targetNodes.size() > capacity) {
+            throw new NoSpaceException(capacity);
+        }
         targetNodes.put(tuple.getTargetNode(), tuple);
     }
 

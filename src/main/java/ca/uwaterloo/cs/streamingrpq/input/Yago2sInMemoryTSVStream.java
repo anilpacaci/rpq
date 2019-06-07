@@ -31,6 +31,7 @@ public class Yago2sInMemoryTSVStream implements TextStream{
     Integer globalCounter = 0;
 
 
+
     public boolean isOpen() {
         return false;
     }
@@ -51,15 +52,6 @@ public class Yago2sInMemoryTSVStream implements TextStream{
         target = new int[maxSize];
         edge = new int[maxSize];
 
-        Runnable counterRunnable = new Runnable() {
-            private int seconds = 0;
-
-            @Override
-            public void run() {
-                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
-                localCounter = 0;
-            }
-        };
 
         String line = null;
         InputTuple tuple = null;
@@ -89,7 +81,7 @@ public class Yago2sInMemoryTSVStream implements TextStream{
         System.out.println("Input file has been buffered");
 
         executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(counterRunnable, 0, 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(getNewCounter(), 1, 1, TimeUnit.SECONDS);
 
     }
 
@@ -111,6 +103,10 @@ public class Yago2sInMemoryTSVStream implements TextStream{
         bufferPointer = 0;
         localCounter = 0;
         globalCounter = 0;
+
+        executor.shutdown();
+        executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(getNewCounter(), 1, 1, TimeUnit.SECONDS);
     }
 
     public InputTuple next() {
@@ -122,5 +118,19 @@ public class Yago2sInMemoryTSVStream implements TextStream{
         localCounter++;
         globalCounter++;
         return tuple;
+    }
+
+    private Runnable getNewCounter() {
+        Runnable counterRunnable = new Runnable() {
+            private int seconds = 0;
+
+            @Override
+            public void run() {
+                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
+                localCounter = 0;
+            }
+        };
+
+        return counterRunnable;
     }
 }

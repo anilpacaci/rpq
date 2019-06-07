@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.waveguide;
 
+import ca.uwaterloo.cs.streamingrpq.data.NoSpaceException;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
@@ -30,11 +31,17 @@ public class SingleThreadedRun implements Callable {
     public Object call() throws Exception {
 
         InputTuple<Integer, Integer, Integer> input = stream.next();
+        logger.info("Query " + queryName + " is starting!");
 
         while (input != null) {
-            //retrieve DFA nodes where transition is same as edge label
-            query.processEdge(input);
-            // incoming edge fully processed, move to next one
+            try {
+                //retrieve DFA nodes where transition is same as edge label
+                query.processEdge(input);
+                // incoming edge fully processed, move to next one
+            } catch (NoSpaceException e) {
+                logger.error("DFST cannot grow further", e);
+                return null;
+            }
             input = stream.next();
 
             if(Thread.currentThread().isInterrupted()) {
