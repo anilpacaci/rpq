@@ -1,12 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.dfa;
 
-import ca.uwaterloo.cs.streamingrpq.data.Tuple;
-import ca.uwaterloo.cs.streamingrpq.core.SubPathExtension;
-import ca.uwaterloo.cs.streamingrpq.data.Delta;
-
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Created by anilpacaci on 2019-01-31.

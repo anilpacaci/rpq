@@ -5,6 +5,7 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -12,14 +13,20 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.*;
 
 /**
  * Created by anilpacaci on 2019-01-31.
  */
 public class WaveGuideQueryRunner {
+
+    private static Logger logger = LoggerFactory.getLogger(WaveGuideQueryRunner.class);
+    private static ExecutorService executor;
 
     public static void main(String[] args) {
 
@@ -40,13 +47,20 @@ public class WaveGuideQueryRunner {
 
         if( !(config.containsKey("input.file") && config.containsKey("p.label") && config.containsKey("p1.label") && config.containsKey("p2.label")) ) {
             // parameters file does not have all the required parameters
-            System.err.println("Parameters file does not have all required parameters");
+            logger.error("Parameters file does not have all required parameters");
             return;
         }
+
 
         String filename = config.getString("input.file");
         Integer queryCount = config.getInt("query.count");
         Integer inputSize = config.getInt("input.size");
+        Integer timeout = config.getInt("query.timeout", 10);
+        Integer maxSize = config.getInt("query.maxsize");
+        Integer queryNumber = config.getInt("query.number");
+        String semantics = config.getString("query.semantics", PathSemantics.ARBITRARY.toString());
+        PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
+
         String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
         String[] p0 = config.getStringArray("p.label");
@@ -64,22 +78,28 @@ public class WaveGuideQueryRunner {
         stream.open(filename, inputSize);
 
         for (int i = 0; i < queryCount; i++) {
-
-            DFA<Integer> queryDFA = WaveGuideQueries.query6(p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
-
-            InputTuple<Integer, Integer, Integer> input = stream.next();
-
-            while (input != null) {
-                //retrieve DFA nodes where transition is same as edge label
-                queryDFA.processEdge(input);
-                // incoming edge fully processed, move to next one
-                input = stream.next();
+            DFA<Integer> queryDFA;
+            if(queryNumber.equals(6)) {
+                queryDFA = WaveGuideQueries.query6(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+            } else if(queryNumber.equals(5)) {
+                queryDFA = WaveGuideQueries.query5(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+            } else {
+                queryDFA = WaveGuideQueries.restrictedRE(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode());
             }
 
-            System.out.println("total number of results for query " + queryNames[i] + " : " + queryDFA.getResultCounter());
-            System.out.println("Edges: " + queryDFA.getGraphEdgeCount());
-            System.out.println("Delta: " + queryDFA.getDeltaTupleCount());
 
+            executor = Executors.newSingleThreadExecutor();
+            SingleThreadedRun task = new SingleThreadedRun(queryNames[i], stream, queryDFA);
+            Future run = executor.submit(task);
+            try {
+                run.get(timeout, TimeUnit.MINUTES);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                run.cancel(true);
+                logger.error("Task interrupted", e);
+            }
+
+            //shut down the executor
+            executor.shutdownNow();
             //reset the stream so we can reuse it for the next query
             stream.reset();
         }

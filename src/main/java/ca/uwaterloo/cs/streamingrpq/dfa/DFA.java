@@ -2,27 +2,55 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 
 import ca.uwaterloo.cs.streamingrpq.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
+import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by anilpacaci on 2019-02-22.
  */
 public class DFA<L> extends DFANode {
 
-    public static final int EXPECTED_NODES = 20000000;
-    public static final int EXPECTED_NEIGHBOURS = 12;
+    private final int EXPECTED_NODES;
+    private final int EXPECTED_NEIGHBOURS = 12;
 
+    private final PathSemantics PATH_SEMANTICS;
 
-    private HashMultimap<L, DFAEdge<L>> dfaEdegs = HashMultimap.create();
-    private HashMap<Integer, DFANode> dfaNodes = new HashMap<>();
-    private HashSet<Tuple> results = new HashSet<>();
-    private Delta delta = new Delta(40000000, 12);
-    private GraphEdges<ProductNode> edges = new GraphEdges<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
-    private Integer finalState;
+    private HashMultimap<L, DFAEdge<L>> dfaEdegs;
+    private HashMap<Integer, DFANode> dfaNodes;
+    private Multimap<Integer, Integer> results;
+    private GraphEdges<ProductNode> edges;
+    private Set<Integer> finalState = new HashSet<>();
     private Integer startState;
+
+    // algorithm specific data structures
+    private DFST delta;
+    private Markings<Integer, ProductNode, RSPQTuple> markings;
+    private boolean[][] containmentMark;
+
+    public DFA(int capacity, PathSemantics semantics) {
+        EXPECTED_NODES = capacity;
+        PATH_SEMANTICS = semantics;
+
+        // data structures for the automaton and the graph
+        dfaEdegs = HashMultimap.create();
+        dfaNodes = new HashMap<>();
+        results = HashMultimap.create();
+        edges = new GraphEdges<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+
+        // initialization of algorithm specific data structures
+        if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
+            delta = new SimpleDFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+            markings = new Markings<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+        } else {
+            delta = new Delta(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+        }
+
+    }
 
     public void addDFAEdge(Integer source, Integer target, L label) {
         DFANode sourceNode = dfaNodes.get(source);
@@ -45,13 +73,13 @@ public class DFA<L> extends DFANode {
     }
 
     public void setFinalState(Integer finalState) {
-        this.finalState = finalState;
+        this.finalState.add(finalState);
         dfaNodes.get(finalState).setFinal(true);
         dfaNodes.get(finalState).addDownstreamNode(this);
     }
 
-    public void processEdge(InputTuple<Integer, Integer, L> input) {
-        Queue<QueuePair> queue = new LinkedList<>();
+    public void processEdge(InputTuple<Integer, Integer, L> input) throws NoSpaceException {
+        Queue<QueuePair<Tuple, ProductNode>> queue = new LinkedList<>();
 
         Set<DFAEdge<L>> dfaEdges = dfaEdegs.get(input.getLabel());
 
@@ -66,43 +94,218 @@ public class DFA<L> extends DFANode {
 
             // if source state is 0 -> create a single edge tuple and add it to the queue
             if(edge.getSource().getNodeId() == this.startState) {
-                Tuple tuple = new Tuple(input.getSource(), targetNode);
-                queue.offer(new QueuePair(tuple, sourceNode));
+                Tuple tuple;
+                if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
+                    tuple = new RSPQTuple(input.getSource(), sourceNode);
+                } else {
+                    tuple = new RAPQTuple(input.getSource(), sourceNode);
+                }
+                queue.offer(new QueuePair<>(tuple, targetNode));
             }
 
             // query Delta to get all existing tuples that can be extended
-            Collection<Integer> prefixes = delta.retrieveByTarget(sourceNode);
-            for(Integer source : prefixes) {
+            Collection prefixes = delta.retrieveByTarget(sourceNode);
+            for(Object prefix : prefixes) {
+                Tuple prefixPath;
+                if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
+                    prefixPath = (RSPQTuple) prefix;
+                } else {
+                    prefixPath = new RAPQTuple((Integer) prefix, targetNode);
+                }
+
                 // extend the prefix path with the new edge
-                Tuple candidate = new Tuple(source, targetNode);
-                queue.offer(new QueuePair(candidate, sourceNode));
+                queue.offer(new QueuePair<>(prefixPath, targetNode));
             }
 
         }
+        if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
+            // if Simple Path Semantics are required, call the simple path specific algorithm
+            while (!queue.isEmpty()) {
+                QueuePair<Tuple, ProductNode> candidate = queue.poll();
+                RSPQTuple prefixPath = (RSPQTuple) candidate.getTuple();
+                ProductNode predecessor = candidate.getProductNode();
 
+                Collection<QueuePair<Tuple, ProductNode>> newCandidates = extendPrefixPath(prefixPath, predecessor);
+                queue.addAll(newCandidates);
+            }
+        } else {
+            while (!queue.isEmpty()) {
+                // arbitrary path semantics
+                QueuePair<Tuple, ProductNode>  candidate = queue.poll();
+                Tuple candidateTuple = candidate.getTuple();
 
-        while (!queue.isEmpty()) {
-            QueuePair candidate = queue.poll();
-            Tuple candidateTuple = candidate.getTuple();
-            ProductNode predecessor = candidate.getProductNode();
+                if (!delta.contains(candidateTuple)) {
+                    if(finalState.contains(candidateTuple.getTargetState())) {
+                        // new result
+                        results.put(candidateTuple.getSource(), candidateTuple.getTarget());
+                    }
 
-            if (!delta.contains(candidateTuple)) {
-                if(candidateTuple.getTargetState() == finalState) {
-                    // new result
-                    results.add(candidateTuple);
+                    delta.addTuple(candidateTuple);
+
+                    Collection<ProductNode> extensionEdges = edges.getNeighbours(candidateTuple.getTargetNode());
+
+                    for(ProductNode extensionEdgeTarget : extensionEdges) {
+                        // extend the newly added tuple with an existing edge
+                        Tuple tuple = new RAPQTuple(candidateTuple.getSource(), extensionEdgeTarget);
+                        queue.offer(new QueuePair(tuple, candidateTuple.getTargetNode()));
+                    }
                 }
 
-                delta.addTuple(candidateTuple);
+            }
+        }
 
-                Collection<ProductNode> extensionEdges = edges.getNeighbours(candidateTuple.getTargetNode());
+    }
 
-                for(ProductNode extensionEdgeTarget : extensionEdges) {
-                    // extend the newly added tuple with an existing edge
-                    Tuple tuple = new Tuple(candidateTuple.getSource(), extensionEdgeTarget);
-                    queue.offer(new QueuePair(tuple, candidateTuple.getTargetNode()));
-                }
+    private Collection<QueuePair<Tuple, ProductNode>> extendPrefixPath(RSPQTuple prefixPath, ProductNode targetNode) throws NoSpaceException {
+
+        ArrayDeque<QueuePair<Tuple, ProductNode>> candidates = new ArrayDeque<>();
+
+        if(prefixPath.containsCM(targetNode.getVertex(), targetNode.getState())) {
+            // return as this is clearly a cycle
+        } else if( !hasContainment(prefixPath.getFirstCM(targetNode.getVertex()), targetNode.getState()) ) {
+            // unmark all parents of the prefix path
+            candidates.addAll(unmark(prefixPath));
+        } else if (markings.contains(prefixPath.getSource(), targetNode)) {
+            // target node is marked, so extend it
+            this.markings.addCrossEdge(prefixPath.getSource(), targetNode, prefixPath);
+        } else {
+            // check if Delta contains the target node. Any leaf added for the first time is added as a marked node.
+            if(!delta.contains(targetNode)) {
+                markings.addMarking(prefixPath.getSource(), targetNode);
             }
 
+            // extend new tuple and add it to SimpleDFST
+            RSPQTuple newPath = prefixPath.extend(targetNode);
+            delta.addTuple(newPath);
+
+            // add to result set of final node is there
+            if(finalState.contains(targetNode.getState())) {
+                results.put(newPath.getSource(), newPath.getTarget());
+            }
+
+            Collection<ProductNode> extensionEdges = edges.getNeighbours(targetNode);
+            for(ProductNode extensionEdge : extensionEdges) {
+                // extend the newly added tuple with an existing edge
+                QueuePair<Tuple, ProductNode> candidate = new QueuePair<>(newPath, extensionEdge);
+                candidates.add(candidate);
+            }
+        }
+
+        // return newly explored candidates for the next iteration
+        return candidates;
+    }
+
+    private Collection<QueuePair<Tuple, ProductNode>> unmark(RSPQTuple tuple) {
+        ArrayDeque<QueuePair<Tuple, ProductNode>> candidates = new ArrayDeque<>();
+
+        while(tuple != null) {
+            if(markings.contains(tuple.getSource(), tuple.getTargetNode())) {
+                // all incoming cross-edges are extended
+                Collection<RSPQTuple> crossEdges = markings.getCrossEdges(tuple.getSource(), tuple.getTargetNode());
+                // remove the marking
+                markings.removeMarking(tuple.getSource(), tuple.getTargetNode());
+                for(RSPQTuple crossEdge : crossEdges) {
+                    QueuePair<Tuple, ProductNode> candidate = new QueuePair<>(crossEdge, tuple.getTargetNode());
+                    candidates.add(candidate);
+                }
+            }
+            tuple = tuple.getParentNode();
+        }
+
+        return candidates;
+    }
+
+    private boolean hasContainment(Integer stateQ, Integer stateT) {
+        if(stateQ == null) {
+            return true;
+        }
+        return !this.containmentMark[stateQ][stateT];
+    }
+
+    /**
+     * Optimization procedure for the autamaton, including minimization, containment relationship
+     * MUST be called after automaton is constructed
+     */
+    public void optimize() {
+        this.containmentMark = new boolean[dfaNodes.size()][dfaNodes.size()];
+        int alphabetSize = dfaEdegs.keySet().size();
+
+        // once we construct the minimized DFA, we can easily compute the sufflix language containment relationship
+        // Algorithm S of Wood'95
+        Map<StatePair, List<StatePair>> stateLists = new HashMap<>();
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                stateLists.put(StatePair.createInstance(s,t), new ArrayList<>());
+            }
+        }
+        // first create a transition matrix for the DFA
+        int[][] transitionMatrix = new int[dfaNodes.size()][alphabetSize];
+        for(int i = 0; i < dfaNodes.size(); i++) {
+            for(int j = 0; j < alphabetSize; j++) {
+                transitionMatrix[i][j] = -1;
+            }
+        }
+        Iterator<L> edgeIterator = dfaEdegs.keySet().iterator();
+        for(int j = 0 ; j < alphabetSize; j++) {
+            Set<DFAEdge<L>> edges = dfaEdegs.get(edgeIterator.next());
+            for (DFAEdge<L> edge : edges) {
+                transitionMatrix[edge.getSource().getNodeId()][j] = edge.getTarget().getNodeId();
+            }
+        }
+
+        // initialize: line 1 of Algorithm S
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                // for s \in S-F and t \in F
+                if(!finalState.contains(s) && finalState.contains(t)) {
+                    containmentMark[s][t] = true;
+                }
+            }
+        }
+
+        // line 2-7 of Algorithm S0
+        for(int s = 0; s < dfaNodes.size(); s++) {
+            for (int t = 0; t < dfaNodes.size(); t++) {
+                // for s,t \in ((SxS) - ((S-F)xF))
+                if(finalState.contains(s) || !finalState.contains(t)) {
+                    // implement line 3,
+                    boolean isMarked = false;
+                    Queue<StatePair> markQueue = new ArrayDeque<>();
+                    for(int j = 0; j < alphabetSize; j++) {
+                        if(transitionMatrix[s][j] == transitionMatrix[t][j] && transitionMatrix[s][j] != -1) {
+                            isMarked = true;
+                            markQueue.add(StatePair.createInstance(s,t));
+                        }
+                    }
+
+                    // recursively mark all the pairs on the list of pairs that are marked in this step
+                    // line 5 of the Algorithm S
+                    while(!markQueue.isEmpty()) {
+                        StatePair pair = markQueue.poll();
+                        List<StatePair> pairList = stateLists.get(pair);
+                        for(StatePair candidate : pairList) {
+                            if(!containmentMark[candidate.stateS][candidate.stateT]) {
+                                markQueue.add(candidate);
+                                containmentMark[candidate.stateS][candidate.stateT] = true;
+                            }
+                        }
+                    }
+
+                    // if there is no marked, then populate the lists
+                    // line 6 of Algorithm S
+                    if(!isMarked) {
+                        for(int j = 0; j < alphabetSize; j++) {
+                            int sEndpoint = transitionMatrix[s][j];
+                            int tEndpoint = transitionMatrix[t][j];
+                            if(sEndpoint != -1 && tEndpoint != -1 && sEndpoint != tEndpoint) {
+                                // Line 7 of Algorithm S
+                                stateLists.get(StatePair.createInstance(sEndpoint, tEndpoint)).add(StatePair.createInstance(s,t));
+                            }
+                        }
+                    }
+
+                }
+            }
         }
 
     }
@@ -113,8 +316,8 @@ public class DFA<L> extends DFANode {
         return results.size();
     }
 
-    public Collection<Tuple> getResults() {
-        return results;
+    public Collection<Pair<Integer, Integer>> getResults() {
+        return results.entries().stream().map(e -> Pair.of(e.getKey(), e.getValue())).collect(Collectors.toList());
     }
 
     public int getGraphEdgeCount() {
