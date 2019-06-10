@@ -39,7 +39,7 @@ public class SingleThreadedRun implements Callable {
                 query.processEdge(input);
                 // incoming edge fully processed, move to next one
             } catch (NoSpaceException e) {
-                logger.error("DFST cannot grow further", e);
+                logger.error("SimpleDFST cannot grow further", e);
                 return null;
             }
             input = stream.next();

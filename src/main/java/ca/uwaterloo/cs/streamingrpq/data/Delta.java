@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.data;
 
 import com.google.common.collect.HashMultimap;
+import com.googlecode.cqengine.query.simple.In;
 
 import java.util.Collection;
 
@@ -8,7 +9,7 @@ import java.util.Collection;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class Delta {
+public class Delta implements DFST<RAPQTuple, Integer> {
 
     private HashMultimap<ProductNode, Integer> targetNodes;
 
@@ -32,6 +33,10 @@ public class Delta {
 
     public boolean contains(RAPQTuple tuple) {
         return targetNodes.containsEntry(tuple.getTargetNode(), tuple.getSource());
+    }
+
+    public boolean contains(ProductNode node) {
+        return targetNodes.containsKey(node);
     }
 
     public int getTupleCount() {

@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class WaveGuideDiaomondExample {
         TextStream stream = new SimpleTextStream();
 
 
-        DFA<String> diamond = new DFA<>(256);
+        DFA<String> diamond = new DFA<>(256, PathSemantics.ARBITRARY);
         diamond.addDFAEdge(0,1,"a");
         diamond.addDFAEdge(1,2,"b");
         diamond.addDFAEdge(2,1,"a");
@@ -41,7 +42,7 @@ public class WaveGuideDiaomondExample {
             try {
                 diamond.processEdge(input);
             } catch (NoSpaceException e) {
-                logger.error("DFST cannot grow", e);
+                logger.error("SimpleDFST cannot grow", e);
             }
             // incoming edge fully processed, move to next one
             input = stream.next();
