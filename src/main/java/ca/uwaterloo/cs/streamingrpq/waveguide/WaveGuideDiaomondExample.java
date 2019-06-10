@@ -27,7 +27,7 @@ public class WaveGuideDiaomondExample {
         TextStream stream = new SimpleTextStream();
 
 
-        DFA<String> diamond = new DFA<>(256, PathSemantics.ARBITRARY);
+        DFA<String> diamond = new DFA<>(256, PathSemantics.fromValue("arbitrary"));
         diamond.addDFAEdge(0,1,"a");
         diamond.addDFAEdge(1,2,"b");
         diamond.addDFAEdge(2,1,"a");

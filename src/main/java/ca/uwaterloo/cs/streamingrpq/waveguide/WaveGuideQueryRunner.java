@@ -5,6 +5,7 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -57,6 +58,8 @@ public class WaveGuideQueryRunner {
         Integer timeout = config.getInt("query.timeout", 10);
         Integer maxSize = config.getInt("query.maxsize");
         Integer queryNumber = config.getInt("query.number");
+        String semantics = config.getString("query.semantics", PathSemantics.ARBITRARY.toString());
+        PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
 
         String streamType = config.getString("input.stream");
         String[] queryNames = config.getStringArray("query.names");
@@ -77,11 +80,11 @@ public class WaveGuideQueryRunner {
         for (int i = 0; i < queryCount; i++) {
             DFA<Integer> queryDFA;
             if(queryNumber.equals(6)) {
-                queryDFA = WaveGuideQueries.query6(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+                queryDFA = WaveGuideQueries.query6(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
             } else if(queryNumber.equals(5)) {
-                queryDFA = WaveGuideQueries.query5(maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
+                queryDFA = WaveGuideQueries.query5(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode(), p2[i].hashCode());
             } else {
-                queryDFA = WaveGuideQueries.restrictedRE(maxSize, p0[i].hashCode(), p1[i].hashCode());
+                queryDFA = WaveGuideQueries.restrictedRE(pathSemantics, maxSize, p0[i].hashCode(), p1[i].hashCode());
             }
 
 

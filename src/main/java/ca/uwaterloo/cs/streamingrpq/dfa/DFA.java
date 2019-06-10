@@ -104,10 +104,17 @@ public class DFA<L> extends DFANode {
             }
 
             // query Delta to get all existing tuples that can be extended
-            Collection<Tuple> prefixes = delta.retrieveByTarget(sourceNode);
-            for(Tuple prefix : prefixes) {
+            Collection prefixes = delta.retrieveByTarget(sourceNode);
+            for(Object prefix : prefixes) {
+                Tuple prefixPath;
+                if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
+                    prefixPath = (RSPQTuple) prefix;
+                } else {
+                    prefixPath = new RAPQTuple((Integer) prefix, targetNode);
+                }
+
                 // extend the prefix path with the new edge
-                queue.offer(new QueuePair<>(prefix, targetNode));
+                queue.offer(new QueuePair<>(prefixPath, targetNode));
             }
 
         }
