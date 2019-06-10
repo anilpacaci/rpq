@@ -9,11 +9,11 @@ import java.util.Collection;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class Delta implements DFST<RAPQTuple, Integer> {
+public class ArbitraryDFST implements DFST<RAPQTuple, Integer> {
 
     private HashMultimap<ProductNode, Integer> targetNodes;
 
-    public Delta(int capacity, int expectedKeys) {
+    public ArbitraryDFST(int capacity, int expectedKeys) {
         targetNodes =  HashMultimap.create(capacity, expectedKeys);
     }
 

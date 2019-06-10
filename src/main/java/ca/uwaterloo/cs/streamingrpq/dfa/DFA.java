@@ -3,6 +3,9 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 import ca.uwaterloo.cs.streamingrpq.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,12 +18,18 @@ import java.util.stream.Collectors;
  */
 public class DFA<L> extends DFANode {
 
+    // metric tools
+    private MetricRegistry metricRegistry;
+    private Counter expansionCounter;
+    private Histogram fullHistogram;
+    private Histogram processedHistogram;
+
     private final int EXPECTED_NODES;
     private final int EXPECTED_NEIGHBOURS = 12;
 
     private final PathSemantics PATH_SEMANTICS;
 
-    private HashMultimap<L, DFAEdge<L>> dfaEdegs;
+    private HashMultimap<L, DFAEdge<L>> dfaTransitions;
     private HashMap<Integer, DFANode> dfaNodes;
     private Multimap<Integer, Integer> results;
     private GraphEdges<ProductNode> edges;
@@ -36,8 +45,9 @@ public class DFA<L> extends DFANode {
         EXPECTED_NODES = capacity;
         PATH_SEMANTICS = semantics;
 
+
         // data structures for the automaton and the graph
-        dfaEdegs = HashMultimap.create();
+        dfaTransitions = HashMultimap.create();
         dfaNodes = new HashMap<>();
         results = HashMultimap.create();
         edges = new GraphEdges<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
@@ -47,7 +57,7 @@ public class DFA<L> extends DFANode {
             delta = new SimpleDFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
             markings = new Markings<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
         } else {
-            delta = new Delta(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+            delta = new ArbitraryDFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
         }
 
     }
@@ -65,7 +75,7 @@ public class DFA<L> extends DFANode {
         }
 
         sourceNode.addDownstreamNode(targetNode);
-        dfaEdegs.put(label, new DFAEdge<>(sourceNode, targetNode, label));
+        dfaTransitions.put(label, new DFAEdge<>(sourceNode, targetNode, label));
     }
 
     public void setStartState(Integer startState) {
@@ -80,8 +90,9 @@ public class DFA<L> extends DFANode {
 
     public void processEdge(InputTuple<Integer, Integer, L> input) throws NoSpaceException {
         Queue<QueuePair<Tuple, ProductNode>> queue = new LinkedList<>();
+        Long startTime = System.currentTimeMillis();
 
-        Set<DFAEdge<L>> dfaEdges = dfaEdegs.get(input.getLabel());
+        Set<DFAEdge<L>> dfaEdges = dfaTransitions.get(input.getLabel());
 
         for(DFAEdge<L> edge : dfaEdges) {
             // for each such node, add raw edge to the edges
@@ -103,7 +114,7 @@ public class DFA<L> extends DFANode {
                 queue.offer(new QueuePair<>(tuple, targetNode));
             }
 
-            // query Delta to get all existing tuples that can be extended
+            // query ArbitraryDFST to get all existing tuples that can be extended
             Collection prefixes = delta.retrieveByTarget(sourceNode);
             for(Object prefix : prefixes) {
                 Tuple prefixPath;
@@ -154,6 +165,14 @@ public class DFA<L> extends DFANode {
             }
         }
 
+        Long elapsedTime = System.currentTimeMillis() - startTime;
+        //populate histograms
+        fullHistogram.update(elapsedTime);
+        if(!dfaEdges.isEmpty()) {
+            // it implies that edge is processed
+            processedHistogram.update(elapsedTime);
+        }
+
     }
 
     private Collection<QueuePair<Tuple, ProductNode>> extendPrefixPath(RSPQTuple prefixPath, ProductNode targetNode) throws NoSpaceException {
@@ -169,7 +188,7 @@ public class DFA<L> extends DFANode {
             // target node is marked, so extend it
             this.markings.addCrossEdge(prefixPath.getSource(), targetNode, prefixPath);
         } else {
-            // check if Delta contains the target node. Any leaf added for the first time is added as a marked node.
+            // check if ArbitraryDFST contains the target node. Any leaf added for the first time is added as a marked node.
             if(!delta.contains(targetNode)) {
                 markings.addMarking(prefixPath.getSource(), targetNode);
             }
@@ -228,7 +247,7 @@ public class DFA<L> extends DFANode {
      */
     public void optimize() {
         this.containmentMark = new boolean[dfaNodes.size()][dfaNodes.size()];
-        int alphabetSize = dfaEdegs.keySet().size();
+        int alphabetSize = dfaTransitions.keySet().size();
 
         // once we construct the minimized DFA, we can easily compute the sufflix language containment relationship
         // Algorithm S of Wood'95
@@ -245,9 +264,9 @@ public class DFA<L> extends DFANode {
                 transitionMatrix[i][j] = -1;
             }
         }
-        Iterator<L> edgeIterator = dfaEdegs.keySet().iterator();
+        Iterator<L> edgeIterator = dfaTransitions.keySet().iterator();
         for(int j = 0 ; j < alphabetSize; j++) {
-            Set<DFAEdge<L>> edges = dfaEdegs.get(edgeIterator.next());
+            Set<DFAEdge<L>> edges = dfaTransitions.get(edgeIterator.next());
             for (DFAEdge<L> edge : edges) {
                 transitionMatrix[edge.getSource().getNodeId()][j] = edge.getTarget().getNodeId();
             }
@@ -326,5 +345,13 @@ public class DFA<L> extends DFANode {
 
     public int getDeltaTupleCount() {
         return delta.getTupleCount();
+    }
+
+    public void addMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+        // register all the matrics
+        expansionCounter = metricRegistry.counter("expansion-counter");
+        fullHistogram = metricRegistry.histogram("full-histogram");
+        processedHistogram = metricRegistry.histogram("processed-histogram");
     }
 }

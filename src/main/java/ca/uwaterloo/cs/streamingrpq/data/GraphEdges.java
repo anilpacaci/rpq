@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.data;
 
+import com.codahale.metrics.Counter;
 import com.google.common.collect.HashMultimap;
 
 import java.util.Collection;
@@ -10,13 +11,17 @@ public class GraphEdges<N> {
 
     private HashMultimap<N,N> nodes;
 
+    private Counter counter;
+
     public GraphEdges(int capacity, int expectedKeys) {
         nodes = HashMultimap.create(capacity, expectedKeys);
+        counter = new Counter();
     }
 
     public void addNeighbour(N source, N target) {
 
         nodes.put(source, target);
+        counter.inc();
     }
 
     public Collection<N> getNeighbours(N source) {

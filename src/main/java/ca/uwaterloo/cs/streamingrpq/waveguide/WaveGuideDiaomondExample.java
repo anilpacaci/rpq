@@ -51,7 +51,7 @@ public class WaveGuideDiaomondExample {
         // stream is over so we can close it and close the program
         logger.info("total number of results: " + diamond.getResultCounter());
         logger.info("Edges: " + diamond.getGraphEdgeCount());
-        logger.info("Delta: " + diamond.getDeltaTupleCount());
+        logger.info("ArbitraryDFST: " + diamond.getDeltaTupleCount());
 
         diamond.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getLeft() + " --> " + t.getRight());});
 

@@ -52,7 +52,7 @@ public class SingleThreadedRun implements Callable {
 
         logger.info("total number of results for query " + queryName + " : " + query.getResultCounter());
         logger.info("Edges: " + query.getGraphEdgeCount());
-        logger.info("Delta: " + query.getDeltaTupleCount());
+        logger.info("ArbitraryDFST: " + query.getDeltaTupleCount());
         return null;
     }
 
