@@ -9,22 +9,25 @@ import time
 class RPQRun:
     name        =   ""
     input       =   ""
+    input_type  =   ""
     report      =   ""
     buffer_size =   100000000
     semantics   =   ""
     labels      =   []
 
-    def __init__(self, name, input, report, buffer_size, semantics, labels):
+    def __init__(self, name, input, input_type, report, buffer_size, semantics, labels):
         self.name = name
         self.input = input
+        self.input_type = input_type
         self.report_file = report
         self.buffer_size = buffer_size
         self.semantics = semantics
         self.labels = labels
 
     def produceCommandString(self):
-        command = "-f {} -s {} -n {} -ps {} -r {} -l {} ".format(
+        command = "-f {} -t {} -s {} -n {} -ps {} -r {} -l {} ".format(
             self.input,
+            self.input_type,
             str(self.buffer_size),
             self.name,
             self.semantics,
@@ -60,6 +63,7 @@ with open(parameters, 'rb') as parameters_handle:
     heap_size = parameters_json["heap-size"]
     timeout = parameters_json["timeout"]
     executable = parameters_json["executable"]
+    input_type = parameters_json["input-type"]
 
 # iterate overs run specific parameters
     for run_config in run_configs:
@@ -72,7 +76,7 @@ with open(parameters, 'rb') as parameters_handle:
         report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics)
 
         # create the run object
-        run_list.append(RPQRun(query_name, dataset_location, report_csv_path, buffer_size, semantics, labels))
+        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, semantics, labels))
 
 
 # iterate over runs and run the experiments

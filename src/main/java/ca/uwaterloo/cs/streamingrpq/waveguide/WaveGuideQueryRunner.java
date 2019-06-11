@@ -1,10 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
-import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sInMemoryTSVStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.CsvReporter;
@@ -44,6 +41,7 @@ public class WaveGuideQueryRunner {
             return;
         }
         String filename = line.getOptionValue("f");
+        String inputType = line.getOptionValue("t");
         Integer inputSize = Integer.parseInt(line.getOptionValue("s"));
         Integer maxSize = Integer.parseInt(line.getOptionValue("s"));
         String queryName = line.getOptionValue("n");
@@ -58,7 +56,16 @@ public class WaveGuideQueryRunner {
 
         TextStream stream;
 
-        stream = new Yago2sTSVStream();
+        switch (inputType) {
+            case "tsv":
+                stream = new Yago2sTSVStream();
+                break;
+            case "hash":
+                stream = new Yago2sHashStream();
+                break;
+            default:
+                stream = new Yago2sTSVStream();
+        }
 
         stream.open(filename, inputSize);
 
@@ -103,6 +110,7 @@ public class WaveGuideQueryRunner {
         Options options = new Options();
 
         options.addRequiredOption("f", "file", true, "text file to read");
+        options.addRequiredOption("t", "type", true, "input type");
         options.addRequiredOption("s", "size", true, "maximum DFST size to be allowed");
         options.addRequiredOption("n", "name", true, "name of the query to be run");
         options.addRequiredOption("ps", "semantics", true, "path semantics");

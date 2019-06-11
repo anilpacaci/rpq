@@ -2,15 +2,16 @@ package ca.uwaterloo.cs.streamingrpq.input;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.googlecode.cqengine.query.simple.In;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class Yago2sTSVStream implements TextStream{
+public class Yago2sHashStream implements TextStream{
 
 
     FileReader fileStream;
@@ -72,10 +73,10 @@ public class Yago2sTSVStream implements TextStream{
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
+                String[] splitResults = Iterables.toArray(Splitter.on(' ').split(line), String.class);
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1].hashCode());
+                    tuple = new InputTuple(splitResults[0], splitResults[1], splitResults[2]);
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
                     break;
                 }
