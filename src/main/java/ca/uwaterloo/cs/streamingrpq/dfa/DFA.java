@@ -55,10 +55,10 @@ public class DFA<L> extends DFANode {
 
         // initialization of algorithm specific data structures
         if(PATH_SEMANTICS.equals(PathSemantics.SIMPLE)) {
-            delta = new SimpleDFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+            delta = new SimpleDFST(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
             markings = new Markings<>(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
         } else {
-            delta = new ArbitraryDFST(2*EXPECTED_NODES, EXPECTED_NEIGHBOURS);
+            delta = new ArbitraryDFST(EXPECTED_NODES, EXPECTED_NEIGHBOURS);
         }
 
     }

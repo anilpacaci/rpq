@@ -1,8 +1,8 @@
 {
   "name" : "yago2s",
-  "dataset" : "/hdd1/apacaci/tmpfs/yago2s_full_shuffle_virtuoso_tem53.tsv",
+  "dataset" : "/hdd1/apacaci/datasets/yago2s/tsv/yago2s_full_shuffle_virtuoso_tem53.tsv",
   "report-folder" : "/home/apacaci/sgraffito/rpq/results",
-  "buffer-size" : 100000000,
+  "buffer-size" : 50000000,
   "heap-size" : 128,
   "timeout" : 600,
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
