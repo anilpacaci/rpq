@@ -1,6 +1,7 @@
 {
   "name" : "yago2s",
   "dataset" : "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/xab",
+  "input-type": "tsv",
   "report-folder" : "/Users/apacaci/Projects/sgraffito/streamingrpq/results",
   "buffer-size" : 100000000,
   "heap-size" : 16,
@@ -20,7 +21,7 @@
       "index" : 2,
       "semantics" : "simple",
       "labels" : [
-        "a", "b", "c"
+        "x", "y", "z"
       ]
     }
   ]

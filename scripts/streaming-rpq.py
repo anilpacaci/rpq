@@ -32,7 +32,7 @@ class RPQRun:
             self.name,
             self.semantics,
             self.report_file,
-            " ".join(labels)
+            " ".join(self.labels)
         )
 
         return command
