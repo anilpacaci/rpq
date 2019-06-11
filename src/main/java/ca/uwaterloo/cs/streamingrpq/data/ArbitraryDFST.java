@@ -1,5 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.data;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashMultimap;
 import com.googlecode.cqengine.query.simple.In;
 
@@ -12,6 +14,7 @@ import java.util.Collection;
 public class ArbitraryDFST implements DFST<RAPQTuple, Integer> {
 
     private HashMultimap<ProductNode, Integer> targetNodes;
+    private Meter tupleCounter;
 
     public ArbitraryDFST(int capacity, int expectedKeys) {
         targetNodes =  HashMultimap.create(capacity, expectedKeys);
@@ -41,6 +44,12 @@ public class ArbitraryDFST implements DFST<RAPQTuple, Integer> {
 
     public int getTupleCount() {
         return targetNodes.values().size();
+    }
+
+    @Override
+    public void setMetricRegistry(MetricRegistry registry) {
+        tupleCounter = registry.meter("dfst-counter");
+        tupleCounter.mark();
     }
 
 }

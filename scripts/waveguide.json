@@ -1,0 +1,27 @@
+{
+  "name" : "yago2s",
+  "dataset" : "/Users/apacaci/Projects/sgraffito/streamingrpq/dataset/yago2s/xab",
+  "report-folder" : "/Users/apacaci/Projects/sgraffito/streamingrpq/results",
+  "buffer-size" : 100000000,
+  "heap-size" : 16,
+  "timeout" : 12,
+  "executable" : "/Users/apacaci/Projects/sgraffito/streamingrpq/codebase/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "q5",
+      "index" : 1,
+      "semantics" : "simple",
+      "labels" : [
+        "a", "b", "c"
+      ]
+    },
+    {
+      "query-name" : "q6",
+      "index" : 2,
+      "semantics" : "simple",
+      "labels" : [
+        "a", "b", "c"
+      ]
+    }
+  ]
+}

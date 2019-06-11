@@ -3,9 +3,8 @@ package ca.uwaterloo.cs.streamingrpq.dfa;
 import ca.uwaterloo.cs.streamingrpq.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,6 +22,8 @@ public class DFA<L> extends DFANode {
     private Counter expansionCounter;
     private Histogram fullHistogram;
     private Histogram processedHistogram;
+    private Timer fullTimer;
+    private Meter queueMeter;
 
     private final int EXPECTED_NODES;
     private final int EXPECTED_NEIGHBOURS = 12;
@@ -90,9 +91,12 @@ public class DFA<L> extends DFANode {
 
     public void processEdge(InputTuple<Integer, Integer, L> input) throws NoSpaceException {
         Queue<QueuePair<Tuple, ProductNode>> queue = new LinkedList<>();
-        Long startTime = System.currentTimeMillis();
+        Long startTime = System.nanoTime();
+        Timer.Context timer = fullTimer.time();
 
         Set<DFAEdge<L>> dfaEdges = dfaTransitions.get(input.getLabel());
+
+        boolean isInputOfInteres = !dfaEdges.isEmpty();
 
         for(DFAEdge<L> edge : dfaEdges) {
             // for each such node, add raw edge to the edges
@@ -126,6 +130,7 @@ public class DFA<L> extends DFANode {
 
                 // extend the prefix path with the new edge
                 queue.offer(new QueuePair<>(prefixPath, targetNode));
+                queueMeter.mark();
             }
 
         }
@@ -138,6 +143,7 @@ public class DFA<L> extends DFANode {
 
                 Collection<QueuePair<Tuple, ProductNode>> newCandidates = extendPrefixPath(prefixPath, predecessor);
                 queue.addAll(newCandidates);
+                queueMeter.mark(newCandidates.size());
             }
         } else {
             while (!queue.isEmpty()) {
@@ -159,16 +165,18 @@ public class DFA<L> extends DFANode {
                         // extend the newly added tuple with an existing edge
                         Tuple tuple = new RAPQTuple(candidateTuple.getSource(), extensionEdgeTarget);
                         queue.offer(new QueuePair(tuple, candidateTuple.getTargetNode()));
+                        queueMeter.mark();
                     }
                 }
 
             }
         }
 
-        Long elapsedTime = System.currentTimeMillis() - startTime;
+        Long elapsedTime = System.nanoTime() - startTime;
         //populate histograms
         fullHistogram.update(elapsedTime);
-        if(!dfaEdges.isEmpty()) {
+        timer.stop();
+        if(isInputOfInteres) {
             // it implies that edge is processed
             processedHistogram.update(elapsedTime);
         }
@@ -353,5 +361,10 @@ public class DFA<L> extends DFANode {
         expansionCounter = metricRegistry.counter("expansion-counter");
         fullHistogram = metricRegistry.histogram("full-histogram");
         processedHistogram = metricRegistry.histogram("processed-histogram");
+        fullTimer = metricRegistry.timer("full-timer");
+        queueMeter = metricRegistry.meter("queue-meter");
+
+        delta.setMetricRegistry(metricRegistry);
+        edges.setMetricRegistry(metricRegistry);
     }
 }
