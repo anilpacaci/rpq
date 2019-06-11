@@ -4,6 +4,9 @@
 #mvn target directory
 target/
 
+# results directory
+results/
+
 # Log file
 *.log
 
