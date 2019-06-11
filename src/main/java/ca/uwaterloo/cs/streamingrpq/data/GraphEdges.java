@@ -13,19 +13,16 @@ public class GraphEdges<N> {
 
     private HashMultimap<N,N> nodes;
 
-    private Counter counter;
-
     private Meter edgeCounter;
 
     public GraphEdges(int capacity, int expectedKeys) {
         nodes = HashMultimap.create(capacity, expectedKeys);
-        counter = new Counter();
     }
 
     public void addNeighbour(N source, N target) {
 
         nodes.put(source, target);
-        counter.inc();
+        edgeCounter.mark();
     }
 
     public Collection<N> getNeighbours(N source) {

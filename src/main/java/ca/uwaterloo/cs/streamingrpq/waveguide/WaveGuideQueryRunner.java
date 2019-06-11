@@ -74,8 +74,17 @@ public class WaveGuideQueryRunner {
             queryDFA = WaveGuideQueries.query6(pathSemantics, maxSize, predicates);
         } else if(queryName.equals("waveguide5")) {
             queryDFA = WaveGuideQueries.query5(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("pvldbq1")) {
+            queryDFA = WikidataQueries.pvdlbq1(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("pvldbq2")) {
+            queryDFA = WikidataQueries.pvdlbq2(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("pvldbq3")) {
+            queryDFA = WikidataQueries.pvdlbq3(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("wwwq2")) {
+            queryDFA = WikidataQueries.wwwq2(pathSemantics, maxSize, predicates);
         } else {
-            queryDFA = WaveGuideQueries.restrictedRE(pathSemantics, maxSize, predicates);
+            logger.error("Not a valid queryname: " + queryName);
+            return;
         }
 
         MetricRegistry metricRegistry = new MetricRegistry();
