@@ -86,14 +86,23 @@ for run in run_list:
 
     print "Executing command {} ".format(javaCommand)
 
+    elapsedTime = 0
+    interval = 5
     # proc = subprocess.Popen(javaCommand, shell=True)
     proc = subprocess.Popen(javaCommand.split())
-    time.sleep(timeout)
 
-    # kill after timeout if process is still alive
-    if proc.poll() is None:
-        print "Killing pid {} after timeout {}".format(str(proc.pid), str(timeout))
-        proc.kill()
+    while True:
+        time.sleep(interval)
+        elapsedTime += interval
+
+        # kill after timeout if process is still alive
+        if elapsedTime > timeout and proc.poll() is None:
+            print "Killing pid {} after timeout {}".format(str(proc.pid), str(timeout))
+            proc.kill()
+            break
+
+        if proc.poll() is not None:
+            break
 
 print "All runs are completed"
 
