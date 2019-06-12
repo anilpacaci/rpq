@@ -23,6 +23,7 @@ public class ArbitraryDFST implements DFST<RAPQTuple, Integer> {
     public void addTuple(RAPQTuple tuple) {
 
         targetNodes.put(tuple.getTargetNode(), tuple.source);
+        tupleCounter.mark();
     }
 
     public Collection<Integer> retrieveByTarget(int targetVertex, int targetState) {
@@ -49,7 +50,6 @@ public class ArbitraryDFST implements DFST<RAPQTuple, Integer> {
     @Override
     public void setMetricRegistry(MetricRegistry registry) {
         tupleCounter = registry.meter("dfst-counter");
-        tupleCounter.mark();
     }
 
 }
