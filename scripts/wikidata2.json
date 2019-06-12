@@ -207,6 +207,105 @@
       ]
     },
     {
+      "query-name" : "pvldbq21",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "labels" : [
+        "http://yago-knowledge.org/resource/byTransport",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "http://www.w3.org/2002/07/owl#disjointWith"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 1,
+      "semantics" : "simple",
+      "labels" : [
+        "http://yago-knowledge.org/resource/byTransport",
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "http://www.w3.org/2002/07/owl#disjointWith"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 2,
+      "semantics" : "arbitrary",
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/created"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 2,
+      "semantics" : "simple",
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/created"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 21,
+      "semantics" : "simple",
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 47,
+      "semantics" : "arbitrary",
+      "labels" : [
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 47,
+      "semantics" : "simple",
+      "labels" : [
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },{
+      "query-name" : "pvldbq21",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "pvldbq21",
+      "index" : 51,
+      "semantics" : "simple",
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
       "query-name" : "wwwq3",
       "index" : 1,
       "semantics" : "arbitrary",

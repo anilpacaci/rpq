@@ -77,6 +77,20 @@ public class WikidataQueries {
         return query;
     }
 
+    public static <L> DFA<L> pvdlbq21(PathSemantics pathSemantics, int maxSize, L... predicates) {
+        DFA<L> query = new DFA<>(maxSize, pathSemantics);
+
+        query.addDFAEdge(0,1,predicates[0]);
+        query.addDFAEdge(1,2,predicates[1]);
+        query.addDFAEdge(2,1,predicates[0]);
+
+        query.setStartState(0);
+        query.setFinalState(2);
+        query.optimize();
+
+        return query;
+    }
+
     public static <L> DFA<L> wwwq2(PathSemantics pathSemantics, int maxSize, L... predicates) {
         DFA<L> query = new DFA<>(maxSize, pathSemantics);
 

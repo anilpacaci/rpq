@@ -84,7 +84,9 @@ public class WaveGuideQueryRunner {
             queryDFA = WikidataQueries.pvdlbq4(pathSemantics, maxSize, predicates);
         } else if(queryName.equals("pvldbq5")) {
             queryDFA = WikidataQueries.pvdlbq5(pathSemantics, maxSize, predicates);
-        }else if(queryName.equals("wwwq2")) {
+        } else if(queryName.equals("pvldbq21")) {
+            queryDFA = WikidataQueries.pvdlbq21(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("wwwq2")) {
             queryDFA = WikidataQueries.wwwq2(pathSemantics, maxSize, predicates);
         } else if(queryName.equals("wwwq3")) {
             queryDFA = WikidataQueries.wwwq3(pathSemantics, maxSize, predicates);
