@@ -80,8 +80,14 @@ public class WaveGuideQueryRunner {
             queryDFA = WikidataQueries.pvdlbq2(pathSemantics, maxSize, predicates);
         } else if(queryName.equals("pvldbq3")) {
             queryDFA = WikidataQueries.pvdlbq3(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("wwwq2")) {
+        } else if(queryName.equals("pvldbq4")) {
+            queryDFA = WikidataQueries.pvdlbq4(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("pvldbq5")) {
+            queryDFA = WikidataQueries.pvdlbq5(pathSemantics, maxSize, predicates);
+        }else if(queryName.equals("wwwq2")) {
             queryDFA = WikidataQueries.wwwq2(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("wwwq3")) {
+            queryDFA = WikidataQueries.wwwq3(pathSemantics, maxSize, predicates);
         } else {
             logger.error("Not a valid queryname: " + queryName);
             return;

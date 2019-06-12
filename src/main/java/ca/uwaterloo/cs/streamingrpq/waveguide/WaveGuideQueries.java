@@ -36,7 +36,7 @@ public class WaveGuideQueries {
         DFA<L> q6 = new DFA<L>(maxSize, pathSemantics);
         q6.addDFAEdge(0,0, predicates[0]);
         q6.addDFAEdge(0,1, predicates[1]);
-        q6.addDFAEdge(1,1, predicates[1]);
+        q6.addDFAEdge(1,2, predicates[1]);
         q6.addDFAEdge(1,2, predicates[0]);
         q6.addDFAEdge(2,2, predicates[0]);
 
