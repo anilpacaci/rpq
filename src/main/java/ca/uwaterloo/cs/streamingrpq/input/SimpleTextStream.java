@@ -19,8 +19,6 @@ public class SimpleTextStream implements TextStream{
 
     String filename;
 
-    ScheduledExecutorService executor;
-
     Integer localCounter = 0;
     Integer globalCounter = 0;
 
@@ -54,7 +52,7 @@ public class SimpleTextStream implements TextStream{
 
     }
 
-    public InputTuple<Integer, Integer, Integer> next() {
+    public InputTuple<Integer, Integer, String> next() {
         String line = null;
         InputTuple tuple = null;
         try {
