@@ -90,6 +90,8 @@ public class WaveGuideQueryRunner {
             queryDFA = WikidataQueries.wwwq2(pathSemantics, maxSize, predicates);
         } else if(queryName.equals("wwwq3")) {
             queryDFA = WikidataQueries.wwwq3(pathSemantics, maxSize, predicates);
+        } else if(queryName.equals("restricted")) {
+            queryDFA = WaveGuideQueries.restrictedRE(pathSemantics, maxSize, predicates);
         } else {
             logger.error("Not a valid queryname: " + queryName);
             return;

@@ -36,15 +36,28 @@ public class WaveGuideQueries {
         DFA<L> q6 = new DFA<L>(maxSize, pathSemantics);
         q6.addDFAEdge(0,0, predicates[0]);
         q6.addDFAEdge(0,1, predicates[1]);
-        q6.addDFAEdge(1,2, predicates[1]);
+        q6.addDFAEdge(1,1, predicates[1]);
         q6.addDFAEdge(1,2, predicates[0]);
         q6.addDFAEdge(2,2, predicates[0]);
 
         q6.setStartState(0);
+        q6.setFinalState(0);
         q6.setFinalState(1);
         q6.setFinalState(2);
         q6.optimize();
 
         return q6;
     }
+
+    public static void main(String[] argv) {
+        String p0 = "a";
+        String p1 = "b";
+        String p2 = "c";
+
+        DFA<String> query = WaveGuideQueries.restrictedRE(PathSemantics.SIMPLE, 100, p0, p1, p2);
+        query.optimize();
+
+        query.optimize();
+    }
+
 }

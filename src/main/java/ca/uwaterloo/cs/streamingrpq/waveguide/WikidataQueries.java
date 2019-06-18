@@ -119,4 +119,16 @@ public class WikidataQueries {
 
         return query;
     }
+
+
+    public static void main(String[] argv) {
+        String p0 = "a";
+        String p1 = "b";
+        String p2 = "c";
+
+        DFA<String> query = WaveGuideQueries.restrictedRE(PathSemantics.SIMPLE, 100, p0, p1, p2);
+        query.optimize();
+
+        query.optimize();
+    }
 }
