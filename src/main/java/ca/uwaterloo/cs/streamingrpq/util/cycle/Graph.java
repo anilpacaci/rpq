@@ -30,4 +30,8 @@ public class Graph<N, L> {
         Set<Edge<N, L>> neighbours = edges.get(source);
         return neighbours.stream().filter(e -> e.getTarget().equals(target)).findFirst().get().getLabel();
     }
+
+    public int getVertexCount() {
+        return edges.size();
+    }
 }

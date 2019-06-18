@@ -102,6 +102,7 @@ public class SimpleCycleDFS<N, L> {
             input = stream.next();
         }
         logger.info("Dataset loaded for predicate set {}", index);
+        logger.info("Number of vertices is {}", graph.getVertexCount());
         cycleDFS.findCycles();
 
         logger.info("Cycles for index {}:", index);
