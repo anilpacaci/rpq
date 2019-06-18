@@ -87,7 +87,8 @@ public class SimpleCycleDFS<N, L> {
 
     public static void main(String[] argv) {
         String inputFilePath = argv[0];
-        SimpleTextStream stream = new SimpleTextStream();
+        String index = argv[1];
+        FilteredSimpleTextStream stream = new FilteredSimpleTextStream(Arrays.copyOfRange(argv, 2, argv.length));
         stream.open(inputFilePath);
 
         Graph<Integer, String> graph = new Graph<>();
@@ -100,12 +101,15 @@ public class SimpleCycleDFS<N, L> {
             graph.addEdge(input.getSource(), input.getTarget(), input.getLabel());
             input = stream.next();
         }
+        logger.info("Dataset loaded for predicate set {}", index);
         cycleDFS.findCycles();
 
+        logger.info("Cycles for index {}:", index);
         List<List<String>> result = cycleDFS.getCycles();
 
         for(List<String> cycle : result) {
-            System.out.println(cycle);
+            logger.info(cycle.toString());
         }
+        logger.info("All cycles for {} completed !!!", index);
     }
 }
