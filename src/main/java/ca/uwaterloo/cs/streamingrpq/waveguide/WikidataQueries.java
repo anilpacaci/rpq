@@ -126,7 +126,7 @@ public class WikidataQueries {
         String p1 = "b";
         String p2 = "c";
 
-        DFA<String> query = WaveGuideQueries.restrictedRE(PathSemantics.SIMPLE, 100, p0, p1, p2);
+        DFA<String> query = WikidataQueries.wwwq3(PathSemantics.SIMPLE, 100, p0, p1, p2);
         query.optimize();
 
         query.optimize();
