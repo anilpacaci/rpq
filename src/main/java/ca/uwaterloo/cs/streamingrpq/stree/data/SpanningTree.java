@@ -9,19 +9,23 @@ public class SpanningTree<V> {
 
     Table<V, Integer, TreeNode> nodeIndex;
 
-    public SpanningTree(V rootVertex) {
+    protected SpanningTree(V rootVertex) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this);
         this.nodeIndex = HashBasedTable.create();
+        nodeIndex.put(rootVertex, 0, rootNode);
     }
 
 
-    public void addNode(V parentVertex, int parentState, V childVertex, int childState, long timestamp) {
-        TreeNode parent = nodeIndex.get(parentVertex, parentState);
-        if(parent == null) {
+    public void addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
+        if(parentNode == null) {
             // TODO no object found
         }
+        if(parentNode.getTree().equals(this)) {
+            // TODO wrong tree
+        }
 
-        TreeNode<V> child = new TreeNode<>(childVertex, childState, parent, this);
+        TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this);
+        parentNode.addChildren(child);
         nodeIndex.put(childVertex, childState, child);
     }
 
@@ -32,5 +36,9 @@ public class SpanningTree<V> {
     public TreeNode getNode(V vertex, int state) {
         TreeNode node = nodeIndex.get(vertex, state);
         return node;
+    }
+
+    public V getRootVertex() {
+        return this.rootNode.getVertex();
     }
 }

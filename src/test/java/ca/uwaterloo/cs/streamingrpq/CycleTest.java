@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq;
 import ca.uwaterloo.cs.streamingrpq.data.NoSpaceException;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
+import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
@@ -16,23 +17,25 @@ import java.io.IOException;
  */
 public class CycleTest {
 
-    static String filename = "src/main/resources/cycle.txt";
+    static String filename = "src/main/resources/diamondgraph.txt";
 
     public static void main(String[] args) {
-        TextStream stream = new Yago2sTSVStream();
+        TextStream stream = new SimpleTextStream();
 
-        DFA<Character> cycleTestDFA = new DFA(128, PathSemantics.SIMPLE);
+        DFA<String> cycleTestDFA = new DFA(128, PathSemantics.ARBITRARY);
 
-        cycleTestDFA.addDFAEdge(0, 1, 'a');
-        cycleTestDFA.addDFAEdge(1, 2, 'b');
-        cycleTestDFA.addDFAEdge(2, 3, 'b');
-        cycleTestDFA.addDFAEdge(3, 4, 'b');
-        cycleTestDFA.addDFAEdge(4, 5, 'c');
+        cycleTestDFA.addDFAEdge(0, 1, "a");
+        cycleTestDFA.addDFAEdge(1, 2, "b");
+        cycleTestDFA.addDFAEdge(2, 1, "a");
+//
+//        cycleTestDFA.addDFAEdge(2, 3, 'b');
+//        cycleTestDFA.addDFAEdge(3, 4, 'b');
+//        cycleTestDFA.addDFAEdge(4, 5, 'c');
         cycleTestDFA.setStartState(0);
-        cycleTestDFA.setFinalState(5);
+        cycleTestDFA.setFinalState(2);
 
         stream.open(filename);
-        InputTuple<Integer, Integer, Character> input = stream.next();
+        InputTuple<Integer, Integer, String> input = stream.next();
 
         while(input != null) {
             //retrieve DFA nodes where transition is same as edge label

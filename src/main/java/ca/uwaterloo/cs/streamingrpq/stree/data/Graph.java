@@ -32,4 +32,21 @@ public class Graph<V,L> {
         backwardLabels.put(label, source);
     }
 
+    public Multimap<L, V> getForwardEdges(V source) {
+        if(forwardAdjacency.containsKey(source)) {
+            return forwardAdjacency.get(source);
+        }
+
+        // TODO edge does not exist
+        return null;
+    }
+
+    public Multimap<L, V> getBackwardEdges(V source) {
+        if(backwardAdjacency.containsKey(source)) {
+            return backwardAdjacency.get(source);
+        }
+
+        // TODO edge does not exist
+        return null;
+    }
 }

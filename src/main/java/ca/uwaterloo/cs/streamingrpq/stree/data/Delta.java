@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Delta<V> {
@@ -15,7 +16,19 @@ public class Delta<V> {
         return tree;
     }
 
+    public Collection<SpanningTree> getTrees() {
+        return treeIndex.values();
+    }
+
     public boolean exists(V vertex) {
         return treeIndex.containsKey(vertex);
+    }
+
+    public void addTree(V vertex) {
+        if(exists(vertex)) {
+            // TODO one spanner per root vertex
+        }
+        SpanningTree<V> tree = new SpanningTree<>(vertex);
+        treeIndex.put(vertex, tree);
     }
 }
