@@ -4,6 +4,7 @@ import ca.uwaterloo.cs.streamingrpq.data.NoSpaceException;
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,9 @@ public class SingleThreadedRun implements Callable {
 
     private String queryName;
     private TextStream stream;
-    private DFA<Integer> query;
+    private IncrementalRAPQ<Integer> query;
 
-    public SingleThreadedRun(String queryName, TextStream stream, DFA<Integer> query) {
+    public SingleThreadedRun(String queryName, TextStream stream, IncrementalRAPQ<Integer> query) {
         this.queryName = queryName;
         this.stream = stream;
         this.query = query;
@@ -34,14 +35,9 @@ public class SingleThreadedRun implements Callable {
         logger.info("Query " + queryName + " is starting!");
 
         while (input != null) {
-            try {
-                //retrieve DFA nodes where transition is same as edge label
-                query.processEdge(input);
-                // incoming edge fully processed, move to next one
-            } catch (NoSpaceException e) {
-                logger.error("SimpleDFST cannot grow further", e);
-                return null;
-            }
+            //retrieve DFA nodes where transition is same as edge label
+            query.processEdge(input);
+            // incoming edge fully processed, move to next one
             input = stream.next();
 
             if(Thread.currentThread().isInterrupted()) {
@@ -50,9 +46,7 @@ public class SingleThreadedRun implements Callable {
             }
         }
 
-        logger.info("total number of results for query " + queryName + " : " + query.getResultCounter());
-        logger.info("Edges: " + query.getGraphEdgeCount());
-        logger.info("ArbitraryDFST: " + query.getDeltaTupleCount());
+        logger.info("total number of results for query " + queryName + " : " + query.getResults().size());
         return null;
     }
 

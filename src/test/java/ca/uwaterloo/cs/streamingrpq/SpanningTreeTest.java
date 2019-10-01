@@ -18,7 +18,7 @@ public class SpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        IncrementalRAPQ rapqEngine = new IncrementalRAPQ(query);
+        IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query);
 
         TextStream stream = new SimpleTextStream();
         stream.open(filename);

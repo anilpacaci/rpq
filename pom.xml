@@ -75,7 +75,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>ca.uwaterloo.cs.streamingrpq.waveguide.WaveGuideQueryRunner</mainClass>
+                            <mainClass>ca.uwaterloo.cs.streamingrpq.waveguide.STQueryRunner</mainClass>
                         </manifest>
                     </archive>
 

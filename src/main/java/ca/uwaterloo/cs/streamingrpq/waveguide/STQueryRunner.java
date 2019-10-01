@@ -1,34 +1,28 @@
 package ca.uwaterloo.cs.streamingrpq.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
-import ca.uwaterloo.cs.streamingrpq.input.*;
+import ca.uwaterloo.cs.streamingrpq.input.TextStream;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
+import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.cli.*;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public class WaveGuideQueryRunner {
+public class STQueryRunner {
 
-    private static Logger logger = LoggerFactory.getLogger(WaveGuideQueryRunner.class);
+    private static Logger logger = LoggerFactory.getLogger(STQueryRunner.class);
 
     public static void main(String[] args) {
 
@@ -69,44 +63,42 @@ public class WaveGuideQueryRunner {
 
         stream.open(filename, inputSize);
 
-        DFA<Integer> queryDFA;
+
+        QueryAutomata<Integer> query;
+
         if(queryName.equals("waveguide6")) {
-            queryDFA = WaveGuideQueries.query6(pathSemantics, maxSize, predicates);
+            query = new QueryAutomata<>(4);
+            query.addTransition(0, predicates[0], 1);
+            query.addTransition(1, predicates[1], 2);
+            query.addTransition(2, predicates[2], 3);
+            query.addTransition(3, predicates[0], 1);
+            query.addFinalState(3);
+
         } else if(queryName.equals("waveguide5")) {
-            queryDFA = WaveGuideQueries.query5(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq1")) {
-            queryDFA = WikidataQueries.pvdlbq1(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq2")) {
-            queryDFA = WikidataQueries.pvdlbq2(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq3")) {
-            queryDFA = WikidataQueries.pvdlbq3(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq4")) {
-            queryDFA = WikidataQueries.pvdlbq4(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq5")) {
-            queryDFA = WikidataQueries.pvdlbq5(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("pvldbq21")) {
-            queryDFA = WikidataQueries.pvdlbq21(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("wwwq2")) {
-            queryDFA = WikidataQueries.wwwq2(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("wwwq3")) {
-            queryDFA = WikidataQueries.wwwq3(pathSemantics, maxSize, predicates);
-        } else if(queryName.equals("restricted")) {
-            queryDFA = WaveGuideQueries.restrictedRE(pathSemantics, maxSize, predicates);
+            query = new QueryAutomata<>(4);
+            query.addTransition(0, predicates[0], 1);
+            query.addTransition(1, predicates[1], 2);
+            query.addTransition(2, predicates[1], 2);
+            query.addTransition(2, predicates[2], 3);
+            query.addTransition(3, predicates[2], 3);
+            query.addFinalState(3);
         } else {
             logger.error("Not a valid queryname: " + queryName);
             return;
         }
 
+        IncrementalRAPQ<Integer> rapq = new IncrementalRAPQ<Integer>(query);
+
         MetricRegistry metricRegistry = new MetricRegistry();
 
-        queryDFA.addMetricRegistry(metricRegistry);
+        rapq.addMetricRegistry(metricRegistry);
         // create the metrics directory
         File resultDirectory = new File(recordCSVFilePath);
         resultDirectory.mkdirs();
         CsvReporter reporter = CsvReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(resultDirectory);
         reporter.start(10, TimeUnit.SECONDS);
 
-        SingleThreadedRun task = new SingleThreadedRun(queryName, stream, queryDFA);
+        SingleThreadedRun task = new SingleThreadedRun(queryName, stream, rapq);
         try {
             task.call();
         } catch (Exception e) {

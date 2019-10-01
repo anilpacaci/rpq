@@ -2,21 +2,30 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.googlecode.cqengine.query.simple.In;
 
 import java.util.Map;
 
-public class IncrementalRAPQ {
+public class IncrementalRAPQ<L> {
+
+    // metric tools
+    private MetricRegistry metricRegistry;
+    private Counter expansionCounter;
+    private Histogram fullHistogram;
+    private Histogram processedHistogram;
+    private Timer fullTimer;
+    private Meter queueMeter;
 
     private Delta<Integer> delta;
-    private Graph<Integer, String> graph;
-    private QueryAutomata<String> automata;
+    private Graph<Integer, L> graph;
+    private QueryAutomata<L> automata;
 
     private Multimap<Integer, Integer> results;
 
-    public IncrementalRAPQ(QueryAutomata<String> query) {
+    public IncrementalRAPQ(QueryAutomata<L> query) {
         delta = new Delta<>();
         automata = query;
         results = HashMultimap.create();
@@ -35,7 +44,7 @@ public class IncrementalRAPQ {
             }
 
             // get all the forward edges of the new extended node
-            Multimap<String, Integer> forwardEdges = graph.getForwardEdges(childVertex);
+            Multimap<L, Integer> forwardEdges = graph.getForwardEdges(childVertex);
 
             if(forwardEdges == null) {
                 // TODO better nul handling
@@ -43,7 +52,7 @@ public class IncrementalRAPQ {
                 return;
             }
 
-            for(Map.Entry<String, Integer> forwardEdge : forwardEdges.entries()) {
+            for(Map.Entry<L, Integer> forwardEdge : forwardEdges.entries()) {
                 Integer targetState = automata.getTransition(childState, forwardEdge.getKey());
                 if(targetState != null && !tree.exists(forwardEdge.getValue(), targetState)) {
                     // recursive call as the target of the forwardEdge has not been visited in state targetState before
@@ -53,7 +62,10 @@ public class IncrementalRAPQ {
         }
     }
 
-    public void processEdge(InputTuple<Integer, Integer, String> inputTuple) {
+    public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
+        Long startTime = System.nanoTime();
+        Timer.Context timer = fullTimer.time();
+
         // add edge to the snapshot graph
         graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel());
 
@@ -76,9 +88,29 @@ public class IncrementalRAPQ {
                 }
             }
         }
+
+        // metric recording
+        Long elapsedTime = System.nanoTime() - startTime;
+        //populate histograms
+        fullHistogram.update(elapsedTime);
+        timer.stop();
+        if(!transitions.isEmpty()) {
+            // it implies that edge is processed
+            processedHistogram.update(elapsedTime);
+        }
     }
 
     public Multimap<Integer, Integer> getResults() {
         return  results;
+    }
+
+    public void addMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+        // register all the matrics
+        this.expansionCounter = metricRegistry.counter("expansion-counter");
+        this.fullHistogram = metricRegistry.histogram("full-histogram");
+        this.processedHistogram = metricRegistry.histogram("processed-histogram");
+        this.fullTimer = metricRegistry.timer("full-timer");
+        this.queueMeter = metricRegistry.meter("queue-meter");
     }
 }
