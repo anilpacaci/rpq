@@ -7,7 +7,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.googlecode.cqengine.query.simple.In;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class IncrementalRAPQ<L> {
 
@@ -34,30 +36,28 @@ public class IncrementalRAPQ<L> {
 
     public void processTransition(SpanningTree<Integer> tree,  int parentVertex, int parentState, int childVertex, int childState) {
         TreeNode parentNode = tree.getNode(parentVertex, parentState);
-        if(!tree.exists(childVertex, childState)) {
-            // extend the spanning tree with incoming noe
-            tree.addNode(parentNode, childVertex, childState, parentNode.getTimestamp());
+        // extend the spanning tree with incoming noe
+        tree.addNode(parentNode, childVertex, childState, parentNode.getTimestamp());
 
-            // add this pair to results if it is a final state
-            if(automata.isFinalState(childState)) {
-                results.put(tree.getRootVertex(), childVertex);
-            }
+        // add this pair to results if it is a final state
+        if(automata.isFinalState(childState)) {
+            results.put(tree.getRootVertex(), childVertex);
+        }
 
-            // get all the forward edges of the new extended node
-            Multimap<L, Integer> forwardEdges = graph.getForwardEdges(childVertex);
+        // get all the forward edges of the new extended node
+        Multimap<L, Integer> forwardEdges = graph.getForwardEdges(childVertex);
 
-            if(forwardEdges == null) {
-                // TODO better nul handling
-                // end recursion if node has no forward edges
-                return;
-            }
+        if(forwardEdges == null) {
+            // TODO better nul handling
+            // end recursion if node has no forward edges
+            return;
+        }
 
-            for(Map.Entry<L, Integer> forwardEdge : forwardEdges.entries()) {
-                Integer targetState = automata.getTransition(childState, forwardEdge.getKey());
-                if(targetState != null && !tree.exists(forwardEdge.getValue(), targetState)) {
-                    // recursive call as the target of the forwardEdge has not been visited in state targetState before
-                    processTransition(tree, childVertex, childState, forwardEdge.getValue(), targetState);
-                }
+        for(Map.Entry<L, Integer> forwardEdge : forwardEdges.entries()) {
+            Integer targetState = automata.getTransition(childState, forwardEdge.getKey());
+            if(targetState != null && !tree.exists(forwardEdge.getValue(), targetState)) {
+                // recursive call as the target of the forwardEdge has not been visited in state targetState before
+                processTransition(tree, childVertex, childState, forwardEdge.getValue(), targetState);
             }
         }
     }
@@ -78,26 +78,22 @@ public class IncrementalRAPQ<L> {
             delta.addTree(inputTuple.getSource());
         }
 
-        int[] transitionArray = new int[automata.numOfStates];
-        for(int i = 0 ; i < transitionArray.length; i++) {
-            transitionArray[i] = Integer.MIN_VALUE;
-        }
-        for(Map.Entry<Integer, Integer> transition : transitions.entrySet()) {
-            transitionArray[transition.getKey()] = transition.getValue();
-        }
+        List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
-        // for each spanning tree in Delta
-        for(SpanningTree spanningTree : delta.getTrees()) {
-            // for each transition that given label satisy
-            for(int i = 0 ; i < transitionArray.length; i++) {
-                int sourceState = i;
-                int targetState = transitionArray[i];
+        // for each transition that given label satisy
+        for(Map.Entry<Integer, Integer> transition : transitionList) {
+            int sourceState = transition.getKey();
+            int targetState = transition.getValue();
+
+            // iterate over spanning trees that include the source node
+            for(SpanningTree spanningTree : delta.getTrees(inputTuple.getSource(), sourceState)) {
                 // if the source already exists, but not the target
-                if(transitionArray[i] > Integer.MIN_VALUE &&  spanningTree.exists(inputTuple.getSource(), sourceState) && !spanningTree.exists(inputTuple.getTarget(), targetState)) {
+                if (spanningTree.exists(inputTuple.getSource(), sourceState) && !spanningTree.exists(inputTuple.getTarget(), targetState)) {
                     processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState);
                 }
             }
         }
+
 
         // metric recording
         Long elapsedTime = System.nanoTime() - startTime;

@@ -6,6 +6,10 @@ import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricRegistry;
+
+import java.util.concurrent.TimeUnit;
 
 public class SpanningTreeTest {
 
@@ -19,6 +23,15 @@ public class SpanningTreeTest {
         query.addTransition(2, "a", 1);
 
         IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query);
+        MetricRegistry metricRegistry = new MetricRegistry();
+        rapqEngine.addMetricRegistry(metricRegistry);
+
+        final ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(1, TimeUnit.MINUTES);
+
 
         TextStream stream = new SimpleTextStream();
         stream.open(filename);

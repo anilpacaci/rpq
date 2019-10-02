@@ -1,9 +1,13 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
+
 import java.util.Collection;
 import java.util.HashSet;
 
 public class TreeNode<V> {
+
+    private int hash = 0;
 
     SpanningTree<V> tree;
 
@@ -61,4 +65,25 @@ public class TreeNode<V> {
         child.setParent(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof TreeNode)) {
+            return false;
+        }
+
+        TreeNode tuple = (TreeNode) o;
+
+        return tuple.vertex == vertex && tuple.state == state;
+    }
+
+    @Override
+    public int hashCode() {
+        int h = hash;
+        if(h == 0) {
+            h = Hasher.TreeNodeHasher(vertex.hashCode(), state);
+            hash = h;
+        }
+        return h;
+    }
 }

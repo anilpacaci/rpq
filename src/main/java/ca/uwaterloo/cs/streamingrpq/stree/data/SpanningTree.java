@@ -15,6 +15,7 @@ public class SpanningTree<V> {
         this.delta = delta;
         this.nodeIndex = HashBasedTable.create();
         nodeIndex.put(rootVertex, 0, rootNode);
+        this.delta.updateTreeNodeIndex(this, rootNode);
     }
 
 
@@ -29,6 +30,9 @@ public class SpanningTree<V> {
         TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this);
         parentNode.addChildren(child);
         nodeIndex.put(childVertex, childState, child);
+
+        // a new node is added to the spanning tree. update delta index
+        this.delta.updateTreeNodeIndex(this, child);
     }
 
     public boolean exists(V vertex, int state) {

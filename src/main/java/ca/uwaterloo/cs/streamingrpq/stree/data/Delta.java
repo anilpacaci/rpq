@@ -1,5 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -8,9 +10,12 @@ import java.util.HashMap;
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
+    private Multimap<Integer, SpanningTree> treeNodeIndex;
+
 
     public Delta() {
         treeIndex = new HashMap<>();
+        treeNodeIndex = HashMultimap.create();
     }
 
     public SpanningTree getTree(V vertex) {
@@ -20,6 +25,10 @@ public class Delta<V> {
 
     public Collection<SpanningTree> getTrees() {
         return treeIndex.values();
+    }
+
+    public Collection<SpanningTree> getTrees(V vertex, int state) {
+        return  treeNodeIndex.get(Hasher.TreeNodeHasher(vertex.hashCode(), state));
     }
 
     public boolean exists(V vertex) {
@@ -32,5 +41,9 @@ public class Delta<V> {
         }
         SpanningTree<V> tree = new SpanningTree<>(this, vertex);
         treeIndex.put(vertex, tree);
+    }
+
+    protected void updateTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
+        treeNodeIndex.put(treeNode.hashCode(), tree);
     }
 }
