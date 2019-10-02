@@ -25,7 +25,7 @@ public class FilteredSimpleTextStream implements TextStream{
     HashSet<String> predicates;
 
 
-    public FilteredSimpleTextStream(String ... predicates) {
+    public FilteredSimpleTextStream(String[] predicates) {
         this.predicates = new HashSet<>();
 
         for(String p : predicates) {

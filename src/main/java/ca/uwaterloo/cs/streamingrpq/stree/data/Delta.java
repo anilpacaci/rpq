@@ -1,5 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import com.google.common.collect.Multimap;
+
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -28,7 +30,7 @@ public class Delta<V> {
         if(exists(vertex)) {
             // TODO one spanner per root vertex
         }
-        SpanningTree<V> tree = new SpanningTree<>(vertex);
+        SpanningTree<V> tree = new SpanningTree<>(this, vertex);
         treeIndex.put(vertex, tree);
     }
 }

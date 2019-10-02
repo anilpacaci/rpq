@@ -78,13 +78,23 @@ public class IncrementalRAPQ<L> {
             delta.addTree(inputTuple.getSource());
         }
 
+        int[] transitionArray = new int[transitions.size()];
+        for(int i = 0 ; i < transitionArray.length; i++) {
+            transitionArray[i] = Integer.MIN_VALUE;
+        }
+        for(Map.Entry<Integer, Integer> transition : transitions.entrySet()) {
+            transitionArray[transition.getKey()] = transition.getValue();
+        }
+
         // for each spanning tree in Delta
         for(SpanningTree spanningTree : delta.getTrees()) {
             // for each transition that given label satisy
-            for(Map.Entry<Integer, Integer> transition : transitions.entrySet()) {
+            for(int i = 0 ; i < transitionArray.length; i++) {
+                int sourceState = i;
+                int targetState = transitionArray[i];
                 // if the source already exists, but not the target
-                if(spanningTree.exists(inputTuple.getSource(), transition.getKey()) && !spanningTree.exists(inputTuple.getTarget(), transition.getValue())) {
-                    processTransition(spanningTree, inputTuple.getSource(), transition.getKey(), inputTuple.getTarget(), transition.getValue());
+                if(transitionArray[i] > Integer.MIN_VALUE &&  spanningTree.exists(inputTuple.getSource(), sourceState) && !spanningTree.exists(inputTuple.getTarget(), targetState)) {
+                    processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState);
                 }
             }
         }

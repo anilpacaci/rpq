@@ -6,11 +6,13 @@ import com.google.common.collect.Table;
 public class SpanningTree<V> {
 
     private TreeNode<V> rootNode;
+    private Delta<V> delta;
 
     Table<V, Integer, TreeNode> nodeIndex;
 
-    protected SpanningTree(V rootVertex) {
+    protected SpanningTree(Delta<V> delta, V rootVertex) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this);
+        this.delta = delta;
         this.nodeIndex = HashBasedTable.create();
         nodeIndex.put(rootVertex, 0, rootNode);
     }

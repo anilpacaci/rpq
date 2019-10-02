@@ -7,7 +7,7 @@ import com.google.common.collect.Multimap;
 import java.util.HashMap;
 
 public class Graph<V,L> {
-    private HashMap<V, Multimap> forwardAdjacency;
+    private HashMap<V, Multimap<L, V>> forwardAdjacency;
     private HashMap<V, Multimap<L, V>> backwardAdjacency;
 
 
