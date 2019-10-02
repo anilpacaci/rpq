@@ -1,9 +1,8 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 import com.google.common.collect.HashMultimap;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Created by anilpacaci on 2019-01-31.

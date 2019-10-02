@@ -1,6 +1,6 @@
-package ca.uwaterloo.cs.streamingrpq.core;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.core;
 
-import ca.uwaterloo.cs.streamingrpq.data.RAPQTuple;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.data.RAPQTuple;
 
 /**
  * Created by anilpacaci on 2019-03-02.

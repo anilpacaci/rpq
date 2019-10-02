@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.dfa;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.dfa;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;

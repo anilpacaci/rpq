@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.dfa;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.dfa;
 
 /**
  * Created by anilpacaci on 2019-06-05.

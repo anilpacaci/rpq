@@ -1,16 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq;
 
-import ca.uwaterloo.cs.streamingrpq.data.NoSpaceException;
-import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.data.NoSpaceException;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import com.google.common.collect.HashMultimap;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by anilpacaci on 2019-01-31.

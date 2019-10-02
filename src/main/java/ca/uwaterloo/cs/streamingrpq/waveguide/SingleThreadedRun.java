@@ -1,7 +1,5 @@
 package ca.uwaterloo.cs.streamingrpq.waveguide;
 
-import ca.uwaterloo.cs.streamingrpq.data.NoSpaceException;
-import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;

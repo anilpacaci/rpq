@@ -1,8 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.data;
-
-import com.googlecode.cqengine.attribute.Attribute;
-import com.googlecode.cqengine.attribute.SimpleAttribute;
-import com.googlecode.cqengine.query.option.QueryOptions;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 /**
  * Created by anilpacaci on 2019-01-31.

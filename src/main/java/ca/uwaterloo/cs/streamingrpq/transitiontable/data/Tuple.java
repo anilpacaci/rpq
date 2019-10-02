@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 public interface Tuple {
     int getSource();

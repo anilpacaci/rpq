@@ -1,6 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.waveguide;
 
-import ca.uwaterloo.cs.streamingrpq.dfa.DFA;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 
 public class WikidataQueries {

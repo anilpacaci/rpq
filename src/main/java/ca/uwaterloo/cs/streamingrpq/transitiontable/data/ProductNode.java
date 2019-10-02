@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 /**
  * Created by anilpacaci on 2019-05-18.

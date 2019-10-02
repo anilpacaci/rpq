@@ -1,8 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.util.cycle;
 
-import ca.uwaterloo.cs.streamingrpq.data.GraphEdges;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

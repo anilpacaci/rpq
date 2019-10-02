@@ -1,6 +1,6 @@
-package ca.uwaterloo.cs.streamingrpq.dfa;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.dfa;
 
-import ca.uwaterloo.cs.streamingrpq.data.*;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.data.*;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
 import com.codahale.metrics.*;

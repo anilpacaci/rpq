@@ -1,9 +1,8 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashMultimap;
-import com.googlecode.cqengine.query.simple.In;
 
 import java.util.Collection;
 

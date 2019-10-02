@@ -1,13 +1,10 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashMultimap;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class GraphEdges<N> {
 

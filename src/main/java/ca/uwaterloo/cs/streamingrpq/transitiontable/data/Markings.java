@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.data;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.data;
 
 import com.google.common.collect.HashMultimap;
 
