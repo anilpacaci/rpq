@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.waveguide;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;

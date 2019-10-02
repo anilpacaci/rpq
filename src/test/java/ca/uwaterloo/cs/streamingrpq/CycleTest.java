@@ -5,7 +5,7 @@ import ca.uwaterloo.cs.streamingrpq.transitiontable.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import com.google.common.collect.HashMultimap;
 
 /**

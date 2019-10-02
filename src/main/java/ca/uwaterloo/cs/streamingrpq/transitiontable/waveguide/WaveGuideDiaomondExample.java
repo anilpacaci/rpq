@@ -1,11 +1,11 @@
-package ca.uwaterloo.cs.streamingrpq.waveguide;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide;
 
-import ca.uwaterloo.cs.streamingrpq.transitiontable.data.NoSpaceException;
-import ca.uwaterloo.cs.streamingrpq.transitiontable.dfa.DFA;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.data.NoSpaceException;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.dfa.DFA;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

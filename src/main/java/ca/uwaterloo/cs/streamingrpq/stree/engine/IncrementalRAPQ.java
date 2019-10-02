@@ -5,7 +5,6 @@ import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.googlecode.cqengine.query.simple.In;
 
 import java.util.List;
 import java.util.Map;

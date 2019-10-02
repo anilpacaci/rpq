@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.util.cycle;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle;
 
 public class Edge<N,L> {
 

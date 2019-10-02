@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.util;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.util;
 
 
 import java.util.HashMap;

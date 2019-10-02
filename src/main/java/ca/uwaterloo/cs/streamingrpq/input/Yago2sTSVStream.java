@@ -2,13 +2,14 @@ package ca.uwaterloo.cs.streamingrpq.input;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.googlecode.cqengine.query.simple.In;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Yago2sTSVStream implements TextStream{
 

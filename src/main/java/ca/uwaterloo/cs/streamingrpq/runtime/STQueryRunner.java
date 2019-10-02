@@ -1,11 +1,12 @@
-package ca.uwaterloo.cs.streamingrpq.waveguide;
+package ca.uwaterloo.cs.streamingrpq.runtime;
 
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
-import ca.uwaterloo.cs.streamingrpq.util.PathSemantics;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.cli.*;

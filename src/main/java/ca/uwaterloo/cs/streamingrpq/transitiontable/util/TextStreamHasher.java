@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.util;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.util;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;

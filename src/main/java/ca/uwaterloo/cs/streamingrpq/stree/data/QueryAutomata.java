@@ -3,7 +3,9 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class QueryAutomata<L> {
     public int numOfStates;

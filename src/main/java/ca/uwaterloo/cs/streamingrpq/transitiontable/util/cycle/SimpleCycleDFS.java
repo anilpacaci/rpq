@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.util.cycle;
+package ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import org.slf4j.Logger;

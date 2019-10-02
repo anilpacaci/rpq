@@ -4,7 +4,6 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-
 import java.util.HashMap;
 
 public class Graph<V,L> {
