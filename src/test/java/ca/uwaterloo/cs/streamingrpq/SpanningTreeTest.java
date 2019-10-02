@@ -22,7 +22,7 @@ public class SpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query);
+        IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query, 100);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 

@@ -87,7 +87,7 @@ public class STQueryRunner {
             return;
         }
 
-        IncrementalRAPQ<Integer> rapq = new IncrementalRAPQ<Integer>(query);
+        IncrementalRAPQ<Integer> rapq = new IncrementalRAPQ<Integer>(query, maxSize);
 
         MetricRegistry metricRegistry = new MetricRegistry();
 

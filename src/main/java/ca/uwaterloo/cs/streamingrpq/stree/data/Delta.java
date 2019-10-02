@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -13,9 +14,9 @@ public class Delta<V> {
     private Multimap<Integer, SpanningTree> treeNodeIndex;
 
 
-    public Delta() {
-        treeIndex = new HashMap<>();
-        treeNodeIndex = HashMultimap.create();
+    public Delta(int capacity) {
+        treeIndex = new HashMap<>(capacity);
+        treeNodeIndex = HashMultimap.create(capacity, Constants.EXPECTED_TREES);
     }
 
     public SpanningTree getTree(V vertex) {

@@ -27,11 +27,11 @@ public class IncrementalRAPQ<L> {
 
     private Multimap<Integer, Integer> results;
 
-    public IncrementalRAPQ(QueryAutomata<L> query) {
-        delta = new Delta<>();
+    public IncrementalRAPQ(QueryAutomata<L> query, int capacity) {
+        delta = new Delta<>(capacity);
         automata = query;
         results = HashMultimap.create();
-        graph = new Graph<>();
+        graph = new Graph<>(capacity);
     }
 
     public void processTransition(SpanningTree<Integer> tree,  int parentVertex, int parentState, int childVertex, int childState) {
@@ -66,11 +66,16 @@ public class IncrementalRAPQ<L> {
         Long startTime = System.nanoTime();
         Timer.Context timer = fullTimer.time();
 
-        // add edge to the snapshot graph
-        graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel());
-
         // retrieve all transition that can be performed with this label
         Map<Integer, Integer> transitions = automata.getTransition(inputTuple.getLabel());
+
+        if(transitions.isEmpty()) {
+            // there is no transition with given label, simply return
+            return;
+        } else {
+            // add edge to the snapshot graph
+            graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel());
+        }
 
         //create a spanning tree for the source node in case it does not exists
         if(transitions.keySet().contains(0) && !delta.exists(inputTuple.getSource())) {
