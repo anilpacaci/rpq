@@ -10,29 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class IncrementalRAPQ<L> {
-
-    // metric tools
-    private MetricRegistry metricRegistry;
-    private Counter expansionCounter;
-    private Histogram fullHistogram;
-    private Histogram processedHistogram;
-    private Timer fullTimer;
-    private Meter queueMeter;
-
-    private Delta<Integer> delta;
-    private Graph<Integer, L> graph;
-    private QueryAutomata<L> automata;
-
-    private Multimap<Integer, Integer> results;
+public class IncrementalRAPQ<L> extends RPQEngine<L> {
 
     public IncrementalRAPQ(QueryAutomata<L> query, int capacity) {
-        delta = new Delta<>(capacity);
-        automata = query;
-        results = HashMultimap.create();
-        graph = new Graph<>(capacity);
+        super(query, capacity);
     }
 
+    @Override
     public void processTransition(SpanningTree<Integer> tree,  int parentVertex, int parentState, int childVertex, int childState) {
         TreeNode parentNode = tree.getNode(parentVertex, parentState);
         // extend the spanning tree with incoming noe
@@ -61,6 +45,7 @@ public class IncrementalRAPQ<L> {
         }
     }
 
+    @Override
     public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
         Long startTime = System.nanoTime();
         Timer.Context timer = fullTimer.time();
@@ -110,17 +95,4 @@ public class IncrementalRAPQ<L> {
         }
     }
 
-    public Multimap<Integer, Integer> getResults() {
-        return  results;
-    }
-
-    public void addMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
-        // register all the matrics
-        this.expansionCounter = metricRegistry.counter("expansion-counter");
-        this.fullHistogram = metricRegistry.histogram("full-histogram");
-        this.processedHistogram = metricRegistry.histogram("processed-histogram");
-        this.fullTimer = metricRegistry.timer("full-timer");
-        this.queueMeter = metricRegistry.meter("queue-meter");
-    }
 }

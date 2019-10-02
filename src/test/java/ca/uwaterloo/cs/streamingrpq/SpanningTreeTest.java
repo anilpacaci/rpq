@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 
@@ -22,7 +23,7 @@ public class SpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query, 100);
+        RPQEngine<String> rapqEngine = new IncrementalRAPQ(query, 100);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 
