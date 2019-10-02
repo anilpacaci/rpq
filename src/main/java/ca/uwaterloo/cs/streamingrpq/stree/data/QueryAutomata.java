@@ -14,7 +14,8 @@ public class QueryAutomata<L> {
     public QueryAutomata(int numOfStates) {
         finalStates = new HashSet<>();
         transitions = HashBasedTable.create();
-    }
+    	this.numOfStates = numOfStates;
+	}
 
     public void addFinalState(int state) {
         if(state >= numOfStates) {

@@ -78,7 +78,7 @@ public class IncrementalRAPQ<L> {
             delta.addTree(inputTuple.getSource());
         }
 
-        int[] transitionArray = new int[transitions.size()];
+        int[] transitionArray = new int[automata.numOfStates];
         for(int i = 0 ; i < transitionArray.length; i++) {
             transitionArray[i] = Integer.MIN_VALUE;
         }
