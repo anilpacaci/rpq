@@ -6,6 +6,7 @@ import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,7 +18,7 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
     }
 
     @Override
-    public void processTransition(SpanningTree<Integer> tree,  int parentVertex, int parentState, int childVertex, int childState) {
+    public void processTransition(SpanningTree<Integer> tree,  int parentVertex, int parentState, int childVertex, int childState, long edgeTimestamp) {
         TreeNode parentNode = tree.getNode(parentVertex, parentState);
         // extend the spanning tree with incoming noe
         tree.addNode(parentNode, childVertex, childState, parentNode.getTimestamp());
@@ -28,7 +29,7 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
         }
 
         // get all the forward edges of the new extended node
-        Multimap<L, Integer> forwardEdges = graph.getForwardEdges(childVertex);
+        Collection<GraphEdge<Integer, L>> forwardEdges = graph.getForwardEdges(childVertex);
 
         if(forwardEdges == null) {
             // TODO better nul handling
@@ -36,11 +37,11 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
             return;
         }
 
-        for(Map.Entry<L, Integer> forwardEdge : forwardEdges.entries()) {
-            Integer targetState = automata.getTransition(childState, forwardEdge.getKey());
-            if(targetState != null && !tree.exists(forwardEdge.getValue(), targetState)) {
+        for(GraphEdge<Integer, L> forwardEdge : forwardEdges) {
+            Integer targetState = automata.getTransition(childState, forwardEdge.getLabel());
+            if(targetState != null && !tree.exists(forwardEdge.getTarget(), targetState)) {
                 // recursive call as the target of the forwardEdge has not been visited in state targetState before
-                processTransition(tree, childVertex, childState, forwardEdge.getValue(), targetState);
+                processTransition(tree, childVertex, childState, forwardEdge.getTarget(), targetState, 0);
             }
         }
     }
@@ -58,13 +59,14 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
             return;
         } else {
             // add edge to the snapshot graph
-            graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel());
+            graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), 0);
         }
 
         //create a spanning tree for the source node in case it does not exists
         if(transitions.keySet().contains(0) && !delta.exists(inputTuple.getSource())) {
             // if there exists a start transition with given label, there should be a spanning tree rooted at source vertex
-            delta.addTree(inputTuple.getSource());
+            // root node of this created tree has the timestamp of the inserted edge
+            delta.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
         }
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
@@ -76,9 +78,9 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
 
             // iterate over spanning trees that include the source node
             for(SpanningTree spanningTree : delta.getTrees(inputTuple.getSource(), sourceState)) {
-                // if the source already exists, but not the target
-                if (spanningTree.exists(inputTuple.getSource(), sourceState) && !spanningTree.exists(inputTuple.getTarget(), targetState)) {
-                    processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState);
+                // source guarenteed to exists, just check target
+                if (!spanningTree.exists(inputTuple.getTarget(), targetState)) {
+                    processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, 0);
                 }
             }
         }

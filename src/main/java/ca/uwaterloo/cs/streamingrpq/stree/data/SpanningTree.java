@@ -3,15 +3,17 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+import java.util.LinkedList;
+
 public class SpanningTree<V> {
 
     private TreeNode<V> rootNode;
     private Delta<V> delta;
 
     Table<V, Integer, TreeNode> nodeIndex;
-
-    protected SpanningTree(Delta<V> delta, V rootVertex) {
-        this.rootNode = new TreeNode<V>(rootVertex, 0, null, this);
+    
+    protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
+        this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
         this.nodeIndex = HashBasedTable.create();
         nodeIndex.put(rootVertex, 0, rootNode);
@@ -27,8 +29,7 @@ public class SpanningTree<V> {
             // TODO wrong tree
         }
 
-        TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this);
-        parentNode.addChildren(child);
+        TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
         nodeIndex.put(childVertex, childState, child);
 
         // a new node is added to the spanning tree. update delta index

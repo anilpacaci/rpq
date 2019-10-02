@@ -8,6 +8,7 @@ public class InputTuple<S,T,L> {
     private S source;
     private T target;
     private L label;
+    private long timestamp;
 
     private TupleType type;
 
@@ -18,10 +19,15 @@ public class InputTuple<S,T,L> {
      * @param label
      */
     public InputTuple(S source, T target, L label) {
+        this(source, target, label, 0);
+    }
+
+    public InputTuple(S source, T target, L label, long timestamp) {
         this.source = source;
         this.target = target;
         this.label = label;
         this.type = TupleType.INSERT;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -57,6 +63,10 @@ public class InputTuple<S,T,L> {
     @Override
     public String toString() {
         return new StringBuilder("<").append(this.source).append(",").append(this.target).append(",").append(this.label).append(",").append(this.type).append(">").toString();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**

@@ -19,12 +19,17 @@ public class TreeNode<V> {
 
     private Collection<TreeNode> children;
 
-    public TreeNode(V vertex, int state, TreeNode parent, SpanningTree t) {
+    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTree t, long timestamp) {
         this.vertex = vertex;
         this.state = state;
         this.parent = parent;
         this.children = new HashSet<>();
         this.tree = t;
+        this.timestamp = timestamp;
+        // set this as a child of the parent if it is not null
+        if(parent != null) {
+            this.parent.addChildren(this);
+        }
     }
 
     public SpanningTree<V> getTree() {
@@ -53,16 +58,22 @@ public class TreeNode<V> {
     }
 
     public void setParent(TreeNode parent) {
+        // remove this node from previous parent
+        if(this.parent != null) {
+            this.parent.children.remove(this);
+        }
+        // set a new parent
         this.parent = parent;
+        // add this as a child to new parent
+        this.parent.addChildren(this);
     }
 
     public Collection<TreeNode> getChildren() {
         return children;
     }
 
-    protected void addChildren(TreeNode child) {
+    private void addChildren(TreeNode child) {
         this.children.add(child);
-        child.setParent(this);
     }
 
     @Override

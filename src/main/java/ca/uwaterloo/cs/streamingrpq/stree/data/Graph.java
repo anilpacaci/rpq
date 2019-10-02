@@ -4,49 +4,59 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class Graph<V,L> {
-    private HashMap<V, Multimap<L, V>> forwardAdjacency;
-    private HashMap<V, Multimap<L, V>> backwardAdjacency;
+    private Multimap<V, GraphEdge<V,L>> forwardAdjacency;
+    private Multimap<V, GraphEdge<V,L>> backwardAdjacency;
 
+
+    private LinkedList<GraphEdge<V,L>> timeOrderedEdges;
 
     public Graph(int capacity) {
-        forwardAdjacency = new HashMap<>(capacity);
-        backwardAdjacency = new HashMap<>(capacity);
+        forwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
+        backwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
+        timeOrderedEdges = new LinkedList<GraphEdge<V,L>>();
     }
 
-    public void addEdge(V source, V target, L label) {
-        if(!forwardAdjacency.containsKey(source)) {
-            forwardAdjacency.put(source, HashMultimap.create(Constants.EXPECTED_LABELS, Constants.EXPECTED_NEIGHBOURS));
-        }
+    public void addEdge(V source, V target, L label, long timestamp) {
+        GraphEdge<V, L> forwardEdge = new GraphEdge<>(source, target, label, timestamp);
+        forwardAdjacency.put(source, forwardEdge);
+        backwardAdjacency.put(target, new GraphEdge<>(target, source, label, timestamp));
 
-        Multimap forwardLabels = forwardAdjacency.get(source);
-        forwardLabels.put(label, target);
-
-        if(!backwardAdjacency.containsKey(target)) {
-            backwardAdjacency.put(target, HashMultimap.create(Constants.EXPECTED_LABELS, Constants.EXPECTED_NEIGHBOURS));
-        }
-
-        Multimap backwardLabels = backwardAdjacency.get(target);
-        backwardLabels.put(label, source);
+        timeOrderedEdges.addLast(forwardEdge);
     }
 
-    public Multimap<L, V> getForwardEdges(V source) {
-        if(forwardAdjacency.containsKey(source)) {
-            return forwardAdjacency.get(source);
-        }
-
-        // TODO edge does not exist
-        return null;
+    private void removeEdgeFromHashIndexes(V source, V target, L label) {
+        GraphEdge<V, L> forwardEdge = new GraphEdge<>(source, target, label, 0);
+        forwardAdjacency.remove(source, forwardEdge);
+        backwardAdjacency.remove(target, new GraphEdge<>(target, source, label, 0));
     }
 
-    public Multimap<L, V> getBackwardEdges(V source) {
-        if(backwardAdjacency.containsKey(source)) {
-            return backwardAdjacency.get(source);
-        }
+    public Collection<GraphEdge<V, L>> getForwardEdges(V source) {
+        return forwardAdjacency.get(source);
+    }
 
-        // TODO edge does not exist
-        return null;
+    public Collection<GraphEdge<V, L>> getBackwardEdges(V source) {
+        return backwardAdjacency.get(source);
+    }
+
+    /**
+     * removes old edges from the graph, used during window management
+     * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
+     */
+    public void removeOldEdges(long minTimestamp) {
+        // it suffices to linearly scan from the oldest edge as we assume ordered arrival
+        while(timeOrderedEdges.peekFirst() != null) {
+            GraphEdge<V, L> oldestEdge = timeOrderedEdges.getFirst();
+            if(oldestEdge.getTimestamp() < minTimestamp) {
+                timeOrderedEdges.removeFirst();
+                removeEdgeFromHashIndexes(oldestEdge.getSource(), oldestEdge.getTarget(), oldestEdge.getLabel());
+            } else {
+                // as we assume ordered arrival, we can stop the search
+                break;
+            }
+        }
     }
 }

@@ -36,11 +36,11 @@ public class Delta<V> {
         return treeIndex.containsKey(vertex);
     }
 
-    public void addTree(V vertex) {
+    public void addTree(V vertex, long timestamp) {
         if(exists(vertex)) {
             // TODO one spanner per root vertex
         }
-        SpanningTree<V> tree = new SpanningTree<>(this, vertex);
+        SpanningTree<V> tree = new SpanningTree<>(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
     }
 
