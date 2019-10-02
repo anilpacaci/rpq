@@ -1,7 +1,5 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
-import java.io.*;
-
 /**
  * Created by anilpacaci on 2019-01-31.
  */

@@ -62,7 +62,7 @@ with open(parameters, 'rb') as parameters_handle:
 # iterate over runs and run the experiments
 for run in run_list:
     commandString = run.produceCommandString()
-    javaCommand = "java -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -Xms{}g -Xmx{}g -cp {} ca.uwaterloo.cs.streamingrpq.util.cycle.SimpleCycleDFS {}".format(heap_size, heap_size, executable, commandString)
+    javaCommand = "java -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -Xms{}g -Xmx{}g -cp {} ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.SimpleCycleDFS {}".format(heap_size, heap_size, executable, commandString)
 
     print "Executing command {} ".format(javaCommand)
 
