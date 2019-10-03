@@ -77,6 +77,8 @@ public class Yago2sHashStream implements TextStream{
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), Integer.parseInt(splitResults[1]), globalCounter);
+                    localCounter++;
+                    globalCounter++;
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
                     break;
                 }
@@ -87,8 +89,7 @@ public class Yago2sHashStream implements TextStream{
         if (line == null) {
             return null;
         }
-        localCounter++;
-        globalCounter++;
+
         return tuple;
     }
 

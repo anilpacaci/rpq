@@ -42,7 +42,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         //for now window processing is done inside edge processing
         long currentTimetsamp = inputTuple.getTimestamp();
-        if(currentTimetsamp>= windowSize && currentTimetsamp % slideSize == 0) {
+        if(currentTimetsamp >= windowSize && currentTimetsamp % slideSize == 0) {
             // its slide time, maintain the window
             expiry(currentTimetsamp - windowSize);
         }

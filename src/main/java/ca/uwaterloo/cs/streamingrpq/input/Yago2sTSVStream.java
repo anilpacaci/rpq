@@ -78,6 +78,8 @@ public class Yago2sTSVStream implements TextStream{
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1].hashCode(), globalCounter);
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
+                    localCounter++;
+                    globalCounter++;
                     break;
                 }
             }
@@ -87,8 +89,7 @@ public class Yago2sTSVStream implements TextStream{
         if (line == null) {
             return null;
         }
-        localCounter++;
-        globalCounter++;
+
         return tuple;
     }
 
