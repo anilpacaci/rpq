@@ -6,6 +6,7 @@ import com.google.common.collect.Table;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class SpanningTree<V> {
@@ -65,6 +66,7 @@ public class SpanningTree<V> {
     protected <L> HashSet<TreeNode> removeOldEdges(long minTimestamp, Graph<V,L> graph, QueryAutomata<L> automata) {
         // potentially expired nodes
         HashSet<TreeNode> candidates = new HashSet<TreeNode>();
+        HashSet<TreeNode> candidateRemoval = new HashSet<>();
 
         // perform a bfs traversal on tree, no need for visited as it is a three
         LinkedList<TreeNode> queue = new LinkedList<>();
@@ -80,10 +82,13 @@ public class SpanningTree<V> {
             }
         }
 
+        Iterator<TreeNode> candidateIterator = candidates.iterator();
+
         //scan over potential nodes once.
         // For each potential, check they have a valid non-tree edge in the original graph
         // If there is traverse down from here (in the graph) and remove all children from potentials
-        for(TreeNode<V> candidate : candidates) {
+        while(candidateIterator.hasNext()) {
+            TreeNode<V> candidate = candidateIterator.next();
             //check if there exists any incoming edge from a valid state
             Collection<GraphEdge<V, L>> backwardEdges = graph.getBackwardEdges(candidate.getVertex());
             TreeNode<V> newParent = null;
@@ -93,7 +98,7 @@ public class SpanningTree<V> {
                 // if there is a state transition with that label
                 if(incomingState != null) {
                     newParent = this.getNode(backwardEdge.getSource(), incomingState);
-                    if (newParent != null && !candidates.contains(newParent)) {
+                    if (newParent != null && (!candidates.contains(newParent) || candidateRemoval.contains(newParent))) {
                         // there is an incoming edge with valid source
                         // source is valid (in the tree) and not in candidate
                         newParentEdge = backwardEdge;
@@ -111,7 +116,7 @@ public class SpanningTree<V> {
                 candidate.setParent(newParent);
                 candidate.setTimestamp(Long.min(newParent.getTimestamp(), newParentEdge.getTimestamp()));
                 // current vertex has a valid incoming edge, so it needs to be removed from candidates
-                candidates.remove(candidate);
+                candidateRemoval.add(candidate);
 
                 //now traverse the graph down from this node, and remove any visited node from candidates
                 LinkedList<TreeNode> traversalQueue = new LinkedList<TreeNode>();
@@ -131,7 +136,7 @@ public class SpanningTree<V> {
                         if(forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode) ) {
                             if(candidates.contains(outgoingTreeNode)) {
                                 // remove this node from potentials as now there is a younger path
-                                candidates.remove(outgoingTreeNode);
+                                candidateRemoval.add(outgoingTreeNode);
                             }
                             if(outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
                                 // note anything in the candidates has a lower timestamp then
@@ -149,6 +154,9 @@ public class SpanningTree<V> {
             }
 
         }
+
+        // update candidates
+        candidates.removeAll(candidateRemoval);
 
         // now if there is any potential remanining, it is guarenteed that they are not reachable
         // so simply clean the indexes and generate negative result if necessary
