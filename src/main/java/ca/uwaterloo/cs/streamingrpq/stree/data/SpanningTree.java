@@ -111,6 +111,8 @@ public class SpanningTree<V> {
                 // means that there was a tree node that is not in the candidates but in the tree as a valid node
                 candidate.setParent(newParent);
                 candidate.setTimestamp(Long.min(newParent.getTimestamp(), newParentEdge.getTimestamp()));
+                // current vertex has a valid incoming edge, so it needs to be removed from candidates
+                candidates.remove(candidate);
 
                 //now traverse the graph down from this node, and remove any visited node from candidates
                 LinkedList<TreeNode> traversalQueue = new LinkedList<TreeNode>();
