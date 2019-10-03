@@ -20,7 +20,6 @@ public class SpanningTree<V> {
         this.delta = delta;
         this.nodeIndex = HashBasedTable.create();
         nodeIndex.put(rootVertex, 0, rootNode);
-        this.delta.addToTreeNodeIndex(this, rootNode);
     }
 
 
