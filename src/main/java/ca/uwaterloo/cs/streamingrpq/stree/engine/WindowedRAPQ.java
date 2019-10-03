@@ -2,6 +2,8 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -19,6 +21,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     private int windowSize;
     private int slideSize;
 
+    protected Histogram windowManagementHistogram;
+
     public WindowedRAPQ(QueryAutomata<L> query, int capacity, int windowSize, int slideSize) {
         super(query, capacity);
         this.windowSize = windowSize;
@@ -26,10 +30,27 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     }
 
     @Override
-    public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
-        Long startTime = System.nanoTime();
-        Timer.Context timer = fullTimer.time();
+    public void addMetricRegistry(MetricRegistry metricRegistry) {
+        windowManagementHistogram = metricRegistry.histogram("window-histogram");
+        // call super function to include all other histograms
+        super.addMetricRegistry(metricRegistry);
+    }
 
+    @Override
+    public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
+        Long windowStartTime = System.nanoTime();
+
+        //for now window processing is done inside edge processing
+        long currentTimetsamp = inputTuple.getTimestamp();
+        if(currentTimetsamp % slideSize == 0) {
+            // its slide time, maintain the window
+            expiry(currentTimetsamp - windowSize);
+        }
+        Long windowElapsedTime = System.nanoTime() - windowStartTime;
+
+        // restart time for edge processing
+        Long edgeStartTime = System.nanoTime();
+        Timer.Context timer = fullTimer.time();
         // retrieve all transition that can be performed with this label
         Map<Integer, Integer> transitions = automata.getTransition(inputTuple.getLabel());
 
@@ -64,13 +85,17 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
 
         // metric recording
-        Long elapsedTime = System.nanoTime() - startTime;
+        Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
         //populate histograms
-        fullHistogram.update(elapsedTime);
+        fullHistogram.update(edgeElapsedTime);
         timer.stop();
+        // if the incoming edge is not discarded
         if(!transitions.isEmpty()) {
             // it implies that edge is processed
-            processedHistogram.update(elapsedTime);
+            processedHistogram.update(edgeElapsedTime);
+        }
+        if(currentTimetsamp % slideSize == 0) {
+            windowManagementHistogram.update(windowElapsedTime);
         }
     }
 
@@ -82,16 +107,32 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         if(tree.exists(childVertex, childState)) {
             // if the child node already exists, we might need to update timestamp
             TreeNode childNode = tree.getNode(childVertex, childState);
-            if(childNode.getTimestamp() < Long.min(parentNode.getTimestamp(), edgeTimestamp)) {
-                // only update its timestamp if there is a younger  path
+
+            // root's children have timestamp equal to the edge timestamp
+            // root timestmap always higher than any node in the tree
+            if(parentNode.equals(tree.getRootNode())) {
+                childNode.setTimestamp(edgeTimestamp);
+                parentNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
+            }
+            // child node cannot be the root because parent has to be at least
+            else if(childNode.getTimestamp() < Long.min(parentNode.getTimestamp(), edgeTimestamp)) {
+                // only update its timestamp if there is a younger  path, back edge is guarenteed to be at smaller or equal
                 childNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
                 // properly update the parent pointer
                 childNode.setParent(parentNode);
             }
         } else {
             // extend the spanning tree with incoming node
-            tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));
 
+            // root's children have timestamp equal to the edge timestamp
+            // root timestmap always higher than any node in the tree
+            if(parentNode.equals(tree.getRootNode())) {
+                tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
+                parentNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
+            }
+            else {
+                tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));
+            }
             // add this pair to results if it is a final state
             if (automata.isFinalState(childState)) {
                 results.put(tree.getRootVertex(), childVertex);
@@ -123,6 +164,9 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {
-
+        // first remove the expired edges from the graph
+        graph.removeOldEdges(minTimestamp);
+        // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
+        delta.expiry(minTimestamp, graph, automata);
     }
 }

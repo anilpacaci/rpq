@@ -57,6 +57,11 @@ public class TreeNode<V> {
         return parent;
     }
 
+    /**
+     * Changes the parent of the current node. Removes this node from previous parent's children nodes, and
+     * adds it into new parent's children nodes.
+     * @param parent new parent. <code>null</code> only if this node is deleted
+     */
     public void setParent(TreeNode parent) {
         // remove this node from previous parent
         if(this.parent != null) {
@@ -64,8 +69,12 @@ public class TreeNode<V> {
         }
         // set a new parent
         this.parent = parent;
-        // add this as a child to new parent
-        this.parent.addChildren(this);
+        // if it is set null, then it is time to remove this node
+        if(this.parent != null) {
+            // add this as a child to new parent
+            if (parent != null) ;
+            this.parent.addChildren(this);
+        }
     }
 
     public Collection<TreeNode> getChildren() {

@@ -23,7 +23,7 @@ public class Graph<V,L> {
     public void addEdge(V source, V target, L label, long timestamp) {
         GraphEdge<V, L> forwardEdge = new GraphEdge<>(source, target, label, timestamp);
         forwardAdjacency.put(source, forwardEdge);
-        backwardAdjacency.put(target, new GraphEdge<>(target, source, label, timestamp));
+        backwardAdjacency.put(target, new GraphEdge<>(source, target, label, timestamp));
 
         timeOrderedEdges.addLast(forwardEdge);
     }
@@ -31,7 +31,7 @@ public class Graph<V,L> {
     private void removeEdgeFromHashIndexes(V source, V target, L label) {
         GraphEdge<V, L> forwardEdge = new GraphEdge<>(source, target, label, 0);
         forwardAdjacency.remove(source, forwardEdge);
-        backwardAdjacency.remove(target, new GraphEdge<>(target, source, label, 0));
+        backwardAdjacency.remove(target, new GraphEdge<>(source, target, label, 0));
     }
 
     public Collection<GraphEdge<V, L>> getForwardEdges(V source) {
@@ -50,7 +50,7 @@ public class Graph<V,L> {
         // it suffices to linearly scan from the oldest edge as we assume ordered arrival
         while(timeOrderedEdges.peekFirst() != null) {
             GraphEdge<V, L> oldestEdge = timeOrderedEdges.getFirst();
-            if(oldestEdge.getTimestamp() < minTimestamp) {
+            if(oldestEdge.getTimestamp() <= minTimestamp) {
                 timeOrderedEdges.removeFirst();
                 removeEdgeFromHashIndexes(oldestEdge.getSource(), oldestEdge.getTarget(), oldestEdge.getLabel());
             } else {
