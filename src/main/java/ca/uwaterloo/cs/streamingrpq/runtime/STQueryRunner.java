@@ -5,10 +5,13 @@ import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.googlecode.cqengine.query.simple.In;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,8 @@ public class STQueryRunner {
         Integer inputSize = Integer.parseInt(line.getOptionValue("s"));
         Integer maxSize = Integer.parseInt(line.getOptionValue("s"));
         String queryName = line.getOptionValue("n");
+        Long windowSize = Long.parseLong(line.getOptionValue("ws"));
+        Long slideSize = Long.parseLong(line.getOptionValue("ss"));
 
         String semantics = line.getOptionValue("ps");
         PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
@@ -87,7 +92,7 @@ public class STQueryRunner {
             return;
         }
 
-        IncrementalRAPQ<Integer> rapq = new IncrementalRAPQ<Integer>(query, maxSize);
+        RPQEngine<Integer> rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
 
         MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -126,6 +131,8 @@ public class STQueryRunner {
         options.addRequiredOption("n", "name", true, "name of the query to be run");
         options.addRequiredOption("ps", "semantics", true, "path semantics");
         options.addRequiredOption("r", "report-path", true, "CSV file to record execution metrics");
+        options.addRequiredOption("ws", "window-size", true, "Size of the window in milliseconds");
+        options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);

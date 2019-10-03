@@ -12,23 +12,29 @@ class RPQRun:
     input_type  =   ""
     report      =   ""
     buffer_size =   100000000
+    window_size =   50000000
+    slide_size  =   10000000
     semantics   =   ""
     labels      =   []
 
-    def __init__(self, name, input, input_type, report, buffer_size, semantics, labels):
+    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, semantics, labels):
         self.name = name
         self.input = input
         self.input_type = input_type
         self.report_file = report
         self.buffer_size = buffer_size
+        self.window_size = window_size
+        self.slide_size = slide_size
         self.semantics = semantics
         self.labels = labels
 
     def produceCommandString(self):
-        command = "-f {} -t {} -s {} -n {} -ps {} -r {} -l {} ".format(
+        command = "-f {} -t {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -l {} ".format(
             self.input,
             self.input_type,
             str(self.buffer_size),
+            str(self.window_size),
+            str(self.slide_size),
             self.name,
             self.semantics,
             self.report_file,
@@ -60,6 +66,8 @@ with open(parameters, 'rb') as parameters_handle:
     dataset_location = parameters_json["dataset"]
     report_folder = parameters_json["report-folder"]
     buffer_size = parameters_json["buffer-size"]
+    window_size = parameters_json["window-size"]
+    slide_size = parameters_json["slide-size"]
     heap_size = parameters_json["heap-size"]
     timeout = parameters_json["timeout"]
     executable = parameters_json["executable"]
@@ -73,10 +81,10 @@ with open(parameters, 'rb') as parameters_handle:
         labels = run_config["labels"]
 
         # reporting folder
-        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics)
+        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size))
 
         # create the run object
-        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, semantics, labels))
+        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, semantics, labels))
 
 
 # iterate over runs and run the experiments

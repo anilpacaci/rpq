@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +19,9 @@ public class SingleThreadedRun implements Callable {
 
     private String queryName;
     private TextStream stream;
-    private IncrementalRAPQ<Integer> query;
+    private RPQEngine<Integer> query;
 
-    public SingleThreadedRun(String queryName, TextStream stream, IncrementalRAPQ<Integer> query) {
+    public SingleThreadedRun(String queryName, TextStream stream, RPQEngine<Integer> query) {
         this.queryName = queryName;
         this.stream = stream;
         this.query = query;

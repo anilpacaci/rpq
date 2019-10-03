@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
  */
 public class WindowedRAPQ<L> extends RPQEngine<L> {
 
-    private int windowSize;
-    private int slideSize;
+    private long windowSize;
+    private long slideSize;
 
     protected Histogram windowManagementHistogram;
 
-    public WindowedRAPQ(QueryAutomata<L> query, int capacity, int windowSize, int slideSize) {
+    public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         super(query, capacity);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
@@ -42,7 +42,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         //for now window processing is done inside edge processing
         long currentTimetsamp = inputTuple.getTimestamp();
-        if(currentTimetsamp % slideSize == 0) {
+        if(currentTimetsamp>= windowSize && currentTimetsamp % slideSize == 0) {
             // its slide time, maintain the window
             expiry(currentTimetsamp - windowSize);
         }
