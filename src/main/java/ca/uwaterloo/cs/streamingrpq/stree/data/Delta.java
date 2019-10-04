@@ -2,23 +2,22 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
-    private Multimap<Integer, SpanningTree> treeNodeIndex;
+    private Table<V, Integer, Set<SpanningTree>> treeNodeIndex;
 
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
-        treeNodeIndex = HashMultimap.create(capacity, Constants.EXPECTED_TREES);
+        treeNodeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_TREES);
     }
 
     public SpanningTree getTree(V vertex) {
@@ -31,7 +30,12 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        return  treeNodeIndex.get(Hasher.TreeNodeHasher(vertex.hashCode(), state));
+        Set<SpanningTree> containingTrees = treeNodeIndex.get(vertex, state);
+        if(containingTrees == null) {
+            containingTrees = new HashSet<>();
+            treeNodeIndex.put(vertex, state, containingTrees);
+        }
+        return containingTrees;
     }
 
     public boolean exists(V vertex) {
@@ -44,10 +48,12 @@ public class Delta<V> {
         }
         SpanningTree<V> tree = new SpanningTree<>(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
+        addToTreeNodeIndex(tree, tree.getRootNode());
     }
 
     protected void addToTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
-        treeNodeIndex.put(treeNode.hashCode(), tree);
+        Collection<SpanningTree> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
+        containingTrees.add(tree);
     }
 
     /**
@@ -65,7 +71,11 @@ public class Delta<V> {
             // first update treeNode index
             while(removedTuples.hasNext()) {
                 TreeNode<V> removedTuple = removedTuples.next();
-                treeNodeIndex.remove(removedTuple.hashCode(), tree);
+                Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
+                containingTrees.remove(tree);
+                if(containingTrees.isEmpty()) {
+                    treeNodeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+                }
             }
 
             // now if the tree has expired simply remove it from tree index
