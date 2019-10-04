@@ -11,7 +11,7 @@
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
     {
-      "query-name" : "waveguide5",
+      "query-name" : "twitter",
       "index" : 1,
       "semantics" : "arbitrary",
       "labels" : [

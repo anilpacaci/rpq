@@ -72,7 +72,7 @@ public class SimpleTextStream implements TextStream{
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on('\t').split(line), String.class);
+                String[] splitResults = Iterables.toArray(Splitter.on('\t').trimResults().split(line), String.class);
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], globalCounter);
