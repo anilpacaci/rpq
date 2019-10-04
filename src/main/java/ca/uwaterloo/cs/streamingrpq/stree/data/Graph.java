@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Graph<V,L> {
@@ -48,10 +49,11 @@ public class Graph<V,L> {
      */
     public void removeOldEdges(long minTimestamp) {
         // it suffices to linearly scan from the oldest edge as we assume ordered arrival
-        while(timeOrderedEdges.peekFirst() != null) {
-            GraphEdge<V, L> oldestEdge = timeOrderedEdges.getFirst();
+        Iterator<GraphEdge<V, L>> edgeIterator = timeOrderedEdges.iterator();
+        while(edgeIterator.hasNext()) {
+            GraphEdge<V, L> oldestEdge = edgeIterator.next();
             if(oldestEdge.getTimestamp() <= minTimestamp) {
-                timeOrderedEdges.removeFirst();
+                edgeIterator.remove();
                 removeEdgeFromHashIndexes(oldestEdge.getSource(), oldestEdge.getTarget(), oldestEdge.getLabel());
             } else {
                 // as we assume ordered arrival, we can stop the search
