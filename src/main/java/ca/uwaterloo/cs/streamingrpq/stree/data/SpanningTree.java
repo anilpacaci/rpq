@@ -84,12 +84,17 @@ public class SpanningTree<V> {
         }
 
         Iterator<TreeNode> candidateIterator = candidates.iterator();
+        HashSet<TreeNode> visited = new HashSet<>();
 
         //scan over potential nodes once.
         // For each potential, check they have a valid non-tree edge in the original graph
         // If there is traverse down from here (in the graph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
             TreeNode<V> candidate = candidateIterator.next();
+            // check if a previous traversal already found a path for the candidate
+            if(candidate.getTimestamp() > minTimestamp) {
+                continue;
+            }
             //check if there exists any incoming edge from a valid state
             Collection<GraphEdge<V, L>> backwardEdges = graph.getBackwardEdges(candidate.getVertex());
             TreeNode<V> newParent = null;
@@ -121,7 +126,6 @@ public class SpanningTree<V> {
 
                 //now traverse the graph down from this node, and remove any visited node from candidates
                 LinkedList<TreeNode> traversalQueue = new LinkedList<TreeNode>();
-                HashSet<TreeNode> visited = new HashSet<>();
 
                 // initial node is the current candidate, because now it is reachable
                 traversalQueue.add(candidate);
@@ -130,25 +134,30 @@ public class SpanningTree<V> {
                     visited.add(currentVertex);
 
                     Collection<GraphEdge<V, L>> forwardEdges = graph.getForwardEdges(currentVertex.getVertex());
+                    // for each potential child
                     for(GraphEdge<V,L> forwardEdge : forwardEdges) {
-                        int outgoingState = automata.getTransition(currentVertex.getState(), forwardEdge.getLabel());
-                        // I can simply retrieve from the tree index because any node that is reachable are in tree index
-                        TreeNode<V> outgoingTreeNode = this.getNode(forwardEdge.getSource(), outgoingState);
-                        if(forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode) ) {
-                            if(candidates.contains(outgoingTreeNode)) {
-                                // remove this node from potentials as now there is a younger path
-                                candidateRemoval.add(outgoingTreeNode);
+                        Integer outgoingState = automata.getTransition(currentVertex.getState(), forwardEdge.getLabel());
+                        // make sure that transition exists
+                        if (outgoingState != null) {
+                            // I can simply retrieve from the tree index because any node that is reachable are in tree index
+                            TreeNode<V> outgoingTreeNode = this.getNode(forwardEdge.getSource(), outgoingState);
+                            // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
+                            if (outgoingTreeNode != null && forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
+                                if (candidates.contains(outgoingTreeNode)) {
+                                    // remove this node from potentials as now there is a younger path
+                                    candidateRemoval.add(outgoingTreeNode);
+                                }
+                                if (outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
+                                    // note anything in the candidates has a lower timestamp then
+                                    // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
+                                    outgoingTreeNode.setParent(currentVertex);
+                                    outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
+                                    traversalQueue.add(outgoingTreeNode);
+                                }
                             }
-                            if(outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
-                                // note anything in the candidates has a lower timestamp then
-                                // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
-                                outgoingTreeNode.setParent(currentVertex);
-                                outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
-                                traversalQueue.add(outgoingTreeNode);
-                            }
+                            // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
+                            // so no need to add them into the queue
                         }
-                        // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
-                        // so no need to add them into the queue
                     }
                 }
 
