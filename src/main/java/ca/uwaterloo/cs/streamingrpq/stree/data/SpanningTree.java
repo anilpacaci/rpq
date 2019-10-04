@@ -96,7 +96,7 @@ public class SpanningTree<V> {
             TreeNode<V> newParent = null;
             GraphEdge<V,L> newParentEdge = null;
             for(GraphEdge<V,L> backwardEdge : backwardEdges) {
-                Set<Integer> incomingStates = automata.getReverseTransitions(candidate.getState(), backwardEdge.getLabel());
+                Collection<Integer> incomingStates = automata.getReverseTransitions(candidate.getState(), backwardEdge.getLabel());
                 // if there is a state transition with that label
                 for(int incomingState : incomingStates) {
                     newParent = this.getNode(backwardEdge.getSource(), incomingState);

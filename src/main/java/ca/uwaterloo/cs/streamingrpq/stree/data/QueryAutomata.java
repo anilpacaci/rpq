@@ -1,25 +1,31 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class QueryAutomata<L> {
     public int numOfStates;
     public Set<Integer> finalStates;
 
-    Table<Integer, L, Integer> transitions;
-    Table<Integer, L, Set<Integer>> reverseTransitions;
+    HashMap<Integer, HashMap<L, Integer>> transitions;
+
+    HashMap<Integer, Multimap<L, Integer>> reverseTransitions;
+
+    HashMap<L, HashMap<Integer, Integer>> labelTransitions;
 
     public QueryAutomata(int numOfStates) {
         finalStates = new HashSet<>();
-        transitions = HashBasedTable.create();
-        reverseTransitions = HashBasedTable.create();
+        transitions =  new HashMap<>();
+        reverseTransitions = new HashMap<>();
+        labelTransitions = new HashMap<>();
     	this.numOfStates = numOfStates;
+    	// initialize transition maps for all
+    	for(int i = 0; i < numOfStates; i++) {
+    	    transitions.put(i, new HashMap<L, Integer>());
+    	    reverseTransitions.put(i, HashMultimap.create());
+        }
 	}
 
     public void addFinalState(int state) {
@@ -34,33 +40,36 @@ public class QueryAutomata<L> {
     }
 
     public void addTransition(int source, L label, int target) {
-        transitions.put(source, label, target);
-        Set<Integer> sources = getReverseTransitions(target, label);
-        sources.add(source);
+        HashMap<L, Integer> forwardMap = transitions.get(source);
+        forwardMap.put(label, target);
+        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
+        backwardMap.put(label, source);
+        if(!labelTransitions.containsKey(label)) {
+            labelTransitions.put(label, new HashMap<>());
+        }
+        HashMap<Integer, Integer> labelMap = labelTransitions.get(label);
+        labelMap.put(source, target);
     }
 
     public Integer getTransition(int source, L label) {
-        return transitions.get(source, label);
+        HashMap<L, Integer> forwardMap = transitions.get(source);
+        return forwardMap.get(label);
     }
 
-    public Set<Integer> getReverseTransitions(int target, L label) {
-        Set<Integer> sources;
-        if(!reverseTransitions.contains(target, label)) {
-            sources = new HashSet<>();
-            reverseTransitions.put(target, label, sources);
-        } else {
-            sources = reverseTransitions.get(target, label);
-        }
+    /**
+     *
+     * @param target
+     * @param label
+     * @return an empty collection, not <code>null</null> in case target, label entry does not exists
+     */
+    public Collection<Integer> getReverseTransitions(int target, L label) {
+        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
 
-        return  sources;
-    }
-
-    public Map<L, Integer> getTransitions(int source) {
-        return transitions.row(source);
+        return backwardMap.get(label);
     }
 
     public Map<Integer, Integer> getTransition(L label) {
-        return transitions.column(label);
+        return labelTransitions.getOrDefault(label, new HashMap<>());
     }
 
 }
