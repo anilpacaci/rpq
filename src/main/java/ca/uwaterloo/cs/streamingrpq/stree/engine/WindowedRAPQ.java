@@ -113,14 +113,17 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             if(parentNode.equals(tree.getRootNode())) {
                 childNode.setTimestamp(edgeTimestamp);
                 parentNode.setTimestamp( edgeTimestamp);
+                // properly update the parent pointer
+                childNode.setParent(parentNode);
             }
             // child node cannot be the root because parent has to be at least
             else if(childNode.getTimestamp() < Long.min(parentNode.getTimestamp(), edgeTimestamp)) {
                 // only update its timestamp if there is a younger  path, back edge is guarenteed to be at smaller or equal
                 childNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
+                // properly update the parent pointer
+                childNode.setParent(parentNode);
             }
-            // properly update the parent pointer
-            childNode.setParent(parentNode);
+
         } else {
             // extend the spanning tree with incoming node
 

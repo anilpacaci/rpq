@@ -1,10 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
 import java.util.*;
@@ -12,12 +9,12 @@ import java.util.*;
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
-    private Table<V, Integer, Set<SpanningTree>> treeNodeIndex;
+    private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
 
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
-        treeNodeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_TREES);
+        nodeToTreeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_TREES);
     }
 
     public SpanningTree getTree(V vertex) {
@@ -30,10 +27,10 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = treeNodeIndex.get(vertex, state);
+        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(vertex, state);
         if(containingTrees == null) {
             containingTrees = new HashSet<>();
-            treeNodeIndex.put(vertex, state, containingTrees);
+            nodeToTreeIndex.put(vertex, state, containingTrees);
         }
         return containingTrees;
     }
@@ -67,14 +64,13 @@ public class Delta<V> {
         Collection<SpanningTree> trees = treeIndex.values();
         Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
         for(SpanningTree<V> tree : trees) {
-            Iterator<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata).iterator();
+            Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata);
             // first update treeNode index
-            while(removedTuples.hasNext()) {
-                TreeNode<V> removedTuple = removedTuples.next();
+            for(TreeNode<V> removedTuple : removedTuples) {
                 Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
                 containingTrees.remove(tree);
                 if(containingTrees.isEmpty()) {
-                    treeNodeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+                    nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
                 }
             }
 

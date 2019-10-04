@@ -62,9 +62,9 @@ public class SpanningTree<V> {
      */
     protected <L> Collection<TreeNode> removeOldEdges(long minTimestamp, Graph<V,L> graph, QueryAutomata<L> automata) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
-        if(this.rootNode.getTimestamp() <= minTimestamp) {
-            return this.nodeIndex.values();
-        }
+//        if(this.rootNode.getTimestamp() <= minTimestamp) {
+//            return this.nodeIndex.values();
+//        }
 
         // potentially expired nodes
         HashSet<TreeNode> candidates = new HashSet<TreeNode>();
@@ -72,7 +72,7 @@ public class SpanningTree<V> {
 
         // perform a bfs traversal on tree, no need for visited as it is a three
         LinkedList<TreeNode> queue = new LinkedList<>();
-        queue.add(rootNode);
+        queue.addAll(rootNode.getChildren());
         while(!queue.isEmpty()) {
             // populate the queue with children
             TreeNode currentVertex = queue.remove();
@@ -189,6 +189,11 @@ public class SpanningTree<V> {
     public boolean isExpired(long minTimestamp) {
         boolean expired = rootNode.getChildren().stream().allMatch(c -> c.getTimestamp() <= minTimestamp);
         return expired;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("Root:").append(rootNode.getVertex()).append("-TS:").append(rootNode.getTimestamp()).toString();
     }
 
 }

@@ -106,4 +106,9 @@ public class TreeNode<V> {
         }
         return h;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("Node:").append(getVertex()).append(",").append(getState()).append("-TS:").append(getTimestamp()).toString();
+    }
 }
