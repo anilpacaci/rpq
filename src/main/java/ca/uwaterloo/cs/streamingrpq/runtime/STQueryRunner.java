@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
+import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
 import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
@@ -62,6 +63,9 @@ public class STQueryRunner {
             case "hash":
                 stream = new Yago2sHashStream();
                 break;
+            case "text":
+                stream = new SimpleTextStream();
+                break;
             default:
                 stream = new Yago2sTSVStream();
         }
@@ -69,17 +73,21 @@ public class STQueryRunner {
         stream.open(filename, inputSize);
 
 
-        QueryAutomata<Integer> query;
 
+        RPQEngine rapq;
+        SingleThreadedRun task;
         if(queryName.equals("waveguide6")) {
+            QueryAutomata<Integer> query;
             query = new QueryAutomata<>(4);
             query.addTransition(0, predicates[0], 1);
             query.addTransition(1, predicates[1], 2);
             query.addTransition(2, predicates[2], 3);
             query.addTransition(3, predicates[0], 1);
             query.addFinalState(3);
-
+            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<Integer>(queryName, stream, rapq);
         } else if(queryName.equals("waveguide5")) {
+            QueryAutomata<Integer> query;
             query = new QueryAutomata<>(4);
             query.addTransition(0, predicates[0], 1);
             query.addTransition(1, predicates[1], 2);
@@ -87,12 +95,21 @@ public class STQueryRunner {
             query.addTransition(2, predicates[2], 3);
             query.addTransition(3, predicates[2], 3);
             query.addFinalState(3);
-        } else {
+            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<Integer>(queryName, stream, rapq);
+        } else if(queryName.equals("twitter")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(2);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[0], 1);
+            query.addFinalState(1);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        }
+        else {
             logger.error("Not a valid queryname: " + queryName);
             return;
         }
-
-        RPQEngine<Integer> rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
 
         MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -103,7 +120,6 @@ public class STQueryRunner {
         CsvReporter reporter = CsvReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(resultDirectory);
         reporter.start(10, TimeUnit.SECONDS);
 
-        SingleThreadedRun task = new SingleThreadedRun(queryName, stream, rapq);
         try {
             task.call();
         } catch (Exception e) {
