@@ -81,7 +81,13 @@ public class Delta<V> {
         }
         // now update the treeIndex
         for(SpanningTree<V> tree: treesToBeRemoved) {
+            TreeNode<V> removedTuple = tree.getRootNode();
             treeIndex.remove(tree.getRootVertex());
+            Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
+            containingTrees.remove(tree);
+            if(containingTrees.isEmpty()) {
+                nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+            }
         }
     }
 
