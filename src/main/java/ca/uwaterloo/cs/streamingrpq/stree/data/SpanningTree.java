@@ -4,10 +4,7 @@ import com.google.common.base.Verify;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class SpanningTree<V> {
 
@@ -99,9 +96,9 @@ public class SpanningTree<V> {
             TreeNode<V> newParent = null;
             GraphEdge<V,L> newParentEdge = null;
             for(GraphEdge<V,L> backwardEdge : backwardEdges) {
-                Integer incomingState = automata.getTransition(candidate.getState(), backwardEdge.getLabel());
+                Set<Integer> incomingStates = automata.getReverseTransitions(candidate.getState(), backwardEdge.getLabel());
                 // if there is a state transition with that label
-                if(incomingState != null) {
+                for(int incomingState : incomingStates) {
                     newParent = this.getNode(backwardEdge.getSource(), incomingState);
                     if (newParent != null && (!candidates.contains(newParent) || candidateRemoval.contains(newParent))) {
                         // there is an incoming edge with valid source

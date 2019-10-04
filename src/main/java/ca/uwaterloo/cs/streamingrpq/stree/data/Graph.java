@@ -24,7 +24,7 @@ public class Graph<V,L> {
     public void addEdge(V source, V target, L label, long timestamp) {
         GraphEdge<V, L> forwardEdge = new GraphEdge<>(source, target, label, timestamp);
         forwardAdjacency.put(source, forwardEdge);
-        backwardAdjacency.put(target, new GraphEdge<>(source, target, label, timestamp));
+        backwardAdjacency.put(target, forwardEdge);
 
         timeOrderedEdges.addLast(forwardEdge);
     }
@@ -35,12 +35,17 @@ public class Graph<V,L> {
         backwardAdjacency.remove(target, new GraphEdge<>(source, target, label, 0));
     }
 
+    private void removeEdgeFromHashIndexes(GraphEdge<V, L> edge) {
+        forwardAdjacency.remove(edge.getSource(), edge);
+        backwardAdjacency.remove(edge.getTarget(), edge);
+    }
+
     public Collection<GraphEdge<V, L>> getForwardEdges(V source) {
         return forwardAdjacency.get(source);
     }
 
-    public Collection<GraphEdge<V, L>> getBackwardEdges(V source) {
-        return backwardAdjacency.get(source);
+    public Collection<GraphEdge<V, L>> getBackwardEdges(V target) {
+        return backwardAdjacency.get(target);
     }
 
     /**
@@ -54,7 +59,7 @@ public class Graph<V,L> {
             GraphEdge<V, L> oldestEdge = edgeIterator.next();
             if(oldestEdge.getTimestamp() <= minTimestamp) {
                 edgeIterator.remove();
-                removeEdgeFromHashIndexes(oldestEdge.getSource(), oldestEdge.getTarget(), oldestEdge.getLabel());
+                removeEdgeFromHashIndexes(oldestEdge);
             } else {
                 // as we assume ordered arrival, we can stop the search
                 break;
