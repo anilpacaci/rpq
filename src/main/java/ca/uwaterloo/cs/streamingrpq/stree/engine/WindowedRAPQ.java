@@ -112,7 +112,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // root timestmap always higher than any node in the tree
             if(parentNode.equals(tree.getRootNode())) {
                 childNode.setTimestamp(edgeTimestamp);
-                parentNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
+                parentNode.setTimestamp( edgeTimestamp);
             }
             // child node cannot be the root because parent has to be at least
             else if(childNode.getTimestamp() < Long.min(parentNode.getTimestamp(), edgeTimestamp)) {
@@ -128,7 +128,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // root timestmap always higher than any node in the tree
             if(parentNode.equals(tree.getRootNode())) {
                 tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
-                parentNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
+                parentNode.setTimestamp(edgeTimestamp);
             }
             else {
                 tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));

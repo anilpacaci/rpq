@@ -94,7 +94,7 @@ public class TreeNode<V> {
 
         TreeNode tuple = (TreeNode) o;
 
-        return tuple.vertex == vertex && tuple.state == state;
+        return tuple.vertex.equals(vertex) && tuple.state == state;
     }
 
     @Override
