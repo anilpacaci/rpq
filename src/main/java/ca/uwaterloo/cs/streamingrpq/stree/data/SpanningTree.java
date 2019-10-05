@@ -17,11 +17,14 @@ public class SpanningTree<V> {
 
     private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
 
+    private long minTimestamp;
+
     protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
         this.nodeIndex = HashBasedTable.create();
         nodeIndex.put(rootVertex, 0, rootNode);
+        this.minTimestamp = timestamp;
     }
 
 
@@ -38,6 +41,8 @@ public class SpanningTree<V> {
 
         // a new node is added to the spanning tree. update delta index
         this.delta.addToTreeNodeIndex(this, child);
+
+        this.updateTimestamp(timestamp);
     }
 
     public boolean exists(V vertex, int state) {
@@ -55,6 +60,16 @@ public class SpanningTree<V> {
 
     public TreeNode<V> getRootNode() {
         return this.rootNode;
+    }
+
+    protected void updateTimestamp(long timestamp) {
+        if(timestamp < minTimestamp) {
+            this.minTimestamp = timestamp;
+        }
+    }
+
+    protected long getMinTimestamp() {
+        return minTimestamp;
     }
 
     /**

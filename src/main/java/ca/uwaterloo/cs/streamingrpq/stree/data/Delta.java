@@ -68,6 +68,10 @@ public class Delta<V> {
         Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
         LOG.info("{} of trees in Delta", trees.size());
         for(SpanningTree<V> tree : trees) {
+            if(tree.getMinTimestamp() > minTimestamp) {
+                // this tree does not have any node to be deleted, so just skip it
+                break;
+            }
             Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata);
             // first update treeNode index
             for(TreeNode<V> removedTuple : removedTuples) {

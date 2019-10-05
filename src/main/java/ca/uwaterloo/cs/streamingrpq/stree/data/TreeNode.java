@@ -51,6 +51,7 @@ public class TreeNode<V> {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+        this.tree.updateTimestamp(timestamp);
     }
 
     public TreeNode getParent() {
