@@ -112,6 +112,10 @@ public class SpanningTree<V> {
                         break;
                     }
                 }
+                // make sure that outer loop exists once we find a valid edge
+                if(newParentEdge != null) {
+                    break;
+                }
             }
 
             //if this node becomes valid, just traverse everything down in the graph. If somehow I traverse an edge who would
