@@ -66,6 +66,7 @@ public class Delta<V> {
     public <L> void expiry(Long minTimestamp, Graph<V,L> graph, QueryAutomata<L> automata) {
         Collection<SpanningTree> trees = treeIndex.values();
         Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
+        LOG.info("{} of trees in Delta", trees.size());
         for(SpanningTree<V> tree : trees) {
             Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata);
             // first update treeNode index

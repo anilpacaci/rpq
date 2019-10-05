@@ -91,11 +91,12 @@ public class SpanningTree<V> {
         Iterator<TreeNode> candidateIterator = candidates.iterator();
         HashSet<TreeNode> visited = new HashSet<>();
 
+        LOG.info("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
+
         //scan over potential nodes once.
         // For each potential, check they have a valid non-tree edge in the original graph
         // If there is traverse down from here (in the graph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
-            LOG.info("Expiry for spanning tree {}, # of candidates {}", toString(), candidates.size());
             TreeNode<V> candidate = candidateIterator.next();
             // check if a previous traversal already found a path for the candidate
             if(candidate.getTimestamp() > minTimestamp) {
