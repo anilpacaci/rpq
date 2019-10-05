@@ -7,6 +7,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +22,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     private long windowSize;
     private long slideSize;
+
+    private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
 
     protected Histogram windowManagementHistogram;
 
@@ -41,10 +45,11 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         Long windowStartTime = System.nanoTime();
 
         //for now window processing is done inside edge processing
-        long currentTimetsamp = inputTuple.getTimestamp();
-        if(currentTimetsamp >= windowSize && currentTimetsamp % slideSize == 0) {
+        long currentTimestamp = inputTuple.getTimestamp();
+        if(currentTimestamp >= windowSize && currentTimestamp % slideSize == 0) {
+            LOG.info("Expiry procedure at timestamp: {}", currentTimestamp);
             // its slide time, maintain the window
-            expiry(currentTimetsamp - windowSize);
+            expiry(currentTimestamp - windowSize);
         }
         Long windowElapsedTime = System.nanoTime() - windowStartTime;
 
@@ -94,7 +99,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // it implies that edge is processed
             processedHistogram.update(edgeElapsedTime);
         }
-        if(currentTimetsamp % slideSize == 0) {
+        if(currentTimestamp % slideSize == 0) {
             windowManagementHistogram.update(windowElapsedTime);
         }
     }

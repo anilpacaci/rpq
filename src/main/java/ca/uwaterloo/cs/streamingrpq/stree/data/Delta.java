@@ -3,6 +3,8 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -11,6 +13,7 @@ public class Delta<V> {
     private HashMap<V, SpanningTree> treeIndex;
     private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
 
+    private final Logger LOG = LoggerFactory.getLogger(Delta.class);
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
@@ -89,6 +92,8 @@ public class Delta<V> {
                 nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
             }
         }
+
+        LOG.info("Expiry at {}: # of trees {}, # of edges in the graph {}", minTimestamp, treeIndex.size(), graph.getEdgeCount());
     }
 
 }

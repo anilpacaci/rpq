@@ -3,6 +3,8 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 import com.google.common.base.Verify;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,6 +14,8 @@ public class SpanningTree<V> {
     private Delta<V> delta;
 
     Table<V, Integer, TreeNode> nodeIndex;
+
+    private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
 
     protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
@@ -91,6 +95,7 @@ public class SpanningTree<V> {
         // For each potential, check they have a valid non-tree edge in the original graph
         // If there is traverse down from here (in the graph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
+            LOG.info("Expiry for spanning tree {}, # of candidates {}", toString(), candidates.size());
             TreeNode<V> candidate = candidateIterator.next();
             // check if a previous traversal already found a path for the candidate
             if(candidate.getTimestamp() > minTimestamp) {
@@ -181,6 +186,8 @@ public class SpanningTree<V> {
             //remove this node from parent's chilren list
             currentVertex.setParent(null);
         }
+
+        LOG.info("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
 
         // return all the remaining nodes, which have actually expired from the window
         return candidates;

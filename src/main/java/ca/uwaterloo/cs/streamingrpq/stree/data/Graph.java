@@ -12,6 +12,8 @@ public class Graph<V,L> {
     private Multimap<V, GraphEdge<V,L>> forwardAdjacency;
     private Multimap<V, GraphEdge<V,L>> backwardAdjacency;
 
+    private int edgeCount;
+
 
     private LinkedList<GraphEdge<V,L>> timeOrderedEdges;
 
@@ -19,6 +21,7 @@ public class Graph<V,L> {
         forwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
         backwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
         timeOrderedEdges = new LinkedList<GraphEdge<V,L>>();
+        int edgeCount = 0;
     }
 
     public void addEdge(V source, V target, L label, long timestamp) {
@@ -27,6 +30,7 @@ public class Graph<V,L> {
         backwardAdjacency.put(target, forwardEdge);
 
         timeOrderedEdges.addLast(forwardEdge);
+        edgeCount++;
     }
 
     private void removeEdgeFromHashIndexes(V source, V target, L label) {
@@ -60,10 +64,15 @@ public class Graph<V,L> {
             if(oldestEdge.getTimestamp() <= minTimestamp) {
                 edgeIterator.remove();
                 removeEdgeFromHashIndexes(oldestEdge);
+                edgeCount--;
             } else {
                 // as we assume ordered arrival, we can stop the search
                 break;
             }
         }
+    }
+
+    protected int getEdgeCount() {
+        return edgeCount;
     }
 }
