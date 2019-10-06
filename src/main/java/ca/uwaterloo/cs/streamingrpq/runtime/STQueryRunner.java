@@ -42,6 +42,7 @@ public class STQueryRunner {
         String queryName = line.getOptionValue("n");
         Long windowSize = Long.parseLong(line.getOptionValue("ws"));
         Long slideSize = Long.parseLong(line.getOptionValue("ss"));
+        Long startTimestamp = Long.parseLong(line.getOptionValue("st", "0"));
 
         String semantics = line.getOptionValue("ps");
         PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
@@ -70,7 +71,7 @@ public class STQueryRunner {
                 stream = new Yago2sTSVStream();
         }
 
-        stream.open(filename, inputSize);
+        stream.open(filename, inputSize, startTimestamp);
 
 
 
@@ -197,6 +198,7 @@ public class STQueryRunner {
         options.addRequiredOption("r", "report-path", true, "CSV file to record execution metrics");
         options.addRequiredOption("ws", "window-size", true, "Size of the window in milliseconds");
         options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
+        options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);
