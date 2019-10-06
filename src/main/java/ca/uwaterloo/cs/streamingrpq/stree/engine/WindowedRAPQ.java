@@ -43,17 +43,18 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     @Override
     public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
-        Long windowStartTime = System.nanoTime();
-
-        //for now window processing is done inside edge processing
+                //for now window processing is done inside edge processing
         long currentTimestamp = inputTuple.getTimestamp();
         if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize ) {
             LOG.info("Expiry procedure at timestamp: {}", currentTimestamp);
             // its slide time, maintain the window
+            Long windowStartTime = System.nanoTime();
             expiry(currentTimestamp - windowSize);
             lastExpiry = currentTimestamp;
+            Long windowElapsedTime = System.nanoTime() - windowStartTime;
+            windowManagementHistogram.update(windowElapsedTime);
         }
-        Long windowElapsedTime = System.nanoTime() - windowStartTime;
+
 
         // restart time for edge processing
         Long edgeStartTime = System.nanoTime();
@@ -101,9 +102,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // it implies that edge is processed
             processedHistogram.update(edgeElapsedTime);
         }
-        if(currentTimestamp % slideSize == 0) {
-            windowManagementHistogram.update(windowElapsedTime);
-        }
+
     }
 
     @Override
