@@ -41,6 +41,11 @@ public class FilteredSimpleTextStream implements TextStream{
         open(filename);
     }
 
+    @Override
+    public void open(String filename, int size, long startTimestamp) {
+        open(filename, size);
+    }
+
     public void open(String filename) {
         this.filename = filename;
         try {

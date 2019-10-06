@@ -22,6 +22,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     private long windowSize;
     private long slideSize;
+    private long lastExpiry = 0;
 
     private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
 
@@ -46,10 +47,11 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         //for now window processing is done inside edge processing
         long currentTimestamp = inputTuple.getTimestamp();
-        if(currentTimestamp >= windowSize && currentTimestamp % slideSize == 0) {
+        if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize ) {
             LOG.info("Expiry procedure at timestamp: {}", currentTimestamp);
             // its slide time, maintain the window
             expiry(currentTimestamp - windowSize);
+            lastExpiry = currentTimestamp;
         }
         Long windowElapsedTime = System.nanoTime() - windowStartTime;
 
@@ -144,6 +146,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // add this pair to results if it is a final state
             if (automata.isFinalState(childState)) {
                 results.put(tree.getRootVertex(), childVertex);
+                resultCounter.inc();
             }
 
             // get all the forward edges of the new extended node

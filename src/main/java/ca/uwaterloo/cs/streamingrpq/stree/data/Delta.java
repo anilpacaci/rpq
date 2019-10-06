@@ -1,6 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
     private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+
+    protected Counter treeCounter;
 
     private final Logger LOG = LoggerFactory.getLogger(Delta.class);
 
@@ -49,6 +53,7 @@ public class Delta<V> {
         SpanningTree<V> tree = new SpanningTree<>(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
         addToTreeNodeIndex(tree, tree.getRootNode());
+        treeCounter.inc();
     }
 
     protected void addToTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
@@ -96,9 +101,13 @@ public class Delta<V> {
             if(containingTrees.isEmpty()) {
                 nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
             }
+            treeCounter.dec();
         }
 
         LOG.info("Expiry at {}: # of trees {}, # of edges in the graph {}", minTimestamp, treeIndex.size(), graph.getEdgeCount());
     }
 
+    public void addMetricRegistry(MetricRegistry metricRegistry) {
+        this.treeCounter = metricRegistry.counter("tree-counter");
+    }
 }

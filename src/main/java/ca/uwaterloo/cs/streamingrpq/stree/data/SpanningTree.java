@@ -115,7 +115,7 @@ public class SpanningTree<V> {
         Iterator<TreeNode> candidateIterator = candidates.iterator();
         HashSet<TreeNode> visited = new HashSet<>();
 
-        LOG.info("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
+        LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
 
         //scan over potential nodes once.
         // For each potential, check they have a valid non-tree edge in the original graph
@@ -212,7 +212,7 @@ public class SpanningTree<V> {
             currentVertex.setParent(null);
         }
 
-        LOG.info("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
+        LOG.debug("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
 
         // return all the remaining nodes, which have actually expired from the window
         return candidates;

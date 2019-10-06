@@ -15,11 +15,10 @@ import com.google.common.collect.Multimap;
 public abstract class RPQEngine<L> {
 
     protected MetricRegistry metricRegistry;
-    protected Counter expansionCounter;
+    protected Counter resultCounter;
     protected Histogram fullHistogram;
     protected Histogram processedHistogram;
     protected Timer fullTimer;
-    protected Meter queueMeter;
 
     protected Delta<Integer> delta;
     protected Graph<Integer, L> graph;
@@ -41,11 +40,12 @@ public abstract class RPQEngine<L> {
     public void addMetricRegistry(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
         // register all the matrics
-        this.expansionCounter = metricRegistry.counter("expansion-counter");
+        this.resultCounter = metricRegistry.counter("result-counter");
         this.fullHistogram = metricRegistry.histogram("full-histogram");
         this.processedHistogram = metricRegistry.histogram("processed-histogram");
         this.fullTimer = metricRegistry.timer("full-timer");
-        this.queueMeter = metricRegistry.meter("queue-meter");
+        this.graph.addMetricRegistry(metricRegistry);
+        this.delta.addMetricRegistry(metricRegistry);
     }
 
     public abstract void processEdge(InputTuple<Integer, Integer, L> inputTuple);

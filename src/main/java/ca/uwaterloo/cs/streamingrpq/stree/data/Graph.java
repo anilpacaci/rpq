@@ -1,6 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -14,6 +16,7 @@ public class Graph<V,L> {
 
     private int edgeCount;
 
+    protected Counter edgeCounter;
 
     private LinkedList<GraphEdge<V,L>> timeOrderedEdges;
 
@@ -30,6 +33,7 @@ public class Graph<V,L> {
         backwardAdjacency.put(target, forwardEdge);
 
         timeOrderedEdges.addLast(forwardEdge);
+        edgeCounter.inc();
         edgeCount++;
     }
 
@@ -64,6 +68,7 @@ public class Graph<V,L> {
             if(oldestEdge.getTimestamp() <= minTimestamp) {
                 edgeIterator.remove();
                 removeEdgeFromHashIndexes(oldestEdge);
+                edgeCounter.dec();
                 edgeCount--;
             } else {
                 // as we assume ordered arrival, we can stop the search
@@ -74,5 +79,9 @@ public class Graph<V,L> {
 
     protected int getEdgeCount() {
         return edgeCount;
+    }
+
+    public void addMetricRegistry(MetricRegistry metricRegistry) {
+        this.edgeCounter = metricRegistry.counter("edge-counter");
     }
 }

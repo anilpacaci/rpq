@@ -1,0 +1,124 @@
+{
+  "name" : "stackoverflow",
+  "dataset" : "/hdd1/apacaci/datasets/stackoverflow/labeled-sorted.txt",
+  "input-type" : "snap-sx",
+  "report-folder" : "/home/apacaci/sgraffito/rpq/results-stackoverflow",
+  "buffer-size" : 50000000,
+  "heap-size" : 128,
+  "timeout" : 600,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "maze1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "maze2",
+      "index" : 2,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze3",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze4",
+      "index" : 47,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze5",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 31556926,
+      "slide-size" : 2629743,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze2",
+      "index" : 2,
+      "semantics" : "arbitrary",
+      "window-size" : 31556926,
+      "slide-size" : 2629743,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze3",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 31556926,
+      "slide-size" : 2629743,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze4",
+      "index" : 47,
+      "semantics" : "arbitrary",
+      "window-size" : 31556926,
+      "slide-size" : 2629743,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },{
+      "query-name" : "maze5",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 31556926,
+      "slide-size" : 2629743,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    }
+  ]
+}

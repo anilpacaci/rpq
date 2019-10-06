@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Yago2sHashStream implements TextStream{
+public class StackOverflowStream implements TextStream{
 
 
     FileReader fileStream;
@@ -24,18 +24,21 @@ public class Yago2sHashStream implements TextStream{
     Integer localCounter = 0;
     Integer globalCounter = 0;
 
+    Long startTimestamp = -1L;
+
 
     public boolean isOpen() {
         return false;
     }
 
     public void open(String filename, int maxSize) {
+        this.startTimestamp = 0L;
         open(filename);
     }
 
-    @Override
-    public void open(String filename, int size, long startTimestamp) {
-        open(filename, size);
+    public void open(String filename, int maxSize, long startTimestamp) {
+        this.startTimestamp = startTimestamp;
+        open(filename);
     }
 
     public void open(String filename) {
@@ -59,7 +62,6 @@ public class Yago2sHashStream implements TextStream{
 
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
-
     }
 
     public void close() {
@@ -73,15 +75,15 @@ public class Yago2sHashStream implements TextStream{
         executor.shutdown();
     }
 
-    public InputTuple<Integer, Integer, Integer> next() {
+    public InputTuple<Integer, Integer, String> next() {
         String line = null;
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
                 String[] splitResults = Iterables.toArray(Splitter.on(' ').split(line), String.class);
-                if(splitResults.length == 3) {
+                if(splitResults.length == 4) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), Integer.parseInt(splitResults[1]), globalCounter);
+                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], Long.parseLong(splitResults[3]) - startTimestamp);
                     localCounter++;
                     globalCounter++;
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);

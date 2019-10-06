@@ -40,6 +40,11 @@ public class Yago2sInMemoryTSVStream implements TextStream{
         open(filename, MAX_STREAM_SIZE);
     }
 
+    @Override
+    public void open(String filename, int size, long startTimestamp) {
+        open(filename, size);
+    }
+
     public void open(String filename, int maxSize) {
         try {
             fileStream = new FileReader(filename);

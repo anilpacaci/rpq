@@ -1,9 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
-import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
@@ -66,6 +63,9 @@ public class STQueryRunner {
             case "text":
                 stream = new SimpleTextStream();
                 break;
+            case "snap-sx":
+                stream = new StackOverflowStream();
+                break;
             default:
                 stream = new Yago2sTSVStream();
         }
@@ -103,6 +103,54 @@ public class STQueryRunner {
             query.addTransition(0, predicateString[0], 1);
             query.addTransition(1, predicateString[0], 1);
             query.addFinalState(1);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        } else if(queryName.equals("maze1")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(3);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[1], 2);
+            query.addTransition(2, predicateString[1], 2);
+            query.addFinalState(2);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        } else if(queryName.equals("maze2")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(2);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[0], 1);
+            query.addFinalState(1);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        } else if(queryName.equals("maze3")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(4);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[1], 2);
+            query.addTransition(2, predicateString[2], 3);
+            query.addTransition(3, predicateString[2], 3);
+            query.addFinalState(3);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        } else if(queryName.equals("maze4")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(3);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[0], 1);
+            query.addTransition(1, predicateString[1], 2);
+            query.addTransition(2, predicateString[1], 2);
+            query.addFinalState(2);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            task = new SingleThreadedRun<String>(queryName, stream, rapq);
+        } else if(queryName.equals("maze4")) {
+            QueryAutomata<String> query;
+            query = new QueryAutomata<>(4);
+            query.addTransition(0, predicateString[0], 1);
+            query.addTransition(1, predicateString[1], 2);
+            query.addTransition(2, predicateString[1], 2);
+            query.addTransition(2, predicateString[2], 3);
+            query.addTransition(3, predicateString[2], 3);
+            query.addFinalState(3);
             rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         }

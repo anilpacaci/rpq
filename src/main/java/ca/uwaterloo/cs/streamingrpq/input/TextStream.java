@@ -12,6 +12,8 @@ public interface TextStream {
 
     public void open(String filename, int size);
 
+    public void open(String filename, int size, long startTimestamp);
+
     public InputTuple next();
 
     public void close();

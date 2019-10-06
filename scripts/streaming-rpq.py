@@ -66,8 +66,6 @@ with open(parameters, 'rb') as parameters_handle:
     dataset_location = parameters_json["dataset"]
     report_folder = parameters_json["report-folder"]
     buffer_size = parameters_json["buffer-size"]
-    window_size = parameters_json["window-size"]
-    slide_size = parameters_json["slide-size"]
     heap_size = parameters_json["heap-size"]
     timeout = parameters_json["timeout"]
     executable = parameters_json["executable"]
@@ -79,7 +77,8 @@ with open(parameters, 'rb') as parameters_handle:
         index = run_config["index"]
         semantics = run_config["semantics"]
         labels = run_config["labels"]
-
+        window_size = run_config["window-size"]
+        slide_size = run_config["slide-size"]
         # reporting folder
         report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size))
 
@@ -93,6 +92,7 @@ for run in run_list:
     javaCommand = "java -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
 
     print "Executing command {} ".format(javaCommand)
+    sys.stdout.flush()
 
     elapsedTime = 0
     interval = 5
@@ -106,6 +106,7 @@ for run in run_list:
         # kill after timeout if process is still alive
         if elapsedTime > timeout and proc.poll() is None:
             print "Killing pid {} after timeout {}".format(str(proc.pid), str(timeout))
+            sys.stdout.flush()
             proc.kill()
             break
 
