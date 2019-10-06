@@ -91,6 +91,9 @@ public class SpanningTree<V> {
 
         // perform a bfs traversal on tree, no need for visited as it is a three
         LinkedList<TreeNode> queue = new LinkedList<>();
+        // minTimestamp of the tree should be updated, find the lowest timestamp in the tree higher than the minTimestmap
+        // because after this maintenance, there is not going to be a node in the tree lower than the minTimestamp
+        long minimumValidTimetamp = Long.MAX_VALUE;
         queue.addAll(rootNode.getChildren());
         while(!queue.isEmpty()) {
             // populate the queue with children
@@ -101,7 +104,13 @@ public class SpanningTree<V> {
             if(currentVertex.getTimestamp() <= minTimestamp) {
                 candidates.add(currentVertex);
             }
+            // find minValidTimestamp for filtering for the next maintenance window
+            if(currentVertex.getTimestamp() > minTimestamp && currentVertex.getTimestamp() < minimumValidTimetamp) {
+                minimumValidTimetamp = currentVertex.getTimestamp();
+            }
         }
+        //update the lowest minimum timestamp for this tree
+        this.minTimestamp = minimumValidTimetamp;
 
         Iterator<TreeNode> candidateIterator = candidates.iterator();
         HashSet<TreeNode> visited = new HashSet<>();

@@ -70,7 +70,7 @@ public class Delta<V> {
         for(SpanningTree<V> tree : trees) {
             if(tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
-                break;
+                continue;
             }
             Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata);
             // first update treeNode index
