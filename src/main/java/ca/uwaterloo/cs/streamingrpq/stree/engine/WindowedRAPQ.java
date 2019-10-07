@@ -55,8 +55,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
         // total number of trees expanded due this edge insertion
         int treeCount = 0;
-        // futures to collect
-        LinkedList<Future<Multimap<Integer, Integer>>> futureResults = new LinkedList<Future<Multimap<Integer, Integer>>>();
         //for now window processing is done inside edge processing
         long currentTimestamp = inputTuple.getTimestamp();
         if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize ) {
@@ -92,6 +90,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
+        LinkedList<Future<Multimap<Integer, Integer>>> futureResults = new LinkedList<Future<Multimap<Integer, Integer>>>();
+
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
@@ -100,7 +100,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             Collection<SpanningTree> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
             treeCount += containingTrees.size();
             // iterate over spanning trees that include the source node
-            for(SpanningTree spanningTree : containingTrees) {
+            for(SpanningTree<Integer> spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 ExtensionRunner<L> extensionJob = new ExtensionRunner<L>(this.graph, this.delta, this.automata, spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());

@@ -10,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
-    private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+    private Table<V, Integer, CopyOnWriteArraySet<SpanningTree>> nodeToTreeIndex;
 
     protected Counter treeCounter;
     protected Histogram maintainedTreeHistogram;
@@ -36,9 +37,9 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(vertex, state);
+        CopyOnWriteArraySet<SpanningTree> containingTrees = nodeToTreeIndex.get(vertex, state);
         if(containingTrees == null) {
-            containingTrees = new HashSet<>();
+            containingTrees = new CopyOnWriteArraySet<>();
             nodeToTreeIndex.put(vertex, state, containingTrees);
         }
         return containingTrees;
