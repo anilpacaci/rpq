@@ -80,7 +80,7 @@ public class StackOverflowStream implements TextStream{
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on(' ').split(line), String.class);
+                String[] splitResults = Iterables.toArray(Splitter.on('\t').trimResults().split(line), String.class);
                 if(splitResults.length == 4) {
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], Long.parseLong(splitResults[3]) - startTimestamp);

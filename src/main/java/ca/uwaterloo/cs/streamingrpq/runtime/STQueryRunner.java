@@ -143,7 +143,7 @@ public class STQueryRunner {
             query.addFinalState(2);
             rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
-        } else if(queryName.equals("maze4")) {
+        } else if(queryName.equals("maze5")) {
             QueryAutomata<String> query;
             query = new QueryAutomata<>(4);
             query.addTransition(0, predicateString[0], 1);
