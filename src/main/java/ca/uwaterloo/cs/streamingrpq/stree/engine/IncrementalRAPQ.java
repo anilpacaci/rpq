@@ -47,6 +47,11 @@ public class IncrementalRAPQ<L> extends RPQEngine<L> {
     }
 
     @Override
+    public void shutDown() {
+        // TODO no need for shutdown
+    }
+
+    @Override
     public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
         Long startTime = System.nanoTime();
         Timer.Context timer = fullTimer.time();

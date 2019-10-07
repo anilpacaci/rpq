@@ -53,4 +53,6 @@ public abstract class RPQEngine<L> {
     public abstract void processEdge(InputTuple<Integer, Integer, L> inputTuple);
 
     public abstract void processTransition(SpanningTree<Integer> tree, int parentVertex, int parentState, int childVertex, int childState, long edgeTimestamp);
+
+    public abstract void shutDown();
 }

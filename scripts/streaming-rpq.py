@@ -17,7 +17,7 @@ class RPQRun:
     semantics   =   ""
     labels      =   []
 
-    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, semantics, labels):
+    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, thread_count, semantics, labels):
         self.name = name
         self.input = input
         self.input_type = input_type
@@ -27,11 +27,13 @@ class RPQRun:
         self.slide_size = slide_size
         self.semantics = semantics
         self.labels = labels
+        self.thread_count = thread_count
 
     def produceCommandString(self):
-        command = "-f {} -t {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -l {} ".format(
+        command = "-f {} -t {} -tc {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -l {}".format(
             self.input,
             self.input_type,
+            str(self.thread_count),
             str(self.buffer_size),
             str(self.window_size),
             str(self.slide_size),
@@ -79,11 +81,12 @@ with open(parameters, 'rb') as parameters_handle:
         labels = run_config["labels"]
         window_size = run_config["window-size"]
         slide_size = run_config["slide-size"]
+        thread_count = run_config["thread-count"]
         # reporting folder
         report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size))
 
         # create the run object
-        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, semantics, labels))
+        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, semantics, labels))
 
 
 # iterate over runs and run the experiments

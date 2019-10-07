@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,14 +26,22 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     private long slideSize;
     private long lastExpiry = 0;
 
+    private ExecutorService executorService;
+
+
     private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
 
     protected Histogram windowManagementHistogram;
 
     public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+        this(query, capacity, windowSize, slideSize, 1);
+    }
+
+    public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         super(query, capacity);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
+        this.executorService = Executors.newFixedThreadPool(numOfThreads);
     }
 
     @Override
@@ -43,7 +53,11 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     @Override
     public void processEdge(InputTuple<Integer, Integer, L> inputTuple) {
-                //for now window processing is done inside edge processing
+        // total number of trees expanded due this edge insertion
+        int treeCount = 0;
+        // futures to collect
+        LinkedList<Future<Multimap<Integer, Integer>>> futureResults = new LinkedList<Future<Multimap<Integer, Integer>>>();
+        //for now window processing is done inside edge processing
         long currentTimestamp = inputTuple.getTimestamp();
         if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize ) {
             LOG.info("Expiry procedure at timestamp: {}", currentTimestamp);
@@ -78,8 +92,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
-        int treeCount = 0;
-
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
@@ -91,10 +103,19 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             for(SpanningTree spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
-                processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                ExtensionRunner<L> extensionJob = new ExtensionRunner<L>(this.graph, this.delta, this.automata, spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                futureResults.add(this.executorService.submit(extensionJob));
             }
         }
 
+        for(Future<Multimap<Integer, Integer>> future : futureResults) {
+            try {
+                results.putAll(future.get());
+                resultCounter.inc(future.get().size());
+            } catch (InterruptedException | ExecutionException  e) {
+                LOG.error("Error executing spanning tree expansion for edge {}", inputTuple.toString());
+            }
+        }
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
@@ -172,6 +193,12 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 }
             }
         }
+    }
+
+    @Override
+    public void shutDown() {
+        // shutdown executors
+        this.executorService.shutdown();
     }
 
     /**

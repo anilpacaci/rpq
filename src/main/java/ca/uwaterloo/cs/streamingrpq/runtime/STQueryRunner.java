@@ -43,6 +43,7 @@ public class STQueryRunner {
         Long windowSize = Long.parseLong(line.getOptionValue("ws"));
         Long slideSize = Long.parseLong(line.getOptionValue("ss"));
         Long startTimestamp = Long.parseLong(line.getOptionValue("st", "0"));
+        Integer threadCount = Integer.parseInt(line.getOptionValue("tc", "1"));
 
         String semantics = line.getOptionValue("ps");
         PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
@@ -85,7 +86,7 @@ public class STQueryRunner {
             query.addTransition(2, predicates[2], 3);
             query.addTransition(3, predicates[0], 1);
             query.addFinalState(3);
-            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<Integer>(queryName, stream, rapq);
         } else if(queryName.equals("waveguide5")) {
             QueryAutomata<Integer> query;
@@ -96,7 +97,7 @@ public class STQueryRunner {
             query.addTransition(2, predicates[2], 3);
             query.addTransition(3, predicates[2], 3);
             query.addFinalState(3);
-            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<Integer>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<Integer>(queryName, stream, rapq);
         } else if(queryName.equals("twitter")) {
             QueryAutomata<String> query;
@@ -104,7 +105,7 @@ public class STQueryRunner {
             query.addTransition(0, predicateString[0], 1);
             query.addTransition(1, predicateString[0], 1);
             query.addFinalState(1);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         } else if(queryName.equals("maze1")) {
             QueryAutomata<String> query;
@@ -113,7 +114,7 @@ public class STQueryRunner {
             query.addTransition(1, predicateString[1], 2);
             query.addTransition(2, predicateString[1], 2);
             query.addFinalState(2);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         } else if(queryName.equals("maze2")) {
             QueryAutomata<String> query;
@@ -121,7 +122,7 @@ public class STQueryRunner {
             query.addTransition(0, predicateString[0], 1);
             query.addTransition(1, predicateString[0], 1);
             query.addFinalState(1);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         } else if(queryName.equals("maze3")) {
             QueryAutomata<String> query;
@@ -131,7 +132,7 @@ public class STQueryRunner {
             query.addTransition(2, predicateString[2], 3);
             query.addTransition(3, predicateString[2], 3);
             query.addFinalState(3);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         } else if(queryName.equals("maze4")) {
             QueryAutomata<String> query;
@@ -141,7 +142,7 @@ public class STQueryRunner {
             query.addTransition(1, predicateString[1], 2);
             query.addTransition(2, predicateString[1], 2);
             query.addFinalState(2);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         } else if(queryName.equals("maze4")) {
             QueryAutomata<String> query;
@@ -152,7 +153,7 @@ public class STQueryRunner {
             query.addTransition(2, predicateString[2], 3);
             query.addTransition(3, predicateString[2], 3);
             query.addFinalState(3);
-            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize);
+            rapq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
             task = new SingleThreadedRun<String>(queryName, stream, rapq);
         }
         else {
@@ -179,6 +180,9 @@ public class STQueryRunner {
         reporter.stop();
         reporter.close();
 
+        //shutdown the engine
+        rapq.shutDown();
+
         //shut down the executor
         //reset the stream so we can reuse it for the next query
         stream.reset();
@@ -199,6 +203,7 @@ public class STQueryRunner {
         options.addRequiredOption("ws", "window-size", true, "Size of the window in milliseconds");
         options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
         options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");
+        options.addOption("tc", "threadCount", true, "# of Threads for inter-query parallelism");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);
