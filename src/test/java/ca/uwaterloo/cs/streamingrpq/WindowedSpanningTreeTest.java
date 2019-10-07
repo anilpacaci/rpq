@@ -23,7 +23,7 @@ public class WindowedSpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        RPQEngine<String> rapqEngine = new WindowedRAPQ<>(query, 100, 5, 1);
+        RPQEngine<String> rapqEngine = new WindowedRAPQ<>(query, 100, 5, 1, 10);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 
@@ -44,6 +44,8 @@ public class WindowedSpanningTreeTest {
         }
 
         rapqEngine.getResults().entries().iterator().forEachRemaining(t-> {System.out.println(t.getKey() + " --> " + t.getValue());});
+
+        rapqEngine.shutDown();
 
     }
 }

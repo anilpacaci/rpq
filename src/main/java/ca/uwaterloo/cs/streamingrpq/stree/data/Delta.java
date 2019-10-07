@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -16,6 +17,7 @@ public class Delta<V> {
     private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
 
     protected Counter treeCounter;
+    protected Histogram maintainedTreeHistogram;
 
     private final Logger LOG = LoggerFactory.getLogger(Delta.class);
 
@@ -109,5 +111,6 @@ public class Delta<V> {
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {
         this.treeCounter = metricRegistry.counter("tree-counter");
+        this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
     }
 }
