@@ -117,7 +117,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 resultCounter.inc(future.get().size());
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error executing spanning tree expansion for edge {}", inputTuple.toString());
+            LOG.error("Error executing spanning tree expansion for edge {}, {}", inputTuple.toString(), e);
         }
 
 
