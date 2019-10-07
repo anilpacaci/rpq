@@ -90,7 +90,9 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
-        LinkedList<Future<Multimap<Integer, Integer>>> futureResults = new LinkedList<Future<Multimap<Integer, Integer>>>();
+        // tasks and results for concurrent execution
+        Collection<ExtensionRunner<L>> tasks = new LinkedList<>();
+        List<Future<Multimap<Integer, Integer>>> futureResults;
 
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
@@ -104,18 +106,21 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 ExtensionRunner<L> extensionJob = new ExtensionRunner<L>(this.graph, this.delta, this.automata, spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                futureResults.add(this.executorService.submit(extensionJob));
+                tasks.add(extensionJob);
             }
         }
 
-        for(Future<Multimap<Integer, Integer>> future : futureResults) {
-            try {
+        try {
+            futureResults = this.executorService.invokeAll(tasks);
+            for(Future<Multimap<Integer, Integer>> future : futureResults) {
                 results.putAll(future.get());
                 resultCounter.inc(future.get().size());
-            } catch (InterruptedException | ExecutionException  e) {
-                LOG.error("Error executing spanning tree expansion for edge {}", inputTuple.toString());
             }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error executing spanning tree expansion for edge {}", inputTuple.toString());
         }
+
+
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
