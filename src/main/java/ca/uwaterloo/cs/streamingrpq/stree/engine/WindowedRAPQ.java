@@ -78,13 +78,17 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
+        int treeCount = 0;
+
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
             int targetState = transition.getValue();
 
+            Collection<SpanningTree> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
+            treeCount += containingTrees.size();
             // iterate over spanning trees that include the source node
-            for(SpanningTree spanningTree : delta.getTrees(inputTuple.getSource(), sourceState)) {
+            for(SpanningTree spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 processTransition(spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
@@ -101,6 +105,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         if(!transitions.isEmpty()) {
             // it implies that edge is processed
             processedHistogram.update(edgeElapsedTime);
+            containingTreeHistogram.update(treeCount);
         }
 
     }

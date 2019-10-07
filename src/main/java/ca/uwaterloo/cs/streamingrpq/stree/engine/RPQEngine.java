@@ -16,6 +16,7 @@ public abstract class RPQEngine<L> {
 
     protected MetricRegistry metricRegistry;
     protected Counter resultCounter;
+    protected Histogram containingTreeHistogram;
     protected Histogram fullHistogram;
     protected Histogram processedHistogram;
     protected Timer fullTimer;
@@ -43,6 +44,7 @@ public abstract class RPQEngine<L> {
         this.resultCounter = metricRegistry.counter("result-counter");
         this.fullHistogram = metricRegistry.histogram("full-histogram");
         this.processedHistogram = metricRegistry.histogram("processed-histogram");
+        this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
         this.graph.addMetricRegistry(metricRegistry);
         this.delta.addMetricRegistry(metricRegistry);
