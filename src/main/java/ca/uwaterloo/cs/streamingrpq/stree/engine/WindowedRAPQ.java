@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -10,10 +11,7 @@ import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +23,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     private long windowSize;
     private long slideSize;
     private long lastExpiry = 0;
+
+    private Queue<TreeExpansionJob> jobQueue;
 
     private ExecutorService executorService;
 
@@ -42,6 +42,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
+        this.jobQueue = new ArrayDeque<>(Constants.EXPECTED_TREES);
     }
 
     @Override
@@ -90,10 +91,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
-        // tasks and results for concurrent execution
-        Collection<ExtensionRunner<L>> tasks = new LinkedList<>();
-        List<Future<Multimap<Integer, Integer>>> futureResults;
-
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
@@ -105,22 +102,16 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             for(SpanningTree<Integer> spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
-                ExtensionRunner<L> extensionJob = new ExtensionRunner<L>(this.graph, this.delta, this.automata, spanningTree, inputTuple.getSource(), sourceState, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                tasks.add(extensionJob);
+                TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
+                //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                jobQueue.offer(new TreeExpansionJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp()));
             }
         }
 
-        try {
-            futureResults = this.executorService.invokeAll(tasks);
-            for(Future<Multimap<Integer, Integer>> future : futureResults) {
-                results.putAll(future.get());
-                resultCounter.inc(future.get().size());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error executing spanning tree expansion for edge {}, {}", inputTuple.toString(), e);
+        while(!jobQueue.isEmpty()) {
+            TreeExpansionJob job = jobQueue.remove();
+            processTransition(job.getSpanningTree(), job.getParentNode(), job.getTargetVertex(), job.getTargetState(), job.getEdgeTimestamp());
         }
-
-
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
@@ -137,9 +128,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     }
 
     @Override
-    public void processTransition(SpanningTree<Integer> tree, int parentVertex, int parentState, int childVertex, int childState, long edgeTimestamp) {
-        TreeNode parentNode = tree.getNode(parentVertex, parentState);
-
+    public void processTransition(SpanningTree<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
         // either update timestamp, or create the node
         if(tree.exists(childVertex, childState)) {
             // if the child node already exists, we might need to update timestamp
@@ -166,12 +155,13 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
             // root's children have timestamp equal to the edge timestamp
             // root timestmap always higher than any node in the tree
+            TreeNode<Integer> childNode;
             if(parentNode.equals(tree.getRootNode())) {
-                tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
+                childNode = tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
                 parentNode.setTimestamp(edgeTimestamp);
             }
             else {
-                tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));
+                childNode = tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));
             }
             // add this pair to results if it is a final state
             if (automata.isFinalState(childState)) {
@@ -193,7 +183,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                     // no need to check if the target node exists as we might need to update its timestamp even if it exists
                     if (targetState != null) {
                         // recursive call as the target of the forwardEdge has not been visited in state targetState before
-                        processTransition(tree, childVertex, childState, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
+                        //processTransition(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
+                        jobQueue.offer(new TreeExpansionJob(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp()));
                     }
                 }
             }

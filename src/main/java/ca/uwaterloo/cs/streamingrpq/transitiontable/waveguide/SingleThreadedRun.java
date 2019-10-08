@@ -2,7 +2,6 @@ package ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

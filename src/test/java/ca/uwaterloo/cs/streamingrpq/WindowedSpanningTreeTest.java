@@ -4,7 +4,6 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
 import com.codahale.metrics.ConsoleReporter;
@@ -46,6 +45,10 @@ public class WindowedSpanningTreeTest {
         rapqEngine.getResults().entries().iterator().forEachRemaining(t-> {System.out.println(t.getKey() + " --> " + t.getValue());});
 
         rapqEngine.shutDown();
+
+        stream.close();
+
+        reporter.stop();
 
     }
 }

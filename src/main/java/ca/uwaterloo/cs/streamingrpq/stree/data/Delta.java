@@ -23,7 +23,7 @@ public class Delta<V> {
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
-        nodeToTreeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_TREES);
+        nodeToTreeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_LABELS);
     }
 
     public SpanningTree getTree(V vertex) {
@@ -38,7 +38,7 @@ public class Delta<V> {
     public Collection<SpanningTree> getTrees(V vertex, int state) {
         Set<SpanningTree> containingTrees = nodeToTreeIndex.get(vertex, state);
         if(containingTrees == null) {
-            containingTrees = new HashSet<>();
+            containingTrees = new HashSet<>(Constants.EXPECTED_TREES);
             nodeToTreeIndex.put(vertex, state, containingTrees);
         }
         return containingTrees;

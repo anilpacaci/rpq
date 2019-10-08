@@ -28,7 +28,7 @@ public class SpanningTree<V> {
     }
 
 
-    public void addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
+    public TreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {
             // TODO no object found
         }
@@ -43,6 +43,8 @@ public class SpanningTree<V> {
         this.delta.addToTreeNodeIndex(this, child);
 
         this.updateTimestamp(timestamp);
+
+        return child;
     }
 
     public boolean exists(V vertex, int state) {

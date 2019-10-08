@@ -66,6 +66,7 @@ public class SimpleTextStream implements TextStream{
         try {
             bufferedReader.close();
             fileStream.close();
+            this.executor.shutdownNow();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,10 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
-import ca.uwaterloo.cs.streamingrpq.stree.data.Graph;
-import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.data.SpanningTree;
+import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -52,7 +49,7 @@ public abstract class RPQEngine<L> {
 
     public abstract void processEdge(InputTuple<Integer, Integer, L> inputTuple);
 
-    public abstract void processTransition(SpanningTree<Integer> tree, int parentVertex, int parentState, int childVertex, int childState, long edgeTimestamp);
+    public abstract void processTransition(SpanningTree<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp);
 
     public abstract void shutDown();
 }

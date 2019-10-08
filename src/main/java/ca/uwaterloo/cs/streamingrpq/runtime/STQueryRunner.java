@@ -2,14 +2,12 @@ package ca.uwaterloo.cs.streamingrpq.runtime;
 
 import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
-import com.googlecode.cqengine.query.simple.In;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
