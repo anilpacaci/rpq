@@ -18,7 +18,7 @@ rdf_loader_run (); &
 
 
 sparql select count(*) from <yago> where { ?s ?p ?o };
-select * {graph ?g {}}
+select * {productGraph ?g {}}
 
 sparql SELECT  DISTINCT ?g WHERE  { GRAPH ?g {?s ?p ?o} } ORDER BY  ?g
 

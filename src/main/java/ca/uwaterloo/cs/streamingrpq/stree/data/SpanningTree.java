@@ -1,6 +1,5 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import com.google.common.base.Verify;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
@@ -75,13 +74,13 @@ public class SpanningTree<V> {
     }
 
     /**
-     * removes old edges from the graph, used during window management.
-     * This function assumes that expired edges are removed from the graph, so traversal assumes that it is guarenteed to
+     * removes old edges from the productGraph, used during window management.
+     * This function assumes that expired edges are removed from the productGraph, so traversal assumes that it is guarenteed to
      * traverse valid edges
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    protected <L> Collection<TreeNode> removeOldEdges(long minTimestamp, Graph<V,L> graph, QueryAutomata<L> automata) {
+    protected <L> Collection<TreeNode> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
@@ -120,8 +119,8 @@ public class SpanningTree<V> {
         LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
 
         //scan over potential nodes once.
-        // For each potential, check they have a valid non-tree edge in the original graph
-        // If there is traverse down from here (in the graph) and remove all children from potentials
+        // For each potential, check they have a valid non-tree edge in the original productGraph
+        // If there is traverse down from here (in the productGraph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
             TreeNode<V> candidate = candidateIterator.next();
             // check if a previous traversal already found a path for the candidate
@@ -129,28 +128,20 @@ public class SpanningTree<V> {
                 continue;
             }
             //check if there exists any incoming edge from a valid state
-            Collection<GraphEdge<V, L>> backwardEdges = graph.getBackwardEdges(candidate.getVertex());
+            Collection<GraphEdge<ProductGraphNode<V>>> backwardEdges = productGraph.getBackwardEdges(candidate.getVertex(), candidate.getState());
             TreeNode<V> newParent = null;
-            GraphEdge<V,L> newParentEdge = null;
-            for(GraphEdge<V,L> backwardEdge : backwardEdges) {
-                Collection<Integer> incomingStates = automata.getReverseTransitions(candidate.getState(), backwardEdge.getLabel());
-                // if there is a state transition with that label
-                for(int incomingState : incomingStates) {
-                    newParent = this.getNode(backwardEdge.getSource(), incomingState);
-                    if (newParent != null && (!candidates.contains(newParent) || candidateRemoval.contains(newParent))) {
-                        // there is an incoming edge with valid source
-                        // source is valid (in the tree) and not in candidate
-                        newParentEdge = backwardEdge;
-                        break;
-                    }
-                }
-                // make sure that outer loop exists once we find a valid edge
-                if(newParentEdge != null) {
+            GraphEdge<ProductGraphNode<V>> newParentEdge = null;
+            for(GraphEdge<ProductGraphNode<V>> backwardEdge : backwardEdges) {
+                newParent = this.getNode(backwardEdge.getSource().getVertex(), backwardEdge.getSource().getState());
+                if (newParent != null && (!candidates.contains(newParent) || candidateRemoval.contains(newParent))) {
+                    // there is an incoming edge with valid source
+                    // source is valid (in the tree) and not in candidate
+                    newParentEdge = backwardEdge;
                     break;
                 }
             }
 
-            //if this node becomes valid, just traverse everything down in the graph. If somehow I traverse an edge who would
+            //if this node becomes valid, just traverse everything down in the productGraph. If somehow I traverse an edge who would
             // be an incoming edge of some candidate, then it is removed from candidate so I never check it there.
             // If that edge is checked during incoming edge search, than it might be only examined again with a traversal which makes sure
             // that edge cannot be visited again. Therefore it is O(m)
@@ -161,7 +152,7 @@ public class SpanningTree<V> {
                 // current vertex has a valid incoming edge, so it needs to be removed from candidates
                 candidateRemoval.add(candidate);
 
-                //now traverse the graph down from this node, and remove any visited node from candidates
+                //now traverse the productGraph down from this node, and remove any visited node from candidates
                 LinkedList<TreeNode> traversalQueue = new LinkedList<TreeNode>();
 
                 // initial node is the current candidate, because now it is reachable
@@ -170,31 +161,27 @@ public class SpanningTree<V> {
                     TreeNode<V> currentVertex = traversalQueue.remove();
                     visited.add(currentVertex);
 
-                    Collection<GraphEdge<V, L>> forwardEdges = graph.getForwardEdges(currentVertex.getVertex());
+                    Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentVertex.getVertex(), currentVertex.getState());
                     // for each potential child
-                    for(GraphEdge<V,L> forwardEdge : forwardEdges) {
-                        Integer outgoingState = automata.getTransition(currentVertex.getState(), forwardEdge.getLabel());
-                        // make sure that transition exists
-                        if (outgoingState != null) {
-                            // I can simply retrieve from the tree index because any node that is reachable are in tree index
-                            TreeNode<V> outgoingTreeNode = this.getNode(forwardEdge.getSource(), outgoingState);
-                            // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
-                            if (outgoingTreeNode != null && forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
-                                if (candidates.contains(outgoingTreeNode)) {
-                                    // remove this node from potentials as now there is a younger path
-                                    candidateRemoval.add(outgoingTreeNode);
-                                }
-                                if (outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
-                                    // note anything in the candidates has a lower timestamp then
-                                    // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
-                                    outgoingTreeNode.setParent(currentVertex);
-                                    outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
-                                    traversalQueue.add(outgoingTreeNode);
-                                }
+                    for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
+                        // I can simply retrieve from the tree index because any node that is reachable are in tree index
+                        TreeNode<V> outgoingTreeNode = this.getNode(forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState());
+                        // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
+                        if (outgoingTreeNode != null && forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
+                            if (candidates.contains(outgoingTreeNode)) {
+                                // remove this node from potentials as now there is a younger path
+                                candidateRemoval.add(outgoingTreeNode);
                             }
-                            // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
-                            // so no need to add them into the queue
+                            if (outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
+                                // note anything in the candidates has a lower timestamp then
+                                // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
+                                outgoingTreeNode.setParent(currentVertex);
+                                outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
+                                traversalQueue.add(outgoingTreeNode);
+                            }
                         }
+                        // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
+                        // so no need to add them into the queue
                     }
                 }
 

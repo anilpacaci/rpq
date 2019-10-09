@@ -47,7 +47,7 @@ public class DFA<L> extends DFANode {
         PATH_SEMANTICS = semantics;
 
 
-        // data structures for the automaton and the graph
+        // data structures for the automaton and the productGraph
         dfaTransitions = HashMultimap.create();
         dfaNodes = new HashMap<>();
         results = HashMultimap.create();

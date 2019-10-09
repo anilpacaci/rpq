@@ -6,8 +6,6 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +77,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // there is no transition with given label, simply return
             return;
         } else {
-            // add edge to the snapshot graph
-            graph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
+            // add edge to the snapshot productGraph
+            productGraph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
         }
 
         //create a spanning tree for the source node in case it does not exists
@@ -170,7 +168,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             }
 
             // get all the forward edges of the new extended node
-            Collection<GraphEdge<Integer, L>> forwardEdges = graph.getForwardEdges(childVertex);
+            Collection<GraphEdge<ProductGraphNode<Integer>>> forwardEdges = productGraph.getForwardEdges(childVertex, childState);
 
             if (forwardEdges == null) {
                 // TODO better nul handling
@@ -178,14 +176,10 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 return;
             } else {
                 // there are forward edges, iterate over them
-                for (GraphEdge<Integer, L> forwardEdge : forwardEdges) {
-                    Integer targetState = automata.getTransition(childState, forwardEdge.getLabel());
-                    // no need to check if the target node exists as we might need to update its timestamp even if it exists
-                    if (targetState != null) {
-                        // recursive call as the target of the forwardEdge has not been visited in state targetState before
-                        //processTransition(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
-                        jobQueue.offer(new TreeExpansionJob(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp()));
-                    }
+                for (GraphEdge<ProductGraphNode<Integer>> forwardEdge : forwardEdges) {
+                    // recursive call as the target of the forwardEdge has not been visited in state targetState before
+                    //processTransition(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
+                    jobQueue.offer(new TreeExpansionJob(tree, childNode, forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState(), forwardEdge.getTimestamp()));
                 }
             }
         }
@@ -202,9 +196,9 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {
-        // first remove the expired edges from the graph
-        graph.removeOldEdges(minTimestamp);
+        // first remove the expired edges from the productGraph
+        productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
-        delta.expiry(minTimestamp, graph, automata);
+        delta.expiry(minTimestamp, productGraph, automata);
     }
 }

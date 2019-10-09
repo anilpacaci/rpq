@@ -3,19 +3,17 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 /**
  * Created by anilpacaci on 2019-10-02.
  */
-public class GraphEdge<V,L> {
+public class GraphEdge<V> {
 
     private int h = 0;
 
     private V source;
     private V target;
-    private L label;
     private long timestamp;
 
-    public GraphEdge(V source, V target, L label, long timestamp) {
+    public GraphEdge(V source, V target, long timestamp) {
         this.source = source;
         this.target = target;
-        this.label = label;
         this.timestamp = timestamp;
     }
 
@@ -27,10 +25,6 @@ public class GraphEdge<V,L> {
         return target;
     }
 
-    public L getLabel() {
-        return label;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }
@@ -40,11 +34,10 @@ public class GraphEdge<V,L> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GraphEdge<?, ?> graphEdge = (GraphEdge<?, ?>) o;
+        GraphEdge<?> graphEdge = (GraphEdge<?>) o;
 
         if (!source.equals(graphEdge.source)) return false;
-        if (!target.equals(graphEdge.target)) return false;
-        return label.equals(graphEdge.label);
+        return (!target.equals(graphEdge.target));
     }
 
     @Override
@@ -52,7 +45,6 @@ public class GraphEdge<V,L> {
         if(h == 0) {
             int result = source.hashCode();
             result = 31 * result + target.hashCode();
-            result = 31 * result + label.hashCode();
             h = result;
         }
         return h;

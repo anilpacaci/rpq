@@ -5,6 +5,8 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class Delta<V> {
         return treeIndex.containsKey(vertex);
     }
 
-    public void addTree(V vertex, long timestamp) {
+    public SpanningTree<V> addTree(V vertex, long timestamp) {
         if(exists(vertex)) {
             // TODO one spanner per root vertex
         }
@@ -56,6 +58,7 @@ public class Delta<V> {
         treeIndex.put(vertex, tree);
         addToTreeNodeIndex(tree, tree.getRootNode());
         treeCounter.inc();
+        return tree;
     }
 
     protected void addToTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
@@ -64,13 +67,28 @@ public class Delta<V> {
     }
 
     /**
+     * Simply performs a full bFS traversal and re-create all edges
+     * @param minTimestamp
+     * @param productGraph
+     * @param automata
+     * @param <L>
+     */
+    public <L> void batchExpiry(Long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
+        // clear both indexes
+        nodeToTreeIndex.clear();
+        treeIndex.clear();
+        LOG.info("Batch expiry at {}, indices are cleard", minTimestamp);
+
+    }
+
+    /**
      * Updates Perform window expiry on each spanning tree
      * @param minTimestamp lower bound on the window interval
-     * @param graph snapshotGraph
+     * @param productGraph snapshotGraph
      * @param automata query automata
      * @param <L>
      */
-    public <L> void expiry(Long minTimestamp, Graph<V,L> graph, QueryAutomata<L> automata) {
+    public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
         Collection<SpanningTree> trees = treeIndex.values();
         Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
         LOG.info("{} of trees in Delta", trees.size());
@@ -79,7 +97,7 @@ public class Delta<V> {
                 // this tree does not have any node to be deleted, so just skip it
                 continue;
             }
-            Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, graph, automata);
+            Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, productGraph, automata);
             // first update treeNode index
             for(TreeNode<V> removedTuple : removedTuples) {
                 Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
@@ -106,7 +124,7 @@ public class Delta<V> {
             treeCounter.dec();
         }
 
-        LOG.info("Expiry at {}: # of trees {}, # of edges in the graph {}", minTimestamp, treeIndex.size(), graph.getEdgeCount());
+        LOG.info("Expiry at {}: # of trees {}, # of edges in the productGraph {}", minTimestamp, treeIndex.size(), productGraph.getEdgeCount());
     }
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {

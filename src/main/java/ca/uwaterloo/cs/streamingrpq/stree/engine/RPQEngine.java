@@ -19,7 +19,7 @@ public abstract class RPQEngine<L> {
     protected Timer fullTimer;
 
     protected Delta<Integer> delta;
-    protected Graph<Integer, L> graph;
+    protected ProductGraph<Integer, L> productGraph;
     protected QueryAutomata<L> automata;
 
     protected Multimap<Integer, Integer> results;
@@ -28,7 +28,7 @@ public abstract class RPQEngine<L> {
         delta = new Delta<>(capacity);
         automata = query;
         results = HashMultimap.create();
-        graph = new Graph<>(capacity);
+        productGraph = new ProductGraph<>(capacity, query);
     }
 
     public Multimap<Integer, Integer> getResults() {
@@ -43,7 +43,7 @@ public abstract class RPQEngine<L> {
         this.processedHistogram = metricRegistry.histogram("processed-histogram");
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
-        this.graph.addMetricRegistry(metricRegistry);
+        this.productGraph.addMetricRegistry(metricRegistry);
         this.delta.addMetricRegistry(metricRegistry);
     }
 
