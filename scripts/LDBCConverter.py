@@ -28,28 +28,28 @@ for i in range(8):
 			csvreader = csv.reader(inputcsvfile, delimiter='|')
 			for row in csvreader:
 				if(row[2] == "2"):
-					csvwriter.writerow([row[3], row[4], "likes", row[5]])
+					csvwriter.writerow([row[3], "likes", row[4],row[5]])
 				elif(row[2] == "3"):
-					csvwriter.writerow([row[3], row[4], "likes", row[5]])
+					csvwriter.writerow([row[3], "likes", row[4], row[5]])
 				elif(row[2] == "5"):
-					csvwriter.writerow([row[3], row[4], "member", row[5]])
-					csvwriter.writerow([row[4], row[3], "hasMember", row[5]])
+					csvwriter.writerow([row[3], "member", row[4], row[5]])
+					csvwriter.writerow([row[4], "hasMember", row[3], row[5]])
 				elif(row[2] == "6"):
-					csvwriter.writerow([row[3], row[11], "created", row[5]])
-					csvwriter.writerow([row[11], row[3], "creatorOf", row[5]])
-					csvwriter.writerow([row[3], row[12], "container", row[5]])
-					csvwriter.writerow([row[12], row[3], "containerOf", row[5]])
+					csvwriter.writerow([row[3], "created", row[11], row[5]])
+					csvwriter.writerow([row[11], "creatorOf", row[3], row[5]])
+					csvwriter.writerow([row[3], "container", row[12], row[5]])
+					csvwriter.writerow([row[12], "containerOf", row[3], row[5]])
 				elif(row[2] == "7"):
-					csvwriter.writerow([row[3], row[9], "created", row[4]])
-					csvwriter.writerow([row[9], row[3], "creatorOf", row[4]])
+					csvwriter.writerow([row[3], "created", row[9], row[4]])
+					csvwriter.writerow([row[9], "creatorOf", row[3], row[4]])
 					if(row[11] == "-1"):
-						csvwriter.writerow([row[3], row[12], "replyOf", row[4]])
-						csvwriter.writerow([row[12], row[3], "reply", row[4]])
+						csvwriter.writerow([row[3], "replyOf", row[12], row[4]])
+						csvwriter.writerow([row[12], "reply", row[3], row[4]])
 					else:
-						csvwriter.writerow([row[3], row[11], "replyOf", row[4]])
-						csvwriter.writerow([row[11], row[3], "reply", row[4]])
+						csvwriter.writerow([row[3], "replyOf", row[11], row[4]])
+						csvwriter.writerow([row[11], "reply", row[3], row[4]])
 				elif(row[2] == "8"):
-					csvwriter.writerow([row[3], row[4], "knows", row[5]])
-					csvwriter.writerow([row[4], row[3], "knows", row[5]])
+					csvwriter.writerow([row[3], "knows", row[4], row[5]])
+					csvwriter.writerow([row[4], "knows", row[3], row[5]])
 
 
