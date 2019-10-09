@@ -79,6 +79,51 @@ public class Delta<V> {
         treeIndex.clear();
         LOG.info("Batch expiry at {}, indices are cleard", minTimestamp);
 
+        // retrieve all the nodes with start state 0
+        Collection<ProductGraphNode<V>> productGraphNodes = productGraph.getVertices();
+
+        for(ProductGraphNode<V> node : productGraphNodes) {
+            if(node.getState() != 0) {
+                // create tree only for the nodes with start state 0
+                continue;
+            }
+
+            Collection<GraphEdge<ProductGraphNode<V>>> edges = productGraph.getForwardEdges(node);
+            Optional<Long> maxTimestamp = edges.stream().map(e -> e.getTimestamp()).max(Long::compare);
+            if(!maxTimestamp.isPresent() || maxTimestamp.get() <= minTimestamp) {
+                // has no valid edge, skip this node
+                continue;
+            }
+
+            // create a spanning tree
+            SpanningTree<V> tree = this.addTree(node.getVertex(), maxTimestamp.get());
+            // traverse this tree
+            Queue<ProductGraphNode<V>> queue = new LinkedList<>();
+            queue.offer(node);
+
+            while(!queue.isEmpty()) {
+                ProductGraphNode<V> currentNode = queue.remove();
+                TreeNode<V> currentTreeNode = tree.getNode(currentNode.getVertex(), currentNode.getState());
+                
+                Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentNode);
+                for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
+                    if(forwardEdge.getTimestamp() <= minTimestamp) {
+                        // this edge is not valid, skip it
+                        continue;
+                    }
+
+                    ProductGraphNode<V> targetNode = forwardEdge.getTarget();
+                    if(!tree.exists(targetNode.getVertex(), targetNode.getState())) {
+                        tree.addNode(currentTreeNode, targetNode.getVertex(), targetNode.getState(), Long.min(currentTreeNode.getTimestamp(), forwardEdge.getTimestamp()));
+                        queue.offer(targetNode);
+                    }
+                }
+
+            }
+            //entire tree is traversed, now add it to the tree index
+
+        }
+
     }
 
     /**

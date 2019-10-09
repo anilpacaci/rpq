@@ -72,7 +72,11 @@ public class ProductGraph<V,L> {
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges(V source, int state) {
-        return forwardAdjacency.get(getNode(source, state));
+        return getForwardEdges(this.getNode(source, state));
+    }
+
+    public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges(ProductGraphNode<V> node) {
+        return forwardAdjacency.get(node);
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getBackwardEdges(V source, int state) {
