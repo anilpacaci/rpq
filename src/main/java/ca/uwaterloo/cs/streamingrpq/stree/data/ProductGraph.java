@@ -17,8 +17,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class ProductGraph<V,L> {
-    private Multimap<ProductGraphNode<V>, GraphEdge<ProductGraphNode<V>>> forwardAdjacency;
-    private Multimap<ProductGraphNode<V>, GraphEdge<ProductGraphNode<V>>> backwardAdjacency;
+
     private QueryAutomata<L> automata;
 
     private Table<V, Integer, ProductGraphNode<V>> nodeIndex;
@@ -32,8 +31,6 @@ public class ProductGraph<V,L> {
     private final Logger LOG = LoggerFactory.getLogger(ProductGraph.class);
 
     public ProductGraph(int capacity, QueryAutomata<L> automata) {
-        forwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
-        backwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
         timeOrderedEdges = new LinkedList<GraphEdge<ProductGraphNode<V>>>();
         nodeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_NEIGHBOURS);
         this.automata = automata;
@@ -48,8 +45,8 @@ public class ProductGraph<V,L> {
             ProductGraphNode<V> sourceNode = this.getNode(source, sourceState);
             ProductGraphNode<V> targetNode = this.getNode(target, targetState);
             GraphEdge<ProductGraphNode<V>> forwardEdge = new GraphEdge<>(sourceNode, targetNode, timestamp);
-            forwardAdjacency.put(sourceNode, forwardEdge);
-            backwardAdjacency.put(targetNode, forwardEdge);
+            sourceNode.addForwardEdge(forwardEdge);
+            targetNode.addBackwardEdge(forwardEdge);
             timeOrderedEdges.add(forwardEdge);
         }
 
@@ -67,12 +64,13 @@ public class ProductGraph<V,L> {
     }
 
     private void removeEdgeFromHashIndexes(GraphEdge<ProductGraphNode<V>> edge) {
-        forwardAdjacency.remove(edge.getSource(), edge);
-        backwardAdjacency.remove(edge.getTarget(), edge);
+        edge.getSource().removeForwardEdge(edge);
+        edge.getTarget().removeBackwardEdge(edge);
+
     }
 
     public Collection<ProductGraphNode<V>> getVertices() {
-        return forwardAdjacency.keySet();
+        return nodeIndex.values();
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges(V source, int state) {
@@ -80,11 +78,15 @@ public class ProductGraph<V,L> {
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges(ProductGraphNode<V> node) {
-        return forwardAdjacency.get(node);
+        return node.getForwardEdges();
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getBackwardEdges(V source, int state) {
-        return backwardAdjacency.get(getNode(source, state));
+        return getBackwardEdges(this.getNode(source, state));
+    }
+
+    public Collection<GraphEdge<ProductGraphNode<V>>> getBackwardEdges(ProductGraphNode<V> node) {
+        return node.getBackwardEdges();
     }
 
     /**

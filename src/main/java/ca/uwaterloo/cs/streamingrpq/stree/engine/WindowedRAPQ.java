@@ -200,6 +200,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
         //delta.expiry(minTimestamp, productGraph, automata);
-        delta.batchExpiry(minTimestamp, productGraph, automata);
+        delta.batchExpiry(minTimestamp, productGraph, this.executorService);
     }
 }

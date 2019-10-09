@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 
 public class Delta<V> {
 
@@ -70,10 +73,9 @@ public class Delta<V> {
      * Simply performs a full bFS traversal and re-create all edges
      * @param minTimestamp
      * @param productGraph
-     * @param automata
      * @param <L>
      */
-    public <L> void batchExpiry(Long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
+    public <L> void batchExpiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
         // clear both indexes
         nodeToTreeIndex.clear();
         treeIndex.clear();
@@ -175,5 +177,21 @@ public class Delta<V> {
     public void addMetricRegistry(MetricRegistry metricRegistry) {
         this.treeCounter = metricRegistry.counter("tree-counter");
         this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
+    }
+
+    private static class TreeConstruction<V,L> implements Callable<Void> {
+
+        private Long minTimestamp;
+        private ProductGraph<V,L> productGraph;
+
+        private HashMap<V, SpanningTree> treeIndex;
+        private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+
+        @Override
+        public Void call() throws Exception {
+
+
+            return null;
+        }
     }
 }
