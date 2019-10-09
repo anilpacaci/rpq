@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
@@ -13,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 public class Delta<V> {
 
@@ -75,7 +75,7 @@ public class Delta<V> {
      * @param productGraph
      * @param <L>
      */
-    public <L> void batchExpiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
+    public <L> void batchExpiry(Long minTimestamp, ProductGraph<V,L> productGraph, CompletionService executorService) {
         // clear both indexes
         nodeToTreeIndex.clear();
         treeIndex.clear();
@@ -132,31 +132,50 @@ public class Delta<V> {
      * Updates Perform window expiry on each spanning tree
      * @param minTimestamp lower bound on the window interval
      * @param productGraph snapshotGraph
-     * @param automata query automata
+     * @param executorService
      * @param <L>
      */
-    public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
+    public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
         Collection<SpanningTree> trees = treeIndex.values();
         Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
+        List<Future<Collection<TreeNode<V>>>> futures = new ArrayList<Future<Collection<TreeNode<V>>>>(trees.size());
+        CompletionService<Collection<TreeNode<V>>> completionService = new ExecutorCompletionService<>(executorService);
+
         LOG.info("{} of trees in Delta", trees.size());
         for(SpanningTree<V> tree : trees) {
-            if(tree.getMinTimestamp() > minTimestamp) {
+            if (tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
                 continue;
             }
-            Collection<TreeNode> removedTuples = tree.removeOldEdges(minTimestamp, productGraph, automata);
-            // first update treeNode index
-            for(TreeNode<V> removedTuple : removedTuples) {
-                Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
-                containingTrees.remove(tree);
-                if(containingTrees.isEmpty()) {
-                    nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
-                }
-            }
 
-            // now if the tree has expired simply remove it from tree index
-            if(tree.isExpired(minTimestamp)) {
-                treesToBeRemoved.add(tree);
+            SpanningTreeExpiryJob<V, L> spanningTreeExpiryJob = new SpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
+            futures.add(completionService.submit(spanningTreeExpiryJob));
+        }
+
+        for(int i = 0; i < futures.size(); i++) {
+
+            Collection<TreeNode<V>> removedTuples = null;
+            try {
+                removedTuples = completionService.take().get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("SpanningTreeExpiry interrupted during execution", e);
+            }
+            // first update treeNode index
+            if(!removedTuples.isEmpty()) {
+                SpanningTree<V> tree = removedTuples.stream().findFirst().get().getTree();
+                for (TreeNode<V> removedTuple : removedTuples) {
+                    tree = removedTuple.getTree();
+                    Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
+                    containingTrees.remove(tree);
+                    if (containingTrees.isEmpty()) {
+                        nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+                    }
+                }
+
+                // now if the tree has expired simply remove it from tree index
+                if (tree.isExpired(minTimestamp)) {
+                    treesToBeRemoved.add(tree);
+                }
             }
         }
         // now update the treeIndex
@@ -179,19 +198,23 @@ public class Delta<V> {
         this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
     }
 
-    private static class TreeConstruction<V,L> implements Callable<Void> {
+    private static class SpanningTreeExpiryJob<V,L> implements Callable<Collection<TreeNode<V>>> {
 
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
 
-        private HashMap<V, SpanningTree> treeIndex;
         private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+        private SpanningTree<V> tree;
+
+        public SpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTree<V> tree) {
+            this.minTimestamp = minTimestamp;
+            this.productGraph = productGraph;
+            this.tree = tree;
+        }
 
         @Override
-        public Void call() throws Exception {
-
-
-            return null;
+        public Collection<TreeNode<V>> call() throws Exception {
+            return tree.removeOldEdges(minTimestamp, productGraph);
         }
     }
 }

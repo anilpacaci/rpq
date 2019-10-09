@@ -80,15 +80,15 @@ public class SpanningTree<V> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    protected <L> Collection<TreeNode> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph, QueryAutomata<L> automata) {
+    protected <L> Collection<TreeNode<V>> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
 //        }
 
         // potentially expired nodes
-        HashSet<TreeNode> candidates = new HashSet<TreeNode>();
-        HashSet<TreeNode> candidateRemoval = new HashSet<>();
+        HashSet<TreeNode<V>> candidates = new HashSet<>();
+        HashSet<TreeNode<V>> candidateRemoval = new HashSet<>();
 
         // perform a bfs traversal on tree, no need for visited as it is a three
         LinkedList<TreeNode> queue = new LinkedList<>();
@@ -113,7 +113,7 @@ public class SpanningTree<V> {
         //update the lowest minimum timestamp for this tree
         this.minTimestamp = minimumValidTimetamp;
 
-        Iterator<TreeNode> candidateIterator = candidates.iterator();
+        Iterator<TreeNode<V>> candidateIterator = candidates.iterator();
         HashSet<TreeNode> visited = new HashSet<>();
 
         LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
