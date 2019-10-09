@@ -66,6 +66,9 @@ public class STQueryRunner {
             case "snap-sx":
                 stream = new StackOverflowStream();
                 break;
+            case "ldbc":
+                stream = new LDBCStream();
+                break;
             default:
                 stream = new Yago2sTSVStream();
         }
