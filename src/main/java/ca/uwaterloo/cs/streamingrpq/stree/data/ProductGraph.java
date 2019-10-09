@@ -7,6 +7,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.Query;
 import java.util.Collection;
@@ -26,6 +28,8 @@ public class ProductGraph<V,L> {
     protected Counter edgeCounter;
 
     private LinkedList<GraphEdge<ProductGraphNode<V>>> timeOrderedEdges;
+
+    private final Logger LOG = LoggerFactory.getLogger(ProductGraph.class);
 
     public ProductGraph(int capacity, QueryAutomata<L> automata) {
         forwardAdjacency = HashMultimap.create(capacity, Constants.EXPECTED_NEIGHBOURS);
@@ -88,6 +92,7 @@ public class ProductGraph<V,L> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      */
     public void removeOldEdges(long minTimestamp) {
+        LOG.info("Batch expiry at {}", minTimestamp);
         // it suffices to linearly scan from the oldest edge as we assume ordered arrival
         Iterator<GraphEdge<ProductGraphNode<V>>> edgeIterator = timeOrderedEdges.iterator();
         while(edgeIterator.hasNext()) {

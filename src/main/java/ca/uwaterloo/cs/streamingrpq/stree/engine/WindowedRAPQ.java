@@ -57,7 +57,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         //for now window processing is done inside edge processing
         long currentTimestamp = inputTuple.getTimestamp();
         if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize ) {
-            LOG.info("Expiry procedure at timestamp: {}", currentTimestamp);
             // its slide time, maintain the window
             Long windowStartTime = System.nanoTime();
             expiry(currentTimestamp - windowSize);
@@ -196,6 +195,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {
+        LOG.info("Expiry procedure at timestamp: {}", minTimestamp);
         // first remove the expired edges from the productGraph
         productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
