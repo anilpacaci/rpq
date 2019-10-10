@@ -7,10 +7,8 @@ import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ public class Delta<V> {
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
-        nodeToTreeIndex = new HashMap<>(capacity);
+        nodeToTreeIndex = Maps.newConcurrentMap();
     }
 
     public SpanningTree getTree(V vertex) {
@@ -42,11 +40,7 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(Hasher.getTreeNodePairKey(vertex, state));
-        if(containingTrees == null) {
-            containingTrees = new HashSet<>(Constants.EXPECTED_TREES);
-            nodeToTreeIndex.put(Hasher.getTreeNodePairKey(vertex, state), containingTrees);
-        }
+        Set<SpanningTree> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<SpanningTree, Boolean>()) );
         return containingTrees;
     }
 
