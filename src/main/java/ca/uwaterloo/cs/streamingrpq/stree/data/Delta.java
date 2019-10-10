@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
-    private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+    private Map<Integer, Set<SpanningTree>> nodeToTreeIndex;
 
     protected Counter treeCounter;
     protected Histogram maintainedTreeHistogram;
@@ -28,7 +29,7 @@ public class Delta<V> {
 
     public Delta(int capacity) {
         treeIndex = new HashMap<>(capacity);
-        nodeToTreeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_LABELS);
+        nodeToTreeIndex = new HashMap<>(capacity);
     }
 
     public SpanningTree getTree(V vertex) {
@@ -41,10 +42,10 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(vertex, state);
+        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(Hasher.TreeNodeHasher(vertex, state));
         if(containingTrees == null) {
             containingTrees = new HashSet<>(Constants.EXPECTED_TREES);
-            nodeToTreeIndex.put(vertex, state, containingTrees);
+            nodeToTreeIndex.put(Hasher.TreeNodeHasher(vertex, state), containingTrees);
         }
         return containingTrees;
     }
@@ -168,7 +169,7 @@ public class Delta<V> {
                     Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
                     containingTrees.remove(tree);
                     if (containingTrees.isEmpty()) {
-                        nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+                        nodeToTreeIndex.remove(Hasher.TreeNodeHasher(removedTuple.getVertex(), removedTuple.getState()));
                     }
                 }
 
@@ -185,7 +186,7 @@ public class Delta<V> {
             Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
             containingTrees.remove(tree);
             if(containingTrees.isEmpty()) {
-                nodeToTreeIndex.remove(removedTuple.getVertex(), removedTuple.getState());
+                nodeToTreeIndex.remove(Hasher.TreeNodeHasher(removedTuple.getVertex(), removedTuple.getState()));
             }
             treeCounter.dec();
         }

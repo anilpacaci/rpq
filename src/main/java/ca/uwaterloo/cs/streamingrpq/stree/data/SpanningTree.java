@@ -198,7 +198,7 @@ public class SpanningTree<V> {
         // so simply clean the indexes and generate negative result if necessary
         for(TreeNode<V> currentVertex : candidates) {
             // remove this node from the node index
-            nodeIndex.remove(currentVertex.getVertex(), currentVertex.getState());
+            nodeIndex.remove(Hasher.TreeNodeHasher(currentVertex.getVertex(), currentVertex.getState()));
             //remove this node from parent's chilren list
             currentVertex.setParent(null);
         }
