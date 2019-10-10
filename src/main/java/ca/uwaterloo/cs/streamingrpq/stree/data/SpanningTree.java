@@ -82,7 +82,7 @@ public class SpanningTree<V> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    protected <L> Collection<TreeNode<V>> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
+    protected <L> void removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
@@ -201,12 +201,17 @@ public class SpanningTree<V> {
             nodeIndex.remove(Hasher.getTreeNodePairKey(currentVertex.getVertex(), currentVertex.getState()));
             //remove this node from parent's chilren list
             currentVertex.setParent(null);
+
+            //remove this entry from nodeToTreeIndex
+            this.delta.removeFromTreeIndex(currentVertex, this);
+        }
+
+        if(this.isExpired(minTimestamp)) {
+            TreeNode<V> removedTuple = this.getRootNode();
+            delta.removeTree(this);
         }
 
         LOG.debug("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
-
-        // return all the remaining nodes, which have actually expired from the window
-        return candidates;
     }
 
     /**

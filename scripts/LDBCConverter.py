@@ -32,10 +32,10 @@ for i in range(8):
 				elif(row[2] == "3"):
 					csvwriter.writerow([row[3], "likes", row[4], row[5]])
 				elif(row[2] == "5"):
-					csvwriter.writerow([row[3], "member", row[4], row[5]])
+					csvwriter.writerow([row[3], "memberOf", row[4], row[5]])
 					csvwriter.writerow([row[4], "hasMember", row[3], row[5]])
 				elif(row[2] == "6"):
-					csvwriter.writerow([row[3], "created", row[11], row[5]])
+					csvwriter.writerow([row[3], "createdBy", row[11], row[5]])
 					csvwriter.writerow([row[11], "creatorOf", row[3], row[5]])
 					csvwriter.writerow([row[3], "container", row[12], row[5]])
 					csvwriter.writerow([row[12], "containerOf", row[3], row[5]])

@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 
 public class Delta<V> {
 
-    private HashMap<V, SpanningTree> treeIndex;
+    private Map<V, SpanningTree> treeIndex;
     private Map<Hasher.MapKey<V>, Set<SpanningTree>> nodeToTreeIndex;
 
     protected Counter treeCounter;
@@ -26,7 +26,7 @@ public class Delta<V> {
     private final Logger LOG = LoggerFactory.getLogger(Delta.class);
 
     public Delta(int capacity) {
-        treeIndex = new HashMap<>(capacity);
+        treeIndex = Maps.newConcurrentMap();
         nodeToTreeIndex = Maps.newConcurrentMap();
     }
 
@@ -59,9 +59,29 @@ public class Delta<V> {
         return tree;
     }
 
+    public void removeTree(SpanningTree<V> tree) {
+        TreeNode<V> rootNode = tree.getRootNode();
+        this.treeIndex.remove(rootNode.getVertex());
+
+        Collection<SpanningTree> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
+        containingTrees.remove(tree);
+        if(containingTrees.isEmpty()) {
+            nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
+        }
+        treeCounter.dec();
+    }
+
     protected void addToTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
         Collection<SpanningTree> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
         containingTrees.add(tree);
+    }
+
+    protected void removeFromTreeIndex(TreeNode<V> removedNode, SpanningTree<V> tree) {
+        Collection<SpanningTree> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
+        containingTrees.remove(tree);
+        if(containingTrees.isEmpty()) {
+            this.nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
+        }
     }
 
     /**
@@ -132,9 +152,8 @@ public class Delta<V> {
      */
     public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
         Collection<SpanningTree> trees = treeIndex.values();
-        Collection<SpanningTree> treesToBeRemoved = new HashSet<SpanningTree>();
-        List<Future<Collection<TreeNode<V>>>> futures = new ArrayList<Future<Collection<TreeNode<V>>>>(trees.size());
-        CompletionService<Collection<TreeNode<V>>> completionService = new ExecutorCompletionService<>(executorService);
+        List<Future<Void>> futures = new ArrayList<>(trees.size());
+        CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
 
         LOG.info("{} of trees in Delta", trees.size());
         for(SpanningTree<V> tree : trees) {
@@ -148,41 +167,11 @@ public class Delta<V> {
         }
 
         for(int i = 0; i < futures.size(); i++) {
-
-            Collection<TreeNode<V>> removedTuples = null;
             try {
-                removedTuples = completionService.take().get();
+                completionService.take().get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("SpanningTreeExpiry interrupted during execution", e);
             }
-            // first update treeNode index
-            if(!removedTuples.isEmpty()) {
-                SpanningTree<V> tree = removedTuples.stream().findFirst().get().getTree();
-                for (TreeNode<V> removedTuple : removedTuples) {
-                    tree = removedTuple.getTree();
-                    Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
-                    containingTrees.remove(tree);
-                    if (containingTrees.isEmpty()) {
-                        nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedTuple.getVertex(), removedTuple.getState()));
-                    }
-                }
-
-                // now if the tree has expired simply remove it from tree index
-                if (tree.isExpired(minTimestamp)) {
-                    treesToBeRemoved.add(tree);
-                }
-            }
-        }
-        // now update the treeIndex
-        for(SpanningTree<V> tree: treesToBeRemoved) {
-            TreeNode<V> removedTuple = tree.getRootNode();
-            treeIndex.remove(tree.getRootVertex());
-            Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
-            containingTrees.remove(tree);
-            if(containingTrees.isEmpty()) {
-                nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedTuple.getVertex(), removedTuple.getState()));
-            }
-            treeCounter.dec();
         }
 
         LOG.info("Expiry at {}: # of trees {}, # of edges in the productGraph {}", minTimestamp, treeIndex.size(), productGraph.getEdgeCount());
@@ -193,7 +182,7 @@ public class Delta<V> {
         this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
     }
 
-    private static class SpanningTreeExpiryJob<V,L> implements Callable<Collection<TreeNode<V>>> {
+    private static class SpanningTreeExpiryJob<V,L> implements Callable<Void> {
 
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
@@ -208,8 +197,9 @@ public class Delta<V> {
         }
 
         @Override
-        public Collection<TreeNode<V>> call() throws Exception {
-            return tree.removeOldEdges(minTimestamp, productGraph);
+        public Void call() throws Exception {
+            tree.removeOldEdges(minTimestamp, productGraph);
+            return null;
         }
     }
 }
