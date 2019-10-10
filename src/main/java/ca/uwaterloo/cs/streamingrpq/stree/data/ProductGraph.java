@@ -1,12 +1,10 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +18,7 @@ public class ProductGraph<V,L> {
 
     private QueryAutomata<L> automata;
 
-    private Table<V, Integer, ProductGraphNode<V>> nodeIndex;
+    private Map<Hasher.MapKey<V>, ProductGraphNode<V>> nodeIndex;
 
     private int edgeCount;
 
@@ -32,7 +30,7 @@ public class ProductGraph<V,L> {
 
     public ProductGraph(int capacity, QueryAutomata<L> automata) {
         timeOrderedEdges = new LinkedList<GraphEdge<ProductGraphNode<V>>>();
-        nodeIndex = HashBasedTable.create(capacity, Constants.EXPECTED_NEIGHBOURS);
+        nodeIndex = Maps.newHashMapWithExpectedSize(capacity);
         this.automata = automata;
         this.edgeCount = 0;
     }
@@ -48,17 +46,16 @@ public class ProductGraph<V,L> {
             sourceNode.addForwardEdge(forwardEdge);
             targetNode.addBackwardEdge(forwardEdge);
             timeOrderedEdges.add(forwardEdge);
+            edgeCounter.inc();
+            edgeCount++;
         }
-
-        edgeCounter.inc();
-        edgeCount++;
     }
 
     private ProductGraphNode<V> getNode(V vertex, int state) {
-        ProductGraphNode<V> node = this.nodeIndex.get(vertex, state);
+        ProductGraphNode<V> node = this.nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state));
         if(node == null) {
             node = new ProductGraphNode<>(vertex, state);
-            this.nodeIndex.put(vertex, state, node);
+            this.nodeIndex.put(Hasher.getTreeNodePairKey(vertex, state), node);
         }
         return node;
     }
