@@ -2,8 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by anilpacaci on 2019-10-08.
@@ -13,8 +12,8 @@ public class ProductGraphNode<V> {
     private V vertex;
     private int state;
 
-    private Set<GraphEdge<ProductGraphNode<V>>> forwardEdges;
-    private Set<GraphEdge<ProductGraphNode<V>>> backwardEdges;
+    private Queue<GraphEdge<ProductGraphNode<V>>> forwardEdges;
+    private Queue<GraphEdge<ProductGraphNode<V>>> backwardEdges;
 
     private int hash = 0;
 
@@ -22,8 +21,8 @@ public class ProductGraphNode<V> {
         this.vertex = vertex;
         this.state = state;
 
-        this.forwardEdges = new HashSet<>(Constants.EXPECTED_NEIGHBOURS);
-        this.backwardEdges = new HashSet<>(Constants.EXPECTED_NEIGHBOURS);
+        this.forwardEdges = new ArrayDeque<>(Constants.EXPECTED_NEIGHBOURS);
+        this.backwardEdges = new ArrayDeque<>(Constants.EXPECTED_NEIGHBOURS);
     }
 
     public V getVertex() {
@@ -50,11 +49,11 @@ public class ProductGraphNode<V> {
         this.backwardEdges.remove(backwardEdge);
     }
 
-    public Set<GraphEdge<ProductGraphNode<V>>> getForwardEdges() {
+    public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges() {
         return forwardEdges;
     }
 
-    public Set<GraphEdge<ProductGraphNode<V>>> getBackwardEdges() {
+    public Collection<GraphEdge<ProductGraphNode<V>>> getBackwardEdges() {
         return backwardEdges;
     }
 

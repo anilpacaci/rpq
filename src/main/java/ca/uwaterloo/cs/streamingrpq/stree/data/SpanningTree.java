@@ -1,5 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
@@ -12,7 +14,7 @@ public class SpanningTree<V> {
     private TreeNode<V> rootNode;
     private Delta<V> delta;
 
-    Table<V, Integer, TreeNode> nodeIndex;
+    private Map<Integer, TreeNode> nodeIndex;
 
     private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
 
@@ -21,8 +23,8 @@ public class SpanningTree<V> {
     protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
-        this.nodeIndex = HashBasedTable.create();
-        nodeIndex.put(rootVertex, 0, rootNode);
+        this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREES);
+        nodeIndex.put(Hasher.TreeNodeHasher(rootVertex, 0), rootNode);
         this.minTimestamp = timestamp;
     }
 
@@ -36,7 +38,7 @@ public class SpanningTree<V> {
         }
 
         TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
-        nodeIndex.put(childVertex, childState, child);
+        nodeIndex.put(Hasher.TreeNodeHasher(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
         this.delta.addToTreeNodeIndex(this, child);
@@ -47,11 +49,11 @@ public class SpanningTree<V> {
     }
 
     public boolean exists(V vertex, int state) {
-        return nodeIndex.contains(vertex, state);
+        return nodeIndex.containsKey(Hasher.TreeNodeHasher(vertex, state));
     }
 
     public TreeNode getNode(V vertex, int state) {
-        TreeNode node = nodeIndex.get(vertex, state);
+        TreeNode node = nodeIndex.get(Hasher.TreeNodeHasher(vertex, state ));
         return node;
     }
 
