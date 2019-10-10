@@ -14,7 +14,7 @@ public class SpanningTree<V> {
     private TreeNode<V> rootNode;
     private Delta<V> delta;
 
-    private Map<Integer, TreeNode> nodeIndex;
+    private Map<Hasher.MapKey<V>, TreeNode> nodeIndex;
 
     private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
 
@@ -24,7 +24,7 @@ public class SpanningTree<V> {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
         this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREES);
-        nodeIndex.put(Hasher.TreeNodeHasher(rootVertex, 0), rootNode);
+        nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
         this.minTimestamp = timestamp;
     }
 
@@ -38,7 +38,7 @@ public class SpanningTree<V> {
         }
 
         TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
-        nodeIndex.put(Hasher.TreeNodeHasher(childVertex, childState), child);
+        nodeIndex.put(Hasher.getTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
         this.delta.addToTreeNodeIndex(this, child);
@@ -49,11 +49,11 @@ public class SpanningTree<V> {
     }
 
     public boolean exists(V vertex, int state) {
-        return nodeIndex.containsKey(Hasher.TreeNodeHasher(vertex, state));
+        return nodeIndex.containsKey(Hasher.getTreeNodePairKey(vertex, state));
     }
 
     public TreeNode getNode(V vertex, int state) {
-        TreeNode node = nodeIndex.get(Hasher.TreeNodeHasher(vertex, state ));
+        TreeNode node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
         return node;
     }
 
@@ -198,7 +198,7 @@ public class SpanningTree<V> {
         // so simply clean the indexes and generate negative result if necessary
         for(TreeNode<V> currentVertex : candidates) {
             // remove this node from the node index
-            nodeIndex.remove(Hasher.TreeNodeHasher(currentVertex.getVertex(), currentVertex.getState()));
+            nodeIndex.remove(Hasher.getTreeNodePairKey(currentVertex.getVertex(), currentVertex.getState()));
             //remove this node from parent's chilren list
             currentVertex.setParent(null);
         }

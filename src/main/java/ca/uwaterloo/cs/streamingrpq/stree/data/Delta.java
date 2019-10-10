@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 public class Delta<V> {
 
     private HashMap<V, SpanningTree> treeIndex;
-    private Map<Integer, Set<SpanningTree>> nodeToTreeIndex;
+    private Map<Hasher.MapKey<V>, Set<SpanningTree>> nodeToTreeIndex;
 
     protected Counter treeCounter;
     protected Histogram maintainedTreeHistogram;
@@ -42,10 +42,10 @@ public class Delta<V> {
     }
 
     public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(Hasher.TreeNodeHasher(vertex, state));
+        Set<SpanningTree> containingTrees = nodeToTreeIndex.get(Hasher.getTreeNodePairKey(vertex, state));
         if(containingTrees == null) {
             containingTrees = new HashSet<>(Constants.EXPECTED_TREES);
-            nodeToTreeIndex.put(Hasher.TreeNodeHasher(vertex, state), containingTrees);
+            nodeToTreeIndex.put(Hasher.getTreeNodePairKey(vertex, state), containingTrees);
         }
         return containingTrees;
     }
@@ -169,7 +169,7 @@ public class Delta<V> {
                     Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
                     containingTrees.remove(tree);
                     if (containingTrees.isEmpty()) {
-                        nodeToTreeIndex.remove(Hasher.TreeNodeHasher(removedTuple.getVertex(), removedTuple.getState()));
+                        nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedTuple.getVertex(), removedTuple.getState()));
                     }
                 }
 
@@ -186,7 +186,7 @@ public class Delta<V> {
             Collection<SpanningTree> containingTrees = getTrees(removedTuple.getVertex(), removedTuple.getState());
             containingTrees.remove(tree);
             if(containingTrees.isEmpty()) {
-                nodeToTreeIndex.remove(Hasher.TreeNodeHasher(removedTuple.getVertex(), removedTuple.getState()));
+                nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedTuple.getVertex(), removedTuple.getState()));
             }
             treeCounter.dec();
         }
