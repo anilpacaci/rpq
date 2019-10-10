@@ -35,7 +35,7 @@ public class Hasher {
         @Override
         public boolean equals (final Object O) {
             if (!(O instanceof MapKey)) return false;
-            if (((MapKey) O).X != X) return false;
+            if (!((MapKey) O).X.equals(X)) return false;
             if (((MapKey) O).Y != Y) return false;
             return true;
         }
