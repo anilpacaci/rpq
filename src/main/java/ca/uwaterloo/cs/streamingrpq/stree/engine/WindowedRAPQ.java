@@ -197,7 +197,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     private void expiry(long minTimestamp) {
         LOG.info("Expiry procedure at timestamp: {}", minTimestamp);
         // first remove the expired edges from the productGraph
-        productGraph.removeOldEdges(minTimestamp, this.executorService);
+        productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
         delta.expiry(minTimestamp, productGraph, this.executorService);
         //delta.batchExpiry(minTimestamp, productGraph, this.executorService);

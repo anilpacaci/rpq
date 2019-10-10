@@ -12,9 +12,6 @@ public class ProductGraphNode<V> {
     private V vertex;
     private int state;
 
-    private long minForwardEdgeTimestamp;
-    private long minBackwardEdgeTimestamp;
-
     private Queue<GraphEdge<ProductGraphNode<V>>> forwardEdges;
     private Queue<GraphEdge<ProductGraphNode<V>>> backwardEdges;
 
@@ -23,8 +20,6 @@ public class ProductGraphNode<V> {
     public ProductGraphNode(V vertex, int state) {
         this.vertex = vertex;
         this.state = state;
-        this.minForwardEdgeTimestamp = Long.MAX_VALUE;
-        this.minBackwardEdgeTimestamp = Long.MAX_VALUE;
 
         this.forwardEdges = new ArrayDeque<>(Constants.EXPECTED_NEIGHBOURS);
         this.backwardEdges = new ArrayDeque<>(Constants.EXPECTED_NEIGHBOURS);
@@ -40,16 +35,18 @@ public class ProductGraphNode<V> {
 
     protected void addForwardEdge(GraphEdge<ProductGraphNode<V>> forwardEdge) {
         this.forwardEdges.add(forwardEdge);
-        if(forwardEdge.getTimestamp() < minForwardEdgeTimestamp) {
-            minForwardEdgeTimestamp = forwardEdge.getTimestamp();
-        }
     }
 
     protected void addBackwardEdge(GraphEdge<ProductGraphNode<V>> backwardEdge) {
         this.backwardEdges.add(backwardEdge);
-        if(backwardEdge.getTimestamp() < minBackwardEdgeTimestamp) {
-            minBackwardEdgeTimestamp = backwardEdge.getTimestamp();
-        }
+    }
+
+    protected void removeForwardEdge(GraphEdge<ProductGraphNode<V>> forwardEdge) {
+        this.forwardEdges.remove(forwardEdge);
+    }
+
+    protected void removeBackwardEdge(GraphEdge<ProductGraphNode<V>> backwardEdge) {
+        this.backwardEdges.remove(backwardEdge);
     }
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getForwardEdges() {
@@ -58,45 +55,6 @@ public class ProductGraphNode<V> {
 
     public Collection<GraphEdge<ProductGraphNode<V>>> getBackwardEdges() {
         return backwardEdges;
-    }
-
-    /**
-     * removes old edges of the given node and updates the min timestamp
-     * @param minTimestamp
-     * @return true if this node has no edges remaining and needs to be garbage collected, false otherwise
-     */
-    public ProductGraphNode<V> removeOldEdges(long minTimestamp) {
-        int removedForwardEdges = 0;
-        // iterater over forwardEdges
-        if (minTimestamp <= this.minForwardEdgeTimestamp) {
-            Iterator<GraphEdge<ProductGraphNode<V>>> forwardIterator = forwardEdges.iterator();
-            while(forwardIterator.hasNext()) {
-                GraphEdge<ProductGraphNode<V>> edge = forwardIterator.next();
-                if(edge.getTimestamp() <= minTimestamp) {
-                    forwardIterator.remove();
-                    removedForwardEdges++;
-                } else {
-                    this.minForwardEdgeTimestamp = edge.getTimestamp();
-                    break;
-                }
-            }
-        }
-
-        // iterate over backward edges
-        if (minTimestamp <= this.minBackwardEdgeTimestamp) {
-            Iterator<GraphEdge<ProductGraphNode<V>>> backwardIterator = backwardEdges.iterator();
-            while(backwardIterator.hasNext()) {
-                GraphEdge<ProductGraphNode<V>> edge = backwardIterator.next();
-                if(edge.getTimestamp() <= minTimestamp) {
-                    backwardIterator.remove();
-                } else {
-                    this.minBackwardEdgeTimestamp = edge.getTimestamp();
-                    break;
-                }
-            }
-        }
-
-        return this;
     }
 
     @Override
