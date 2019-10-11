@@ -96,6 +96,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
+        TreeExpansionJob<L> treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
+
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
@@ -110,10 +112,44 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
-                processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                // check whether the job is full and ready to submit
+                if(treeExpansionJob.isFull()) {
+                    if (runParallel) {
+                        futureList.add(completionService.submit(treeExpansionJob));
+                        treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
+                    } else {
+                        try {
+                            Integer partialResultCount = treeExpansionJob.call();
+                            treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
+                            resultCounter.inc(partialResultCount);
+                        } catch (Exception e) {
+                            LOG.error("SpanningTreeExpansion exception on main thread", e);
+                        }
+                    }
+                }
             }
         }
 
+        // if there is any remaining job in the buffer, run them in main thread
+        if(!treeExpansionJob.isEmpty()) {
+            try {
+                Integer partialResultCount = treeExpansionJob.call();
+                resultCounter.inc(partialResultCount);
+            } catch (Exception e) {
+                LOG.error("SpanningTreeExpansion exception on main thread", e);
+            }
+        }
+
+        for(int i = 0; i < futureList.size() ; i++) {
+            try {
+                Integer partialResultCount = completionService.take().get();
+                resultCounter.inc(partialResultCount);
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("SpanningTreeExpansion interrupted during execution", e);
+            }
+        }
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
@@ -127,65 +163,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             containingTreeHistogram.update(treeCount);
         }
 
-    }
-
-    public void processTransition(SpanningTree<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
-        // either update timestamp, or create the node
-        if(tree.exists(childVertex, childState)) {
-            // if the child node already exists, we might need to update timestamp
-            TreeNode childNode = tree.getNode(childVertex, childState);
-
-            // root's children have timestamp equal to the edge timestamp
-            // root timestmap always higher than any node in the tree
-            if(parentNode.equals(tree.getRootNode())) {
-                childNode.setTimestamp(edgeTimestamp);
-                parentNode.setTimestamp( edgeTimestamp);
-                // properly update the parent pointer
-                childNode.setParent(parentNode);
-            }
-            // child node cannot be the root because parent has to be at least
-            else if(childNode.getTimestamp() < Long.min(parentNode.getTimestamp(), edgeTimestamp)) {
-                // only update its timestamp if there is a younger  path, back edge is guarenteed to be at smaller or equal
-                childNode.setTimestamp(Long.min(parentNode.getTimestamp(), edgeTimestamp));
-                // properly update the parent pointer
-                childNode.setParent(parentNode);
-            }
-
-        } else {
-            // extend the spanning tree with incoming node
-
-            // root's children have timestamp equal to the edge timestamp
-            // root timestmap always higher than any node in the tree
-            TreeNode<Integer> childNode;
-            if(parentNode.equals(tree.getRootNode())) {
-                childNode = tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
-                parentNode.setTimestamp(edgeTimestamp);
-            }
-            else {
-                childNode = tree.addNode(parentNode, childVertex, childState, Long.min(parentNode.getTimestamp(), edgeTimestamp));
-            }
-            // add this pair to results if it is a final state
-            if (automata.isFinalState(childState)) {
-                results.offer(new ResultPair<>(tree.getRootVertex(), childVertex));
-                resultCounter.inc();
-            }
-
-            // get all the forward edges of the new extended node
-            Collection<GraphEdge<ProductGraphNode<Integer>>> forwardEdges = productGraph.getForwardEdges(childVertex, childState);
-
-            if (forwardEdges == null) {
-                // TODO better nul handling
-                // end recursion if node has no forward edges
-                return;
-            } else {
-                // there are forward edges, iterate over them
-                for (GraphEdge<ProductGraphNode<Integer>> forwardEdge : forwardEdges) {
-                    // recursive call as the target of the forwardEdge has not been visited in state targetState before
-                    //processTransition(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
-                    processTransition(tree, childNode, forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState(), forwardEdge.getTimestamp());
-                }
-            }
-        }
     }
 
     @Override
