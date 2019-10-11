@@ -132,6 +132,16 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             }
         }
 
+        for(int i = 0; i < futureList.size() ; i++) {
+            try {
+                Integer partialResultCount = completionService.take().get();
+                resultCounter.inc(partialResultCount);
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("SpanningTreeExpansion interrupted during execution", e);
+            }
+        }
+
+
         // if there is any remaining job in the buffer, run them in main thread
         if(!treeExpansionJob.isEmpty()) {
             try {
@@ -139,15 +149,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 resultCounter.inc(partialResultCount);
             } catch (Exception e) {
                 LOG.error("SpanningTreeExpansion exception on main thread", e);
-            }
-        }
-
-        for(int i = 0; i < futureList.size() ; i++) {
-            try {
-                Integer partialResultCount = completionService.take().get();
-                resultCounter.inc(partialResultCount);
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("SpanningTreeExpansion interrupted during execution", e);
             }
         }
 
