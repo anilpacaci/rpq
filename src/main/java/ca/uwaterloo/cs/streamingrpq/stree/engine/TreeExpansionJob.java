@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -11,29 +12,71 @@ public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>
 
     private ProductGraph<Integer,L> productGraph;
     private QueryAutomata<L> automata;
-    private SpanningTree<Integer> spanningTree;
-    private TreeNode<Integer> parentNode;
-    private int targetVertex;
-    private int targetState;
-    private long edgeTimestamp;
+    private SpanningTree<Integer> spanningTree[];
+    private TreeNode<Integer> parentNode[];
+    private int targetVertex[];
+    private int targetState[];
+    private long edgeTimestamp[];
+
+    private int currentSize;
 
     private Multimap<Integer, Integer> results;
 
-    public TreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, SpanningTree<Integer> spanningTree, TreeNode<Integer> parentNode, int targetVertex, int targetState, long edgeTimestamp) {
+    public TreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata) {
         this.productGraph = productGraph;
         this.automata = automata;
-        this.spanningTree = spanningTree;
-        this.parentNode = parentNode;
-        this.targetVertex = targetVertex;
-        this.targetState = targetState;
-        this.edgeTimestamp = edgeTimestamp;
+        this.spanningTree = new SpanningTree[Constants.EXPECTED_BATCH_SIZE];
+        this.parentNode = new TreeNode[Constants.EXPECTED_BATCH_SIZE];
+        this.targetVertex = new int[Constants.EXPECTED_BATCH_SIZE];
+        this.targetState = new int[Constants.EXPECTED_BATCH_SIZE];
+        this.edgeTimestamp = new long[Constants.EXPECTED_BATCH_SIZE];
         this.results = HashMultimap.create();
+        this.currentSize = 0;
+    }
+
+    /**
+     * Populates the job array
+     * @param spanningTree
+     * @param parentNode
+     * @param targetVertex
+     * @param targetState
+     * @param edgeTimestamp
+     * @return false whenever job array is full and cannot be further populated
+     */
+    public boolean addJob(SpanningTree<Integer> spanningTree, TreeNode<Integer> parentNode, int targetVertex, int targetState, long edgeTimestamp) throws IllegalStateException{
+        if(this.currentSize >= Constants.EXPECTED_BATCH_SIZE) {
+            throw new IllegalStateException("Job capacity exceed limit " + currentSize);
+        }
+
+        this.spanningTree[currentSize] = spanningTree;
+        this.parentNode[currentSize] = parentNode;
+        this.targetVertex[currentSize] = targetVertex;
+        this.targetState[currentSize] = targetState;
+        this.edgeTimestamp[currentSize] = edgeTimestamp;
+        this.currentSize++;
+
+        if(currentSize == Constants.EXPECTED_BATCH_SIZE - 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean isFull() {
+        return currentSize == Constants.EXPECTED_BATCH_SIZE - 1;
+    }
+
+    public boolean isEmpty() {
+        return currentSize == 0;
     }
 
     @Override
     public Multimap<Integer, Integer> call() throws Exception {
-        processTransition(spanningTree, parentNode, targetVertex, targetState, edgeTimestamp);
 
+        // call each job in teh buffer
+        for(int i = 0; i < currentSize; i++) {
+            processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+        }
         return results;
     }
 

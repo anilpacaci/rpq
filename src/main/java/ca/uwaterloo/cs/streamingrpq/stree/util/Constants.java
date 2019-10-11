@@ -12,4 +12,9 @@ public class Constants {
 
     // expected number of labels in a productGraph
     public static final int EXPECTED_LABELS = 8;
+
+    /**
+     * Total number of SpanningTreeExpansion jobs to be assigned to a thread
+     */
+    public static final int EXPECTED_BATCH_SIZE = 128;
 }

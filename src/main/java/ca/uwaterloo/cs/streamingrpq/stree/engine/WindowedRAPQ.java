@@ -93,6 +93,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
+        TreeExpansionJob<L> treeExpansionJob = new TreeExpansionJob<>(productGraph, automata);
+
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
@@ -106,8 +108,18 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 // we do not check target here as even if it exist, we might update its timetsap
                 TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
                 //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                futureList.add(completionService.submit(new TreeExpansionJob(productGraph, automata, spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp())));
+                treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                // check whether the job is full and ready to submit
+                if(treeExpansionJob.isFull()) {
+                    futureList.add(completionService.submit(treeExpansionJob));
+                    treeExpansionJob = new TreeExpansionJob<>(productGraph, automata);
+                }
             }
+        }
+
+        // if there is any remaining job in the buffer, submit it as well
+        if(!treeExpansionJob.isEmpty()) {
+            futureList.add(completionService.submit(treeExpansionJob));
         }
 
         for(int i = 0; i < futureList.size() ; i++) {
