@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ public class SimpleTextStream implements TextStream{
     Integer localCounter = 0;
     Integer globalCounter = 0;
 
+    private String splitResults[];
 
     public boolean isOpen() {
         return false;
@@ -60,6 +62,8 @@ public class SimpleTextStream implements TextStream{
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
 
+        splitResults = new String[3];
+
     }
 
     public void close() {
@@ -78,8 +82,12 @@ public class SimpleTextStream implements TextStream{
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on('\t').trimResults().split(line), String.class);
-                if(splitResults.length == 3) {
+                Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
+                int i = 0;
+                for(i = 0; iterator.hasNext() && i < 3; i++) {
+                    splitResults[i] = iterator.next();
+                }
+                if(i == 3) {
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], globalCounter);
                     break;
