@@ -88,12 +88,12 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             delta.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
         }
 
-        List<Future<Multimap<Integer, Integer>>> futureList = Lists.newArrayList();
-        CompletionService<Multimap<Integer, Integer>> completionService = new ExecutorCompletionService<Multimap<Integer, Integer>>(this.executorService);
+        List<Future<Integer>> futureList = Lists.newArrayList();
+        CompletionService<Integer> completionService = new ExecutorCompletionService<>(this.executorService);
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
 
-        TreeExpansionJob<L> treeExpansionJob = new TreeExpansionJob<>(productGraph, automata);
+        TreeExpansionJob<L> treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
 
         // for each transition that given label satisy
         for(Map.Entry<Integer, Integer> transition : transitionList) {
@@ -112,7 +112,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 // check whether the job is full and ready to submit
                 if(treeExpansionJob.isFull()) {
                     futureList.add(completionService.submit(treeExpansionJob));
-                    treeExpansionJob = new TreeExpansionJob<>(productGraph, automata);
+                    treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
                 }
             }
         }
@@ -124,9 +124,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         for(int i = 0; i < futureList.size() ; i++) {
             try {
-                Multimap<Integer, Integer> partialResults = completionService.take().get();
-                resultCounter.inc(partialResults.size());
-                results.putAll(partialResults);
+                Integer partialResultCount = completionService.take().get();
+                resultCounter.inc(partialResultCount);
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("SpanningTreeExpansion interrupted during execution", e);
             }

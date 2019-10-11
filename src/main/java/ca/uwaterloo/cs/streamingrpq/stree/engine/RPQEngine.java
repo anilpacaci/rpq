@@ -5,6 +5,9 @@ import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Queues;
+
+import java.util.Queue;
 
 /**
  * Created by anilpacaci on 2019-10-02.
@@ -22,17 +25,21 @@ public abstract class RPQEngine<L> {
     protected ProductGraph<Integer, L> productGraph;
     protected QueryAutomata<L> automata;
 
-    protected Multimap<Integer, Integer> results;
+    protected Queue<ResultPair<Integer>> results;
 
     protected RPQEngine(QueryAutomata<L> query, int capacity) {
         delta = new Delta<>(capacity);
         automata = query;
-        results = HashMultimap.create();
+        results = Queues.newConcurrentLinkedQueue();
         productGraph = new ProductGraph<>(capacity, query);
     }
 
-    public Multimap<Integer, Integer> getResults() {
+    public Queue<ResultPair<Integer>> getResults() {
         return  results;
+    }
+
+    public long getResultCount() {
+        return resultCounter.getCount();
     }
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {

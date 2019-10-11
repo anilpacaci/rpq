@@ -6,9 +6,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 
-public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>{
+public class TreeExpansionJob<L> implements Callable<Integer>{
 
     private ProductGraph<Integer,L> productGraph;
     private QueryAutomata<L> automata;
@@ -20,9 +21,11 @@ public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>
 
     private int currentSize;
 
-    private Multimap<Integer, Integer> results;
+    private int resultCount;
 
-    public TreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata) {
+    private Queue<ResultPair<Integer>> results;
+
+    public TreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
         this.productGraph = productGraph;
         this.automata = automata;
         this.spanningTree = new SpanningTree[Constants.EXPECTED_BATCH_SIZE];
@@ -30,8 +33,9 @@ public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>
         this.targetVertex = new int[Constants.EXPECTED_BATCH_SIZE];
         this.targetState = new int[Constants.EXPECTED_BATCH_SIZE];
         this.edgeTimestamp = new long[Constants.EXPECTED_BATCH_SIZE];
-        this.results = HashMultimap.create();
+        this.results = results;
         this.currentSize = 0;
+        this.resultCount = 0;
     }
 
     /**
@@ -71,13 +75,14 @@ public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>
     }
 
     @Override
-    public Multimap<Integer, Integer> call() throws Exception {
+    public Integer call() throws Exception {
 
         // call each job in teh buffer
         for(int i = 0; i < currentSize; i++) {
             processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
         }
-        return results;
+
+        return this.resultCount;
     }
 
     public void processTransition(SpanningTree<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
@@ -117,7 +122,8 @@ public class TreeExpansionJob<L> implements Callable<Multimap<Integer, Integer>>
             }
             // add this pair to results if it is a final state
             if (automata.isFinalState(childState)) {
-                results.put(tree.getRootVertex(), childVertex);
+                results.offer(new ResultPair<>(tree.getRootVertex(), childVertex));
+                resultCount++;
             }
 
             // get all the forward edges of the new extended node

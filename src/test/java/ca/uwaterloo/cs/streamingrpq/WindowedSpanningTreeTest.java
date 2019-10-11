@@ -42,7 +42,7 @@ public class WindowedSpanningTreeTest {
             input = stream.next();
         }
 
-        rapqEngine.getResults().entries().iterator().forEachRemaining(t-> {System.out.println(t.getKey() + " --> " + t.getValue());});
+        rapqEngine.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget());});
 
         rapqEngine.shutDown();
 

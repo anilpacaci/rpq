@@ -44,7 +44,7 @@ public class SingleThreadedRun<L> implements Callable {
             }
         }
 
-        logger.info("total number of results for query " + queryName + " : " + query.getResults().size());
+        logger.info("total number of results for query " + queryName + " : " + query.getResultCount());
         return null;
     }
 
