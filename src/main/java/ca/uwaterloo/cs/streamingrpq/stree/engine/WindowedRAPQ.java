@@ -122,6 +122,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                     } else {
                         try {
                             Integer partialResultCount = treeExpansionJob.call();
+                            treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
                             resultCounter.inc(partialResultCount);
                         } catch (Exception e) {
                             LOG.error("SpanningTreeExpansion exception on main thread", e);
