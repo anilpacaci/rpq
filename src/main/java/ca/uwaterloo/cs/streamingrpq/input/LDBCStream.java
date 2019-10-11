@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,8 @@ public class LDBCStream implements TextStream{
     Integer globalCounter = 0;
 
     Long startTimestamp = -1L;
+
+    private String[] splitResults;
 
 
     public boolean isOpen() {
@@ -62,6 +65,8 @@ public class LDBCStream implements TextStream{
 
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
+
+        splitResults = new String[4];
     }
 
     public void close() {
@@ -80,8 +85,16 @@ public class LDBCStream implements TextStream{
         InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on('\t').trimResults().split(line), String.class);
-                if(splitResults.length == 4) {
+                Iterator<String> stringIterator = Splitter.on('\t').trimResults().split(line).iterator();
+                int i = 0;
+                for(i = 0; i < 4 ; i++) {
+                    if(stringIterator.hasNext()) {
+                        splitResults[i] = stringIterator.next();
+                    } else {
+                        break;
+                    }
+                }
+                if(i == 3) {
 //                    tuple = new InputTuple(1,2,3);
                     tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1], Long.parseLong(splitResults[3]) - startTimestamp);
                     localCounter++;
