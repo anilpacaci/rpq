@@ -28,6 +28,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     private ExecutorService executorService;
 
+    private int numOfThreads;
+
 
     private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
 
@@ -43,6 +45,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
         this.jobQueue = new ArrayDeque<>(Constants.EXPECTED_TREES);
+        this.numOfThreads = numOfThreads;
     }
 
     @Override
@@ -102,6 +105,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
             Collection<SpanningTree> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
             treeCount += containingTrees.size();
+
+            boolean runParallel = containingTrees.size() > Constants.EXPECTED_BATCH_SIZE * this.numOfThreads;
             // iterate over spanning trees that include the source node
             for(SpanningTree<Integer> spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
@@ -111,15 +116,29 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
                 // check whether the job is full and ready to submit
                 if(treeExpansionJob.isFull()) {
-                    futureList.add(completionService.submit(treeExpansionJob));
-                    treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
+                    if (runParallel) {
+                        futureList.add(completionService.submit(treeExpansionJob));
+                        treeExpansionJob = new TreeExpansionJob<>(productGraph, automata, results);
+                    } else {
+                        try {
+                            Integer partialResultCount = treeExpansionJob.call();
+                            resultCounter.inc(partialResultCount);
+                        } catch (Exception e) {
+                            LOG.error("SpanningTreeExpansion exception on main thread", e);
+                        }
+                    }
                 }
             }
         }
 
-        // if there is any remaining job in the buffer, submit it as well
+        // if there is any remaining job in the buffer, run them in main thread
         if(!treeExpansionJob.isEmpty()) {
-            futureList.add(completionService.submit(treeExpansionJob));
+            try {
+                Integer partialResultCount = treeExpansionJob.call();
+                resultCounter.inc(partialResultCount);
+            } catch (Exception e) {
+                LOG.error("SpanningTreeExpansion exception on main thread", e);
+            }
         }
 
         for(int i = 0; i < futureList.size() ; i++) {

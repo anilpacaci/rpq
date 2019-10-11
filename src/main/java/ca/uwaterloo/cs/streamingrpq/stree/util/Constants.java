@@ -16,5 +16,5 @@ public class Constants {
     /**
      * Total number of SpanningTreeExpansion jobs to be assigned to a thread
      */
-    public static final int EXPECTED_BATCH_SIZE = 128;
+    public static final int EXPECTED_BATCH_SIZE = 64;
 }
