@@ -1,38 +1,39 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data;
+package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
-import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTree<V> {
+public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
 
-    private TreeNode<V> rootNode;
-    private Delta<V> delta;
+    private TreeNodeRSPQ<V> rootNode;
+    private DeltaRSPQ<V> delta;
 
-    private Map<Hasher.MapKey<V>, TreeNode> nodeIndex;
+    private Multimap<Hasher.MapKey<V>, TreeNodeRSPQ> nodeIndex;
 
-    private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
+    private HashSet<Hasher.MapKey<V>> markings;
+
+    private final Logger LOG = LoggerFactory.getLogger(SpanningTreeRSPQ.class);
 
     private long minTimestamp;
 
-    protected SpanningTree() {
-        // empty constructor
-    }
-
-    protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
-        this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
+    protected SpanningTreeRSPQ(DeltaRSPQ<V> delta, V rootVertex, long timestamp) {
+        this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
-        this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREES);
+        this.nodeIndex = HashMultimap.create();
         nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
+        this.markings = Sets.newHashSet();
         this.minTimestamp = timestamp;
     }
 
-    public TreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
+
+    public TreeNodeRSPQ<V> addNode(TreeNodeRSPQ parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {
             // TODO no object found
         }
@@ -40,7 +41,7 @@ public class SpanningTree<V> {
             // TODO wrong tree
         }
 
-        TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
+        TreeNodeRSPQ<V> child = new TreeNodeRSPQ<>(childVertex, childState, parentNode, this, timestamp);
         nodeIndex.put(Hasher.getTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
@@ -55,8 +56,8 @@ public class SpanningTree<V> {
         return nodeIndex.containsKey(Hasher.getTreeNodePairKey(vertex, state));
     }
 
-    public TreeNode getNode(V vertex, int state) {
-        TreeNode node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
+    public Collection<TreeNodeRSPQ>  getNodes(V vertex, int state) {
+        Collection<TreeNodeRSPQ> node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
         return node;
     }
 
@@ -76,6 +77,14 @@ public class SpanningTree<V> {
 
     public long getMinTimestamp() {
         return minTimestamp;
+    }
+
+    public void addMarking(V vertex, int state) {
+        markings.add(Hasher.getTreeNodePairKey(vertex, state));
+    }
+
+    public boolean isMarked(V vertex, int state) {
+        return markings.contains(Hasher.getTreeNodePairKey(vertex, state));
     }
 
     /**

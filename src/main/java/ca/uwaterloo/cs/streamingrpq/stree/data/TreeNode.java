@@ -9,15 +9,19 @@ public class TreeNode<V> {
 
     private int hash = 0;
 
-    SpanningTree<V> tree;
+    private SpanningTree<V> tree;
 
-    private V vertex;
-    private int state;
-    private long timestamp;
+    protected V vertex;
+    protected int state;
+    protected long timestamp;
 
     private TreeNode parent;
 
     private Collection<TreeNode> children;
+
+    protected TreeNode() {
+
+    }
 
     protected TreeNode(V vertex, int state, TreeNode parent, SpanningTree t, long timestamp) {
         this.vertex = vertex;
@@ -78,7 +82,7 @@ public class TreeNode<V> {
         }
     }
 
-    public Collection<TreeNode> getChildren() {
+    public Collection<? extends TreeNode> getChildren() {
         return children;
     }
 

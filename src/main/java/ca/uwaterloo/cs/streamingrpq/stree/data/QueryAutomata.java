@@ -72,4 +72,9 @@ public class QueryAutomata<L> {
         return labelTransitions.getOrDefault(label, new HashMap<>());
     }
 
+    public boolean hasContainment(int stateQ,int stateT) {
+        // TODO need to implement containment checking
+        return true;
+    }
+
 }

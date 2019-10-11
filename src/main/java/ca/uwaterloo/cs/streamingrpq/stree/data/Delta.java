@@ -1,14 +1,10 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeExpansionJob;
-import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.*;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +117,7 @@ public class Delta<V> {
             while(!queue.isEmpty()) {
                 ProductGraphNode<V> currentNode = queue.remove();
                 TreeNode<V> currentTreeNode = tree.getNode(currentNode.getVertex(), currentNode.getState());
-                
+
                 Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentNode);
                 for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
                     if(forwardEdge.getTimestamp() <= minTimestamp) {
@@ -162,8 +158,8 @@ public class Delta<V> {
                 continue;
             }
 
-            SpanningTreeExpiryJob<V, L> spanningTreeExpiryJob = new SpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
-            futures.add(completionService.submit(spanningTreeExpiryJob));
+            RAPQSpanningTreeExpiryJob<V, L> RAPQSpanningTreeExpiryJob = new RAPQSpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
+            futures.add(completionService.submit(RAPQSpanningTreeExpiryJob));
         }
 
         for(int i = 0; i < futures.size(); i++) {
@@ -182,7 +178,7 @@ public class Delta<V> {
         this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
     }
 
-    private static class SpanningTreeExpiryJob<V,L> implements Callable<Void> {
+    private static class RAPQSpanningTreeExpiryJob<V,L> implements Callable<Void> {
 
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
@@ -190,7 +186,7 @@ public class Delta<V> {
         private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
         private SpanningTree<V> tree;
 
-        public SpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTree<V> tree) {
+        public RAPQSpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTree<V> tree) {
             this.minTimestamp = minTimestamp;
             this.productGraph = productGraph;
             this.tree = tree;

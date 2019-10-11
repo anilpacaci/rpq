@@ -21,14 +21,12 @@ public abstract class RPQEngine<L> {
     protected Histogram processedHistogram;
     protected Timer fullTimer;
 
-    protected Delta<Integer> delta;
     protected ProductGraph<Integer, L> productGraph;
     protected QueryAutomata<L> automata;
 
     protected Queue<ResultPair<Integer>> results;
 
     protected RPQEngine(QueryAutomata<L> query, int capacity) {
-        delta = new Delta<>(capacity);
         automata = query;
         results = Queues.newConcurrentLinkedQueue();
         productGraph = new ProductGraph<>(capacity, query);
@@ -51,7 +49,6 @@ public abstract class RPQEngine<L> {
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
         this.productGraph.addMetricRegistry(metricRegistry);
-        this.delta.addMetricRegistry(metricRegistry);
     }
 
     public abstract void processEdge(InputTuple<Integer, Integer, L> inputTuple);

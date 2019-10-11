@@ -108,7 +108,7 @@ public class ProductGraph<V,L> {
         }
     }
 
-    protected int getEdgeCount() {
+    public int getEdgeCount() {
         return edgeCount;
     }
 

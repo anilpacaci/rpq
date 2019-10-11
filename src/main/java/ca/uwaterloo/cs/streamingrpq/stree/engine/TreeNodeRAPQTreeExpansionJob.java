@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 
-public class TreeExpansionJob<L> implements Callable<Integer>{
+public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
 
     private ProductGraph<Integer,L> productGraph;
     private QueryAutomata<L> automata;
@@ -25,7 +25,7 @@ public class TreeExpansionJob<L> implements Callable<Integer>{
 
     private Queue<ResultPair<Integer>> results;
 
-    public TreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
+    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
         this.productGraph = productGraph;
         this.automata = automata;
         this.spanningTree = new SpanningTree[Constants.EXPECTED_BATCH_SIZE];
