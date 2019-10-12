@@ -1,12 +1,11 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.SpanningTree;
-import ca.uwaterloo.cs.streamingrpq.stree.data.TreeNode;
-import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 
 import java.util.concurrent.Callable;
 
-public abstract class AbstractTreeExpansionJob implements Callable<Integer> {
+public abstract class AbstractTreeExpansionJob<T, N> implements Callable<Integer> {
 
     /**
      * Populates the job array
@@ -17,7 +16,7 @@ public abstract class AbstractTreeExpansionJob implements Callable<Integer> {
      * @param edgeTimestamp
      * @return false whenever job array is full and cannot be further populated
      */
-    abstract <T extends SpanningTree, N extends TreeNode> boolean addJob(T spanningTree, N parentNode, int targetVertex, int targetState, long edgeTimestamp) throws IllegalStateException;
+    abstract  boolean addJob(T spanningTree, N parentNode, int targetVertex, int targetState, long edgeTimestamp) throws IllegalStateException;
 
     abstract boolean isFull();
 

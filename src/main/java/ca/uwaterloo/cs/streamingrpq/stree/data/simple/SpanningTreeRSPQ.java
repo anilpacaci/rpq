@@ -1,6 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -10,12 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
+public class SpanningTreeRSPQ<V> {
 
     private TreeNodeRSPQ<V> rootNode;
     private DeltaRSPQ<V> delta;
 
-    private Multimap<Hasher.MapKey<V>, TreeNodeRSPQ> nodeIndex;
+    private Multimap<Hasher.MapKey<V>, TreeNodeRSPQ<V>> nodeIndex;
 
     private HashSet<Hasher.MapKey<V>> markings;
 
@@ -56,8 +58,8 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
         return nodeIndex.containsKey(Hasher.getTreeNodePairKey(vertex, state));
     }
 
-    public Collection<TreeNodeRSPQ>  getNodes(V vertex, int state) {
-        Collection<TreeNodeRSPQ> node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
+    public Collection<TreeNodeRSPQ<V>>  getNodes(V vertex, int state) {
+        Collection<TreeNodeRSPQ<V>> node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
         return node;
     }
 
@@ -65,13 +67,28 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
         return this.rootNode.getVertex();
     }
 
-    public TreeNode<V> getRootNode() {
+    public TreeNodeRSPQ<V> getRootNode() {
         return this.rootNode;
     }
 
     protected void updateTimestamp(long timestamp) {
         if(timestamp < minTimestamp) {
             this.minTimestamp = timestamp;
+        }
+    }
+
+    /**
+     * removes the node from current nodeIndex.
+     * If there is no such node remaining, then remove it from delta tree index
+     * @param node
+     */
+    private void removeNode(TreeNodeRSPQ<V> node) {
+        Hasher.MapKey<V> nodeKey = Hasher.getTreeNodePairKey(node.getVertex(), node.getState());
+        this.nodeIndex.remove(nodeKey, node);
+        //remove this node from parent's chilren list
+        node.setParent(null);
+        if(this.nodeIndex.get(nodeKey).isEmpty()) {
+            this.delta.removeFromTreeIndex(node, this);
         }
     }
 
@@ -85,6 +102,53 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
 
     public boolean isMarked(V vertex, int state) {
         return markings.contains(Hasher.getTreeNodePairKey(vertex, state));
+    }
+
+    public void removeMarking(V vertex, int state) {
+        markings.remove(Hasher.getTreeNodePairKey(vertex, state));
+    }
+
+    /**
+     * Implements unmarking procedure for nodes with conflicts
+     * @param productGraph
+     * @param parentNode
+     */
+    protected <L> void unmark(ProductGraph<V, L> productGraph, TreeNodeRSPQ<V> parentNode) {
+
+        Stack<TreeNodeRSPQ<V>> unmarkedNodes = new Stack<>();
+
+        TreeNodeRSPQ<V> currentNode = parentNode;
+
+        // first unmark all marked nodes upto parent
+        while (currentNode != null && this.isMarked(currentNode.getVertex(), currentNode.getState())) {
+            this.removeMarking(currentNode.getVertex(), currentNode.getState());
+            unmarkedNodes.push(currentNode);
+            currentNode = currentNode.getParent();
+        }
+
+        // now simply traverse back edges of the candidates and invoke processTransition
+        while (!unmarkedNodes.isEmpty()) {
+            currentNode = unmarkedNodes.pop();
+
+            // get backward edges of the unmarked node
+            Collection<GraphEdge<ProductGraphNode<V>>> backwardEdges = productGraph.getBackwardEdges(currentNode.getVertex(), currentNode.getState());
+            for (GraphEdge<ProductGraphNode<V>> backwardEdge : backwardEdges) {
+                V sourceVertex = backwardEdge.getSource().getVertex();
+                int sourceState = backwardEdge.getSource().getState();
+                // find all the nodes that are pruned due to previously marking
+                Collection<TreeNodeRSPQ<V>> parentNodes = this.getNodes(sourceVertex, sourceState);
+                for (TreeNodeRSPQ<V> parent : parentNodes) {
+                    // try to extend if it is not a cycle in the product graph
+                    if (!parent.containsCM(currentNode.getVertex(), currentNode.getState())) {
+                        extendPrefixPath(productGraph, parent, currentNode.getVertex(), currentNode.getState(), backwardEdge.getTimestamp());
+                    }
+                }
+            }
+        }
+    }
+
+    protected <L> void extendPrefixPath(ProductGraph<V, L> productGraph, TreeNodeRSPQ<V> parentNode, V targetVertex, int targetState, long edgeTimestamp) {
+
     }
 
     /**
@@ -101,23 +165,31 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
 //        }
 
         // potentially expired nodes
-        HashSet<TreeNode<V>> candidates = new HashSet<>();
-        HashSet<TreeNode<V>> candidateRemoval = new HashSet<>();
+        HashSet<TreeNodeRSPQ<V>> candidates = new HashSet<>();
+        HashSet<TreeNodeRSPQ<V>> candidateRemoval = new HashSet<>();
 
         // perform a bfs traversal on tree, no need for visited as it is a three
-        LinkedList<TreeNode> queue = new LinkedList<>();
+        LinkedList<TreeNodeRSPQ<V>> queue = new LinkedList<>();
         // minTimestamp of the tree should be updated, find the lowest timestamp in the tree higher than the minTimestmap
         // because after this maintenance, there is not going to be a node in the tree lower than the minTimestamp
         long minimumValidTimetamp = Long.MAX_VALUE;
         queue.addAll(rootNode.getChildren());
         while(!queue.isEmpty()) {
             // populate the queue with children
-            TreeNode currentVertex = queue.remove();
+            TreeNodeRSPQ<V> currentVertex = queue.remove();
             queue.addAll(currentVertex.getChildren());
 
             // check time timestamp to decide whether it is expired
             if(currentVertex.getTimestamp() <= minTimestamp) {
-                candidates.add(currentVertex);
+                // if node is unmarked simply remove it here
+                if(this.isMarked(currentVertex.getVertex(), currentVertex.getState())) {
+                    // unmarked nodes are guarenteed to have no cross-edges
+                    this.removeNode(currentVertex);
+                } else {
+                    // marked nodes are just candidate for removal
+                    candidates.add(currentVertex);
+                }
+
             }
             // find minValidTimestamp for filtering for the next maintenance window
             if(currentVertex.getTimestamp() > minTimestamp && currentVertex.getTimestamp() < minimumValidTimetamp) {
@@ -127,8 +199,8 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
         //update the lowest minimum timestamp for this tree
         this.minTimestamp = minimumValidTimetamp;
 
-        Iterator<TreeNode<V>> candidateIterator = candidates.iterator();
-        HashSet<TreeNode> visited = new HashSet<>();
+        Iterator<TreeNodeRSPQ<V>> candidateIterator = candidates.iterator();
+        HashSet<TreeNodeRSPQ> visited = new HashSet<>();
 
         LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
 
@@ -136,21 +208,29 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
         // For each potential, check they have a valid non-tree edge in the original productGraph
         // If there is traverse down from here (in the productGraph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
-            TreeNode<V> candidate = candidateIterator.next();
+            TreeNodeRSPQ<V> candidate = candidateIterator.next();
             // check if a previous traversal already found a path for the candidate
             if(candidate.getTimestamp() > minTimestamp) {
                 continue;
             }
             //check if there exists any incoming edge from a valid state
             Collection<GraphEdge<ProductGraphNode<V>>> backwardEdges = productGraph.getBackwardEdges(candidate.getVertex(), candidate.getState());
-            TreeNode<V> newParent = null;
+            TreeNodeRSPQ<V> newParent = null;
             GraphEdge<ProductGraphNode<V>> newParentEdge = null;
             for(GraphEdge<ProductGraphNode<V>> backwardEdge : backwardEdges) {
-                newParent = this.getNode(backwardEdge.getSource().getVertex(), backwardEdge.getSource().getState());
-                if (newParent != null && (!candidates.contains(newParent) || candidateRemoval.contains(newParent))) {
-                    // there is an incoming edge with valid source
-                    // source is valid (in the tree) and not in candidate
-                    newParentEdge = backwardEdge;
+                Collection<TreeNodeRSPQ<V>> newParents = this.getNodes(backwardEdge.getSource().getVertex(), backwardEdge.getSource().getState());
+                // candidate is a marked node, therefore these edges cannot form a cycle or register conflict
+                for(TreeNodeRSPQ<V> newParentCandidate : newParents) {
+                    if (!candidates.contains(newParentCandidate) || candidateRemoval.contains(newParentCandidate)) {
+                        // there is an incoming edge with valid source
+                        // source is valid (in the tree) and not in candidate
+                        newParent = newParentCandidate;
+                        newParentEdge = backwardEdge;
+                        break;
+                    }
+                }
+                if(newParentEdge != null) {
+                    // a valid backward edge is found
                     break;
                 }
             }
@@ -167,35 +247,37 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
                 candidateRemoval.add(candidate);
 
                 //now traverse the productGraph down from this node, and remove any visited node from candidates
-                LinkedList<TreeNode> traversalQueue = new LinkedList<TreeNode>();
+                LinkedList<TreeNodeRSPQ<V>> traversalQueue = new LinkedList<>();
 
                 // initial node is the current candidate, because now it is reachable
                 traversalQueue.add(candidate);
                 while(!traversalQueue.isEmpty()){
-                    TreeNode<V> currentVertex = traversalQueue.remove();
+                    TreeNodeRSPQ<V> currentVertex = traversalQueue.remove();
                     visited.add(currentVertex);
 
                     Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentVertex.getVertex(), currentVertex.getState());
                     // for each potential child
                     for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
                         // I can simply retrieve from the tree index because any node that is reachable are in tree index
-                        TreeNode<V> outgoingTreeNode = this.getNode(forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState());
-                        // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
-                        if (outgoingTreeNode != null && forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
-                            if (candidates.contains(outgoingTreeNode)) {
-                                // remove this node from potentials as now there is a younger path
-                                candidateRemoval.add(outgoingTreeNode);
+                        Collection<TreeNodeRSPQ<V>> outgoingTreeNodes = this.getNodes(forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState());
+                        for (TreeNodeRSPQ<V> outgoingTreeNode : outgoingTreeNodes) {
+                            // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
+                            if (forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
+                                if (candidates.contains(outgoingTreeNode)) {
+                                    // remove this node from potentials as now there is a younger path
+                                    candidateRemoval.add(outgoingTreeNode);
+                                }
+                                if (outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
+                                    // note anything in the candidates has a lower timestamp then
+                                    // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
+                                    outgoingTreeNode.setParent(currentVertex);
+                                    outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
+                                    traversalQueue.add(outgoingTreeNode);
+                                }
                             }
-                            if (outgoingTreeNode.getTimestamp() < Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp())) {
-                                // note anything in the candidates has a lower timestamp then
-                                // min(currentVertex, forwardEdge) as currentVertex and forward edge are guarenteed to be larger than minTimestamp
-                                outgoingTreeNode.setParent(currentVertex);
-                                outgoingTreeNode.setTimestamp(Long.min(currentVertex.getTimestamp(), forwardEdge.getTimestamp()));
-                                traversalQueue.add(outgoingTreeNode);
-                            }
+                            // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
+                            // so no need to add them into the queue
                         }
-                        // nodes with forward edge smaller than minTimestamp with already younger paths no need to be visited
-                        // so no need to add them into the queue
                     }
                 }
 
@@ -208,18 +290,13 @@ public class SpanningTreeRSPQ<V> extends SpanningTree<V> {
 
         // now if there is any potential remanining, it is guarenteed that they are not reachable
         // so simply clean the indexes and generate negative result if necessary
-        for(TreeNode<V> currentVertex : candidates) {
+        for(TreeNodeRSPQ<V> currentVertex : candidates) {
             // remove this node from the node index
-            nodeIndex.remove(Hasher.getTreeNodePairKey(currentVertex.getVertex(), currentVertex.getState()));
-            //remove this node from parent's chilren list
-            currentVertex.setParent(null);
-
-            //remove this entry from nodeToTreeIndex
-            this.delta.removeFromTreeIndex(currentVertex, this);
+            this.removeNode(currentVertex);
         }
 
         if(this.isExpired(minTimestamp)) {
-            TreeNode<V> removedTuple = this.getRootNode();
+            TreeNodeRSPQ<V> removedTuple = this.getRootNode();
             delta.removeTree(this);
         }
 

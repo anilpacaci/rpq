@@ -1,6 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -28,15 +30,6 @@ public class DeltaRSPQ<V> {
         nodeToTreeIndex = Maps.newConcurrentMap();
     }
 
-    public SpanningTree getTree(V vertex) {
-        SpanningTree tree = treeIndex.get(vertex);
-        return tree;
-    }
-
-    public Collection<SpanningTreeRSPQ> getTrees() {
-        return treeIndex.values();
-    }
-
     public Collection<SpanningTreeRSPQ> getTrees(V vertex, int state) {
         Set<SpanningTreeRSPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key ->
                 Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRSPQ, Boolean>()) );
@@ -59,7 +52,7 @@ public class DeltaRSPQ<V> {
     }
 
     public void removeTree(SpanningTreeRSPQ<V> tree) {
-        TreeNode<V> rootNode = tree.getRootNode();
+        TreeNodeRSPQ<V> rootNode = tree.getRootNode();
         this.treeIndex.remove(rootNode.getVertex());
 
         Collection<SpanningTreeRSPQ> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
@@ -70,12 +63,12 @@ public class DeltaRSPQ<V> {
         treeCounter.dec();
     }
 
-    public void addToTreeNodeIndex(SpanningTreeRSPQ<V> tree, TreeNode<V> treeNode) {
+    public void addToTreeNodeIndex(SpanningTreeRSPQ<V> tree, TreeNodeRSPQ<V> treeNode) {
         Collection<SpanningTreeRSPQ> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
         containingTrees.add(tree);
     }
 
-    public void removeFromTreeIndex(TreeNode<V> removedNode, SpanningTreeRSPQ<V> tree) {
+    public void removeFromTreeIndex(TreeNodeRSPQ<V> removedNode, SpanningTreeRSPQ<V> tree) {
         Collection<SpanningTreeRSPQ> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
@@ -96,7 +89,7 @@ public class DeltaRSPQ<V> {
         List<Future<Void>> futures = new ArrayList<>(trees.size());
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
 
-        LOG.info("{} of trees in Delta", trees.size());
+        LOG.info("{} of trees in DeltaRAPQ", trees.size());
         for(SpanningTreeRSPQ<V> tree : trees) {
             if (tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
@@ -128,7 +121,7 @@ public class DeltaRSPQ<V> {
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
 
-        private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
+        private Table<V, Integer, Set<SpanningTreeRAPQ>> nodeToTreeIndex;
         private SpanningTreeRSPQ<V> tree;
 
         public RSPQSpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTreeRSPQ<V> tree) {

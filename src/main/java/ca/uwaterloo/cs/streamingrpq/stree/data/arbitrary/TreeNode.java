@@ -1,4 +1,4 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data;
+package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 
@@ -9,7 +9,7 @@ public class TreeNode<V> {
 
     private int hash = 0;
 
-    private SpanningTree<V> tree;
+    private SpanningTreeRAPQ<V> tree;
 
     protected V vertex;
     protected int state;
@@ -23,7 +23,7 @@ public class TreeNode<V> {
 
     }
 
-    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTree t, long timestamp) {
+    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTreeRAPQ t, long timestamp) {
         this.vertex = vertex;
         this.state = state;
         this.parent = parent;
@@ -36,7 +36,7 @@ public class TreeNode<V> {
         }
     }
 
-    public SpanningTree<V> getTree() {
+    public SpanningTreeRAPQ<V> getTree() {
         return tree;
     }
 

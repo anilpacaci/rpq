@@ -7,9 +7,9 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.Collection;
 import java.util.Queue;
-import java.util.concurrent.Callable;
+import java.util.Stack;
 
-public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
+public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>{
 
     private ProductGraph<Integer,L> productGraph;
     private QueryAutomata<L> automata;
@@ -86,13 +86,14 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
     }
 
     public void processTransition(SpanningTreeRSPQ<Integer> tree, TreeNodeRSPQ<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
-        if(automata.hasContainment(parentNode.getFirstCM(childVertex), childState)) {
+        if(!automata.hasContainment(parentNode.getFirstCM(childVertex), childState)) {
             // detected conflict parent node needs to be unmarked
+            unmark(tree, parentNode);
         } else if(tree.isMarked(childVertex, childState)) {
             // target is already marked and exists in this tree so no need to visit again
         } else {
             // if this is the first target product node is visited, simply add it to the markings
-            if(tree.exists(childVertex, childState)) {
+            if(!tree.exists(childVertex, childState)) {
                 tree.addMarking(childVertex, childState);
             }
 
@@ -118,8 +119,8 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
             } else {
                 // there are forward edges, iterate over them
                 for (GraphEdge<ProductGraphNode<Integer>> forwardEdge : forwardEdges) {
-                    int targetVertex = forwardEdge.getSource().getVertex();
-                    int targetState = forwardEdge.getSource().getState();
+                    int targetVertex = forwardEdge.getTarget().getVertex();
+                    int targetState = forwardEdge.getTarget().getState();
                     if(!childNode.containsCM(targetVertex, targetState)) {
                         // visit a node only if that same node is not visited at the same state before
                         // simply prevent cycles in product graph
@@ -128,5 +129,45 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
                 }
             }
         }
+    }
+
+    /**
+     * Implements unmarking procedure for nodes with conflicts
+     * @param tree
+     * @param parentNode
+     */
+    public void unmark(SpanningTreeRSPQ<Integer> tree, TreeNodeRSPQ<Integer> parentNode) {
+
+        Stack<TreeNodeRSPQ<Integer>> unmarkedNodes = new Stack<>();
+
+        TreeNodeRSPQ<Integer> currentNode = parentNode;
+
+        // first unmark all marked nodes upto parent
+        while(currentNode != null && tree.isMarked(currentNode.getVertex(), currentNode.getState())) {
+            tree.removeMarking(currentNode.getVertex(), currentNode.getState());
+            unmarkedNodes.push(currentNode);
+            currentNode = currentNode.getParent();
+        }
+
+        // now simply traverse back edges of the candidates and invoke processTransition
+        while(!unmarkedNodes.isEmpty()) {
+            currentNode = unmarkedNodes.pop();
+
+            // get backward edges of the unmarked node
+            Collection<GraphEdge<ProductGraphNode<Integer>>> backwardEdges = productGraph.getBackwardEdges(currentNode.getVertex(), currentNode.getState());
+            for(GraphEdge<ProductGraphNode<Integer>> backwardEdge : backwardEdges) {
+                int sourceVertex = backwardEdge.getSource().getVertex();
+                int sourceState = backwardEdge.getSource().getState();
+                // find all the nodes that are pruned due to previously marking
+                Collection<TreeNodeRSPQ<Integer>> parentNodes = tree.getNodes(sourceVertex, sourceState);
+                for(TreeNodeRSPQ<Integer> parent : parentNodes) {
+                    // try to extend if it is not a cycle in the product graph
+                    if(!parent.containsCM(currentNode.getVertex(), currentNode.getState())) {
+                        processTransition(tree, parent, currentNode.getVertex(), currentNode.getState(), backwardEdge.getTimestamp());
+                    }
+                }
+            }
+        }
+
     }
 }

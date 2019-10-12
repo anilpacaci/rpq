@@ -1,6 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
@@ -9,15 +9,19 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-public class TreeNodeRSPQ<V> extends TreeNode<V> {
+public class TreeNodeRSPQ<V> {
 
     private int hash = 0;
+
+    protected V vertex;
+    protected int state;
+    protected long timestamp;
 
     private SpanningTreeRSPQ<V> tree;
 
     private TreeNodeRSPQ parent;
 
-    private Collection<TreeNodeRSPQ> children;
+    private Collection<TreeNodeRSPQ<V>> children;
 
     private Map<V, Integer> firstMarkings;
     private SetMultimap<V, Integer> currentMarkings;
@@ -31,7 +35,6 @@ public class TreeNodeRSPQ<V> extends TreeNode<V> {
         this.timestamp = timestamp;
         // set this as a child of the parent if it is not null
         if(parent != null) {
-            this.parent.addChildren(this);
             this.firstMarkings = Maps.newHashMap(parent.firstMarkings);
             this.currentMarkings = HashMultimap.create(parent.currentMarkings);
         } else {
@@ -42,6 +45,36 @@ public class TreeNodeRSPQ<V> extends TreeNode<V> {
         // populate with root node
         this.firstMarkings.putIfAbsent(vertex, state);
         this.currentMarkings.put(vertex, state);
+
+        if(parent != null) {
+            this.parent.addChildren(this);
+        }
+    }
+
+    public SpanningTreeRSPQ<V> getTree() {
+        return tree;
+    }
+
+    public V getVertex() {
+        return vertex;
+    }
+
+
+    public int getState() {
+        return state;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+        this.tree.updateTimestamp(timestamp);
+    }
+
+    public TreeNodeRSPQ<V> getParent() {
+        return parent;
     }
 
     /**
@@ -64,7 +97,7 @@ public class TreeNodeRSPQ<V> extends TreeNode<V> {
         }
     }
 
-    public Collection<TreeNodeRSPQ> getChildren() {
+    public Collection<TreeNodeRSPQ<V>> getChildren() {
         return children;
     }
 
@@ -85,9 +118,9 @@ public class TreeNodeRSPQ<V> extends TreeNode<V> {
     /**
      * The first state this vertex is visited on the path from root to this node
      * @param vertex
-     * @return
+     * @return null if no such vertex exists
      */
-    public int getFirstCM(V vertex) {
+    public Integer getFirstCM(V vertex) {
         return firstMarkings.get(vertex);
     }
 

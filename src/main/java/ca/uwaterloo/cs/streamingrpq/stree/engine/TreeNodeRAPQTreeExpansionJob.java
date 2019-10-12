@@ -1,19 +1,18 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 import java.util.Collection;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 
-public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
+public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<SpanningTreeRAPQ<Integer>, TreeNode<Integer>>{
 
     private ProductGraph<Integer,L> productGraph;
     private QueryAutomata<L> automata;
-    private SpanningTree<Integer> spanningTree[];
+    private SpanningTreeRAPQ<Integer> spanningTree[];
     private TreeNode<Integer> parentNode[];
     private int targetVertex[];
     private int targetState[];
@@ -28,7 +27,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
     public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
         this.productGraph = productGraph;
         this.automata = automata;
-        this.spanningTree = new SpanningTree[Constants.EXPECTED_BATCH_SIZE];
+        this.spanningTree = new SpanningTreeRAPQ[Constants.EXPECTED_BATCH_SIZE];
         this.parentNode = new TreeNode[Constants.EXPECTED_BATCH_SIZE];
         this.targetVertex = new int[Constants.EXPECTED_BATCH_SIZE];
         this.targetState = new int[Constants.EXPECTED_BATCH_SIZE];
@@ -47,7 +46,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
      * @param edgeTimestamp
      * @return false whenever job array is full and cannot be further populated
      */
-    public boolean addJob(SpanningTree<Integer> spanningTree, TreeNode<Integer> parentNode, int targetVertex, int targetState, long edgeTimestamp) throws IllegalStateException{
+    public boolean addJob(SpanningTreeRAPQ<Integer> spanningTree, TreeNode<Integer> parentNode, int targetVertex, int targetState, long edgeTimestamp) throws IllegalStateException{
         if(this.currentSize >= Constants.EXPECTED_BATCH_SIZE) {
             throw new IllegalStateException("Job capacity exceed limit " + currentSize);
         }
@@ -85,7 +84,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob{
         return this.resultCount;
     }
 
-    public void processTransition(SpanningTree<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
+    public void processTransition(SpanningTreeRAPQ<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
         // either update timestamp, or create the node
         if(tree.exists(childVertex, childState)) {
             // if the child node already exists, we might need to update timestamp

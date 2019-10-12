@@ -1,7 +1,11 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.DeltaRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.DeltaRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
@@ -12,44 +16,46 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
  * Created by anilpacaci on 2019-10-02.
  */
-public class WindowedRPQ<L> extends RPQEngine<L> {
+public class WindowedRSPQ<L> extends RPQEngine<L> {
 
     private long windowSize;
     private long slideSize;
     private long lastExpiry = 0;
 
-    protected Delta<Integer> delta;
+    protected DeltaRSPQ<Integer> delta;
 
-    private Queue<TreeNodeRAPQTreeExpansionJob> jobQueue;
 
     private ExecutorService executorService;
 
     private int numOfThreads;
 
 
-    private final Logger LOG = LoggerFactory.getLogger(WindowedRPQ.class);
+    private final Logger LOG = LoggerFactory.getLogger(WindowedRSPQ.class);
 
     protected Histogram windowManagementHistogram;
 
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+    public WindowedRSPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
     }
 
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+    public WindowedRSPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         super(query, capacity);
-        delta = new Delta<>(capacity);
+        this.delta =  new DeltaRSPQ<>(capacity);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
-        this.jobQueue = new ArrayDeque<>(Constants.EXPECTED_TREES);
         this.numOfThreads = numOfThreads;
+        // make sure to call query optimizer to compute containment relationship
+        query.computeContainmentRelationship();
     }
 
     @Override
@@ -100,67 +106,37 @@ public class WindowedRPQ<L> extends RPQEngine<L> {
         CompletionService<Integer> completionService = new ExecutorCompletionService<>(this.executorService);
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
-        AbstractTreeExpansionJob treeExpansionJob = null;
+        TreeNodeRSPQTreeExpansionJob treeExpansionJob = new TreeNodeRSPQTreeExpansionJob<>(productGraph, automata, results);
 
            // for each transition that given label satisy
         for (Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
             int targetState = transition.getValue();
 
-            Collection<? extends SpanningTree> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
+            Collection<SpanningTreeRSPQ> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
             treeCount += containingTrees.size();
 
             boolean runParallel = containingTrees.size() > Constants.EXPECTED_BATCH_SIZE * this.numOfThreads;
             // iterate over spanning trees that include the source node
-            for (SpanningTree<Integer> spanningTree : containingTrees) {
-                if(true) {
-                    //RAPQ evaluation
-                    treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
-
-                    // source is guarenteed to exists due to above loop,
-                    // we do not check target here as even if it exist, we might update its timetsap
-                    TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
+            for (SpanningTreeRSPQ<Integer> spanningTree : containingTrees) {
+                // source is guarenteed to exists due to above loop,
+                // we do not check target here as even if it exist, we might update its timetsap
+                Collection<TreeNodeRSPQ<Integer>> parentNodes = spanningTree.getNodes(inputTuple.getSource(), sourceState);
+                for(TreeNodeRSPQ<Integer> parentNode : parentNodes) {
                     //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
                     treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
                     // check whether the job is full and ready to submit
                     if (treeExpansionJob.isFull()) {
                         if (runParallel) {
                             futureList.add(completionService.submit(treeExpansionJob));
-                            treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
+                            treeExpansionJob = new TreeNodeRSPQTreeExpansionJob<>(productGraph, automata, results);
                         } else {
                             try {
                                 Integer partialResultCount = treeExpansionJob.call();
-                                treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
+                                treeExpansionJob = new TreeNodeRSPQTreeExpansionJob<>(productGraph, automata, results);
                                 resultCounter.inc(partialResultCount);
                             } catch (Exception e) {
                                 LOG.error("SpanningTreeExpansion exception on main thread", e);
-                            }
-                        }
-                    }
-                } else {
-                    // RSPQ evaluation
-                    treeExpansionJob = new TreeNodeRSPQTreeExpansionJob<>(productGraph, automata, results);
-
-                    // there might be multiple nodes for the same vertex-state pair
-                    Collection<TreeNodeRSPQ> parentNodes = ((SpanningTreeRSPQ<Integer>) spanningTree).getNodes(inputTuple.getSource(), sourceState);
-                    for(TreeNodeRSPQ<Integer> parentNode : parentNodes) {
-                        //check for cycles in the product graph
-                        if(!parentNode.containsCM(inputTuple.getTarget(), targetState)) {
-                            treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                            // check whether the job is full and ready to submit
-                            if (treeExpansionJob.isFull()) {
-                                if (runParallel) {
-                                    futureList.add(completionService.submit(treeExpansionJob));
-                                    treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
-                                } else {
-                                    try {
-                                        Integer partialResultCount = treeExpansionJob.call();
-                                        treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
-                                        resultCounter.inc(partialResultCount);
-                                    } catch (Exception e) {
-                                        LOG.error("SpanningTreeExpansion exception on main thread", e);
-                                    }
-                                }
                             }
                         }
                     }
@@ -203,6 +179,10 @@ public class WindowedRPQ<L> extends RPQEngine<L> {
 
     }
 
+    private void processEdgeRAPQ() {
+
+    }
+
     @Override
     public void shutDown() {
         // shutdown executors
@@ -210,7 +190,7 @@ public class WindowedRPQ<L> extends RPQEngine<L> {
     }
 
     /**
-     * updates Delta and Spanning Trees and removes any node that is lower than the window endpoint
+     * updates DeltaRAPQ and Spanning Trees and removes any node that is lower than the window endpoint
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {

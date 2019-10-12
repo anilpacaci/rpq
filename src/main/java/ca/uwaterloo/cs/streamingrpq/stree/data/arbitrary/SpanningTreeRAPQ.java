@@ -1,32 +1,33 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data;
+package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
+import ca.uwaterloo.cs.streamingrpq.stree.data.GraphEdge;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ProductGraph;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ProductGraphNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTree<V> {
+public class SpanningTreeRAPQ<V> {
 
     private TreeNode<V> rootNode;
-    private Delta<V> delta;
+    private DeltaRAPQ<V> deltaRAPQ;
 
     private Map<Hasher.MapKey<V>, TreeNode> nodeIndex;
 
-    private final Logger LOG = LoggerFactory.getLogger(SpanningTree.class);
+    private final Logger LOG = LoggerFactory.getLogger(SpanningTreeRAPQ.class);
 
     private long minTimestamp;
 
-    protected SpanningTree() {
+    protected SpanningTreeRAPQ() {
         // empty constructor
     }
 
-    protected SpanningTree(Delta<V> delta, V rootVertex, long timestamp) {
+    protected SpanningTreeRAPQ(DeltaRAPQ<V> deltaRAPQ, V rootVertex, long timestamp) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
-        this.delta = delta;
+        this.deltaRAPQ = deltaRAPQ;
         this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREES);
         nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
         this.minTimestamp = timestamp;
@@ -44,7 +45,7 @@ public class SpanningTree<V> {
         nodeIndex.put(Hasher.getTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
-        this.delta.addToTreeNodeIndex(this, child);
+        this.deltaRAPQ.addToTreeNodeIndex(this, child);
 
         this.updateTimestamp(timestamp);
 
@@ -206,12 +207,12 @@ public class SpanningTree<V> {
             currentVertex.setParent(null);
 
             //remove this entry from nodeToTreeIndex
-            this.delta.removeFromTreeIndex(currentVertex, this);
+            this.deltaRAPQ.removeFromTreeIndex(currentVertex, this);
         }
 
         if(this.isExpired(minTimestamp)) {
             TreeNode<V> removedTuple = this.getRootNode();
-            delta.removeTree(this);
+            deltaRAPQ.removeTree(this);
         }
 
         LOG.debug("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
