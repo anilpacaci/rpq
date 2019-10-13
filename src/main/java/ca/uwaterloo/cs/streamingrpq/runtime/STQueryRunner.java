@@ -75,10 +75,6 @@ public class STQueryRunner {
                 stream = new Yago2sTSVStream();
         }
 
-        stream.open(filename, inputSize, startTimestamp);
-
-
-
         RPQEngine rpq;
         QueryAutomata<String> query;
         SingleThreadedRun task;
@@ -96,6 +92,7 @@ public class STQueryRunner {
             rpq = new WindowedRSPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
         }
 
+        stream.open(filename, inputSize, startTimestamp);
         task = new SingleThreadedRun<String>(queryName, stream, rpq);
 
         MetricRegistry metricRegistry = new MetricRegistry();

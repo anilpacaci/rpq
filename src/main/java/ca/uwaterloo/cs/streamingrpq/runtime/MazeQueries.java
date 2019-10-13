@@ -27,7 +27,7 @@ public class MazeQueries {
                 break;
             case "robotic3":
                 checkArguments(queryName, 4, predicateString);
-                query = new QueryAutomata<>(3);
+                query = new QueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 1);
                 query.addTransition(1, predicateString[2], 2);
@@ -58,8 +58,8 @@ public class MazeQueries {
                 query.addFinalState(2);
                 break;
             case "robotic6":
-                checkArguments(queryName, 2, predicateString);
-                query = new QueryAutomata<>(3);
+                checkArguments(queryName, 4, predicateString);
+                query = new QueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 1);
                 query.addTransition(1, predicateString[2], 2);
