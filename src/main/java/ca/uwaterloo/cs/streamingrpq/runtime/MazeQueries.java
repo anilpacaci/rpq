@@ -58,13 +58,13 @@ public class MazeQueries {
                 query.addFinalState(2);
                 break;
             case "robotic6":
-                checkArguments(queryName, 4, predicateString);
+                checkArguments(queryName, 3, predicateString);
                 query = new QueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
-                query.addTransition(1, predicateString[1], 1);
-                query.addTransition(1, predicateString[2], 2);
-                query.addTransition(2, predicateString[3], 3);
-                query.addTransition(3, predicateString[3], 3);
+                query.addTransition(1, predicateString[0], 1);
+                query.addTransition(1, predicateString[1], 2);
+                query.addTransition(2, predicateString[2], 3);
+                query.addTransition(3, predicateString[2], 3);
                 query.addFinalState(1);
                 query.addFinalState(3);
                 break;
