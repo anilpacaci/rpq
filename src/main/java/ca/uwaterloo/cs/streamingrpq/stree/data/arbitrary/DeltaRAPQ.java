@@ -1,46 +1,35 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data;
+package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
-import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeExpansionJob;
-import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.AbstractTreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import ca.uwaterloo.cs.streamingrpq.transitiontable.util.cycle.Graph;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.*;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Delta<V> {
+public class DeltaRAPQ<V>{
 
-    private Map<V, SpanningTree> treeIndex;
-    private Map<Hasher.MapKey<V>, Set<SpanningTree>> nodeToTreeIndex;
+    private Map<V, SpanningTreeRAPQ> treeIndex;
+    private Map<Hasher.MapKey<V>, Set<SpanningTreeRAPQ>> nodeToTreeIndex;
 
     protected Counter treeCounter;
-    protected Histogram maintainedTreeHistogram;
+    protected Histogram treeSizeHistogram;
 
-    private final Logger LOG = LoggerFactory.getLogger(Delta.class);
+    private final Logger LOG = LoggerFactory.getLogger(DeltaRAPQ.class);
 
-    public Delta(int capacity) {
+    public DeltaRAPQ(int capacity) {
         treeIndex = Maps.newConcurrentMap();
         nodeToTreeIndex = Maps.newConcurrentMap();
     }
 
-    public SpanningTree getTree(V vertex) {
-        SpanningTree tree = treeIndex.get(vertex);
-        return tree;
-    }
-
-    public Collection<SpanningTree> getTrees() {
-        return treeIndex.values();
-    }
-
-    public Collection<SpanningTree> getTrees(V vertex, int state) {
-        Set<SpanningTree> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<SpanningTree, Boolean>()) );
+    public Collection<SpanningTreeRAPQ> getTrees(V vertex, int state) {
+        Set<SpanningTreeRAPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRAPQ, Boolean>()) );
         return containingTrees;
     }
 
@@ -48,36 +37,40 @@ public class Delta<V> {
         return treeIndex.containsKey(vertex);
     }
 
-    public SpanningTree<V> addTree(V vertex, long timestamp) {
+
+
+    public SpanningTreeRAPQ<V> addTree(V vertex, long timestamp) {
         if(exists(vertex)) {
             // TODO one spanner per root vertex
         }
-        SpanningTree<V> tree = new SpanningTree<>(this, vertex, timestamp);
+        SpanningTreeRAPQ<V> tree = new SpanningTreeRAPQ<>(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
         addToTreeNodeIndex(tree, tree.getRootNode());
+
         treeCounter.inc();
         return tree;
     }
 
-    public void removeTree(SpanningTree<V> tree) {
+    public void removeTree(SpanningTreeRAPQ<V> tree) {
         TreeNode<V> rootNode = tree.getRootNode();
         this.treeIndex.remove(rootNode.getVertex());
 
-        Collection<SpanningTree> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
+        Collection<SpanningTreeRAPQ> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
             nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
         }
+
         treeCounter.dec();
     }
 
-    protected void addToTreeNodeIndex(SpanningTree<V> tree, TreeNode<V> treeNode) {
-        Collection<SpanningTree> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
+    protected void addToTreeNodeIndex(SpanningTreeRAPQ<V> tree, TreeNode<V> treeNode) {
+        Collection<SpanningTreeRAPQ> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
         containingTrees.add(tree);
     }
 
-    protected void removeFromTreeIndex(TreeNode<V> removedNode, SpanningTree<V> tree) {
-        Collection<SpanningTree> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
+    protected void removeFromTreeIndex(TreeNode<V> removedNode, SpanningTreeRAPQ<V> tree) {
+        Collection<SpanningTreeRAPQ> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
             this.nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
@@ -113,7 +106,7 @@ public class Delta<V> {
             }
 
             // create a spanning tree
-            SpanningTree<V> tree = this.addTree(node.getVertex(), maxTimestamp.get());
+            SpanningTreeRAPQ<V> tree = this.addTree(node.getVertex(), maxTimestamp.get());
             // traverse this tree
             Queue<ProductGraphNode<V>> queue = new LinkedList<>();
             queue.offer(node);
@@ -121,7 +114,7 @@ public class Delta<V> {
             while(!queue.isEmpty()) {
                 ProductGraphNode<V> currentNode = queue.remove();
                 TreeNode<V> currentTreeNode = tree.getNode(currentNode.getVertex(), currentNode.getState());
-                
+
                 Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentNode);
                 for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
                     if(forwardEdge.getTimestamp() <= minTimestamp) {
@@ -151,19 +144,20 @@ public class Delta<V> {
      * @param <L>
      */
     public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
-        Collection<SpanningTree> trees = treeIndex.values();
+        Collection<SpanningTreeRAPQ> trees = treeIndex.values();
         List<Future<Void>> futures = new ArrayList<>(trees.size());
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
 
-        LOG.info("{} of trees in Delta", trees.size());
-        for(SpanningTree<V> tree : trees) {
+        LOG.info("{} of trees in DeltaRAPQ", trees.size());
+        for(SpanningTreeRAPQ<V> tree : trees) {
+            treeSizeHistogram.update(tree.getSize());
             if (tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
                 continue;
             }
 
-            SpanningTreeExpiryJob<V, L> spanningTreeExpiryJob = new SpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
-            futures.add(completionService.submit(spanningTreeExpiryJob));
+            RAPQSpanningTreeExpiryJob<V, L> RAPQSpanningTreeExpiryJob = new RAPQSpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
+            futures.add(completionService.submit(RAPQSpanningTreeExpiryJob));
         }
 
         for(int i = 0; i < futures.size(); i++) {
@@ -179,18 +173,18 @@ public class Delta<V> {
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {
         this.treeCounter = metricRegistry.counter("tree-counter");
-        this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
+        this.treeSizeHistogram = metricRegistry.histogram("tree-size-histogram");
     }
 
-    private static class SpanningTreeExpiryJob<V,L> implements Callable<Void> {
+    private static class RAPQSpanningTreeExpiryJob<V,L> implements Callable<Void> {
 
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
 
-        private Table<V, Integer, Set<SpanningTree>> nodeToTreeIndex;
-        private SpanningTree<V> tree;
+        private Table<V, Integer, Set<SpanningTreeRAPQ>> nodeToTreeIndex;
+        private SpanningTreeRAPQ<V> tree;
 
-        public SpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTree<V> tree) {
+        public RAPQSpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTreeRAPQ<V> tree) {
             this.minTimestamp = minTimestamp;
             this.productGraph = productGraph;
             this.tree = tree;

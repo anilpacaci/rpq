@@ -22,8 +22,6 @@ public class ProductGraph<V,L> {
 
     private int edgeCount;
 
-    protected Counter edgeCounter;
-
     private LinkedList<GraphEdge<ProductGraphNode<V>>> timeOrderedEdges;
 
     private final Logger LOG = LoggerFactory.getLogger(ProductGraph.class);
@@ -46,7 +44,6 @@ public class ProductGraph<V,L> {
             sourceNode.addForwardEdge(forwardEdge);
             targetNode.addBackwardEdge(forwardEdge);
             timeOrderedEdges.add(forwardEdge);
-            edgeCounter.inc();
             edgeCount++;
         }
     }
@@ -91,7 +88,7 @@ public class ProductGraph<V,L> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      */
     public void removeOldEdges(long minTimestamp) {
-        LOG.info("Batch expiry at {}", minTimestamp);
+        LOG.info("Graph expiry at {}", minTimestamp);
         // it suffices to linearly scan from the oldest edge as we assume ordered arrival
         Iterator<GraphEdge<ProductGraphNode<V>>> edgeIterator = timeOrderedEdges.iterator();
         while(edgeIterator.hasNext()) {
@@ -99,7 +96,6 @@ public class ProductGraph<V,L> {
             if(oldestEdge.getTimestamp() <= minTimestamp) {
                 edgeIterator.remove();
                 removeEdgeFromHashIndexes(oldestEdge);
-                edgeCounter.dec();
                 edgeCount--;
             } else {
                 // as we assume ordered arrival, we can stop the search
@@ -108,11 +104,10 @@ public class ProductGraph<V,L> {
         }
     }
 
-    protected int getEdgeCount() {
+    public int getEdgeCount() {
         return edgeCount;
     }
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {
-        this.edgeCounter = metricRegistry.counter("edge-counter");
     }
 }
