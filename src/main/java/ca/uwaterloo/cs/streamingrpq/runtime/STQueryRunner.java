@@ -82,49 +82,13 @@ public class STQueryRunner {
         RPQEngine rpq;
         QueryAutomata<String> query;
         SingleThreadedRun task;
-        if(queryName.equals("twitter")) {
-            query = new QueryAutomata<>(2);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[0], 1);
-            query.addFinalState(1);
-        } else if(queryName.equals("maze1")) {
-            query = new QueryAutomata<>(3);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[1], 2);
-            query.addTransition(2, predicateString[1], 2);
-            query.addFinalState(2);
-        } else if(queryName.equals("maze2")) {
-            query = new QueryAutomata<>(2);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[0], 1);
-            query.addFinalState(1);
-        } else if(queryName.equals("maze3")) {
-            query = new QueryAutomata<>(4);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[1], 2);
-            query.addTransition(2, predicateString[2], 3);
-            query.addTransition(3, predicateString[2], 3);
-            query.addFinalState(3);
-        } else if(queryName.equals("maze4")) {
-            query = new QueryAutomata<>(3);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[0], 1);
-            query.addTransition(1, predicateString[1], 2);
-            query.addTransition(2, predicateString[1], 2);
-            query.addFinalState(2);
-        } else if(queryName.equals("maze5")) {
-            query = new QueryAutomata<>(4);
-            query.addTransition(0, predicateString[0], 1);
-            query.addTransition(1, predicateString[1], 2);
-            query.addTransition(2, predicateString[1], 2);
-            query.addTransition(2, predicateString[2], 3);
-            query.addTransition(3, predicateString[2], 3);
-            query.addFinalState(3);
-        }
-        else {
-            logger.error("Not a valid queryname: " + queryName);
+        try {
+            query = MazeQueries.getMazeQuery(queryName, predicateString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error creating the query", e);
             return;
         }
+
 
         if(semantics.equals(Semantics.ARBITRARY)) {
             rpq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
@@ -141,7 +105,7 @@ public class STQueryRunner {
         File resultDirectory = new File(recordCSVFilePath);
         resultDirectory.mkdirs();
         CsvReporter reporter = CsvReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(resultDirectory);
-        reporter.start(10, TimeUnit.SECONDS);
+        reporter.start(1, TimeUnit.SECONDS);
 
         try {
             task.call();

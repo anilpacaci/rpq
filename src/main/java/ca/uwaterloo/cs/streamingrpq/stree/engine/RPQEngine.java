@@ -19,12 +19,17 @@ public abstract class RPQEngine<L> {
     protected Histogram containingTreeHistogram;
     protected Histogram fullHistogram;
     protected Histogram processedHistogram;
+    protected Histogram windowManagementHistogram;
+    protected Histogram edgeCountHistogram;
     protected Timer fullTimer;
 
     protected ProductGraph<Integer, L> productGraph;
     protected QueryAutomata<L> automata;
 
     protected Queue<ResultPair<Integer>> results;
+
+    protected int edgeCount = 0;
+
 
     protected RPQEngine(QueryAutomata<L> query, int capacity) {
         automata = query;
@@ -48,6 +53,9 @@ public abstract class RPQEngine<L> {
         this.processedHistogram = metricRegistry.histogram("processed-histogram");
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
+        windowManagementHistogram = metricRegistry.histogram("window-histogram");
+        edgeCountHistogram = metricRegistry.histogram("edgecount-histogram");
+
         this.productGraph.addMetricRegistry(metricRegistry);
     }
 

@@ -33,15 +33,12 @@ public class WindowedRSPQ<L> extends RPQEngine<L> {
 
     protected DeltaRSPQ<Integer> delta;
 
-
     private ExecutorService executorService;
 
     private int numOfThreads;
 
 
     private final Logger LOG = LoggerFactory.getLogger(WindowedRSPQ.class);
-
-    protected Histogram windowManagementHistogram;
 
     public WindowedRSPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
@@ -60,7 +57,8 @@ public class WindowedRSPQ<L> extends RPQEngine<L> {
 
     @Override
     public void addMetricRegistry(MetricRegistry metricRegistry) {
-        windowManagementHistogram = metricRegistry.histogram("window-histogram");
+
+        // call metric registry on delta
         this.delta.addMetricRegistry(metricRegistry);
         // call super function to include all other histograms
         super.addMetricRegistry(metricRegistry);
@@ -79,6 +77,10 @@ public class WindowedRSPQ<L> extends RPQEngine<L> {
             lastExpiry = currentTimestamp;
             Long windowElapsedTime = System.nanoTime() - windowStartTime;
             windowManagementHistogram.update(windowElapsedTime);
+
+            //reset the edge counter
+            edgeCountHistogram.update(edgeCount);
+            edgeCount = 0;
         }
 
 
@@ -94,6 +96,7 @@ public class WindowedRSPQ<L> extends RPQEngine<L> {
         } else {
             // add edge to the snapshot productGraph
             productGraph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
+            edgeCount++;
         }
 
         //create a spanning tree for the source node in case it does not exists

@@ -34,6 +34,9 @@ public class SpanningTreeRSPQ<V> {
         this.minTimestamp = timestamp;
     }
 
+    protected int getSize() {
+        return nodeIndex.size();
+    }
 
     public TreeNodeRSPQ<V> addNode(TreeNodeRSPQ parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {

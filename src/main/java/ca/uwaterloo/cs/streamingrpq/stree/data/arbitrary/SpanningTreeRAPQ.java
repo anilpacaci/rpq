@@ -33,6 +33,10 @@ public class SpanningTreeRAPQ<V> {
         this.minTimestamp = timestamp;
     }
 
+    protected int getSize() {
+        return nodeIndex.size();
+    }
+
     public TreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {
             // TODO no object found

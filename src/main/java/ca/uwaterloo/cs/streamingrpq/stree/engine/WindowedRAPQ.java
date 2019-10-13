@@ -36,8 +36,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
 
-    protected Histogram windowManagementHistogram;
-
     public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
     }
@@ -53,7 +51,6 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     @Override
     public void addMetricRegistry(MetricRegistry metricRegistry) {
-        windowManagementHistogram = metricRegistry.histogram("window-histogram");
         this.deltaRAPQ.addMetricRegistry(metricRegistry);
         // call super function to include all other histograms
         super.addMetricRegistry(metricRegistry);
@@ -72,6 +69,10 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             lastExpiry = currentTimestamp;
             Long windowElapsedTime = System.nanoTime() - windowStartTime;
             windowManagementHistogram.update(windowElapsedTime);
+
+            //reset the edge counter
+            edgeCountHistogram.update(edgeCount);
+            edgeCount = 0;
         }
 
 

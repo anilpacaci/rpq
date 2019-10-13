@@ -21,7 +21,7 @@ public class DeltaRSPQ<V> {
     private Map<Hasher.MapKey<V>, Set<SpanningTreeRSPQ>> nodeToTreeIndex;
 
     protected Counter treeCounter;
-    protected Histogram maintainedTreeHistogram;
+    protected Histogram treeSizeHistogram;
 
     private final Logger LOG = LoggerFactory.getLogger(DeltaRSPQ.class);
 
@@ -47,6 +47,7 @@ public class DeltaRSPQ<V> {
         SpanningTreeRSPQ<V> tree = new SpanningTreeRSPQ<>(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
         addToTreeNodeIndex(tree, tree.getRootNode());
+
         treeCounter.inc();
         return tree;
     }
@@ -60,6 +61,7 @@ public class DeltaRSPQ<V> {
         if(containingTrees.isEmpty()) {
             nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
         }
+
         treeCounter.dec();
     }
 
@@ -91,6 +93,7 @@ public class DeltaRSPQ<V> {
 
         LOG.info("{} of trees in DeltaRAPQ", trees.size());
         for(SpanningTreeRSPQ<V> tree : trees) {
+            treeSizeHistogram.update(tree.getSize());
             if (tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
                 continue;
@@ -113,7 +116,7 @@ public class DeltaRSPQ<V> {
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {
         this.treeCounter = metricRegistry.counter("tree-counter");
-        this.maintainedTreeHistogram = metricRegistry.histogram("expired-tree-histogram");
+        this.treeSizeHistogram = metricRegistry.histogram("tree-size-histogram");
     }
 
     private static class RSPQSpanningTreeExpiryJob<V,L> implements Callable<Void> {
