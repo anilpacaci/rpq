@@ -29,25 +29,30 @@ for i in range(8):
 			for row in csvreader:
 				if(row[2] == "2"):
 					csvwriter.writerow([row[3], "likes", row[4],row[5]])
+					csvwriter.writerow([row[4], "isLikedBy", row[3],row[5]])
 				elif(row[2] == "3"):
 					csvwriter.writerow([row[3], "likes", row[4], row[5]])
+					csvwriter.writerow([row[4], "isLikedBy", row[3],row[5]])
+				elif(row[2] == "4"):
+					csvwriter.writerow([row[3], "hasModerator", row[6], row[5]])
+					csvwriter.writerow([row[6], "moderatorOf", row[3], row[5]])
 				elif(row[2] == "5"):
-					csvwriter.writerow([row[3], "memberOf", row[4], row[5]])
-					csvwriter.writerow([row[4], "hasMember", row[3], row[5]])
+					csvwriter.writerow([row[3], "hasMember", row[4], row[5]])
+					csvwriter.writerow([row[4], "memberOf", row[3], row[5]])
 				elif(row[2] == "6"):
-					csvwriter.writerow([row[3], "createdBy", row[11], row[5]])
+					csvwriter.writerow([row[3], "hasCreator", row[11], row[5]])
 					csvwriter.writerow([row[11], "creatorOf", row[3], row[5]])
-					csvwriter.writerow([row[3], "container", row[12], row[5]])
+					csvwriter.writerow([row[3], "hasContainer", row[12], row[5]])
 					csvwriter.writerow([row[12], "containerOf", row[3], row[5]])
 				elif(row[2] == "7"):
-					csvwriter.writerow([row[3], "created", row[9], row[4]])
+					csvwriter.writerow([row[3], "hasCreator", row[9], row[4]])
 					csvwriter.writerow([row[9], "creatorOf", row[3], row[4]])
 					if(row[11] == "-1"):
 						csvwriter.writerow([row[3], "replyOf", row[12], row[4]])
-						csvwriter.writerow([row[12], "reply", row[3], row[4]])
+						csvwriter.writerow([row[12], "hasReply", row[3], row[4]])
 					else:
 						csvwriter.writerow([row[3], "replyOf", row[11], row[4]])
-						csvwriter.writerow([row[11], "reply", row[3], row[4]])
+						csvwriter.writerow([row[11], "hasReply", row[3], row[4]])
 				elif(row[2] == "8"):
 					csvwriter.writerow([row[3], "knows", row[4], row[5]])
 					csvwriter.writerow([row[4], "knows", row[3], row[5]])
