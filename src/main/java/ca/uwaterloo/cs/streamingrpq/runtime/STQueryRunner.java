@@ -90,7 +90,7 @@ public class STQueryRunner {
         }
 
 
-        if(semantics.equals(Semantics.ARBITRARY)) {
+        if(pathSemantics.equals(Semantics.ARBITRARY)) {
             rpq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
         } else {
             rpq = new WindowedRSPQ<String>(query, maxSize, windowSize, slideSize, threadCount);

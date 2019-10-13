@@ -27,8 +27,8 @@
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
-        "hasCreator",
-        "knows"
+        "likes",
+        "replyOf"
       ]
     },
     {

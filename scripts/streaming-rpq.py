@@ -83,7 +83,7 @@ with open(parameters, 'rb') as parameters_handle:
         slide_size = run_config["slide-size"]
         thread_count = run_config["thread-count"]
         # reporting folder
-        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size))
+        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count))
 
         # create the run object
         run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, semantics, labels))
