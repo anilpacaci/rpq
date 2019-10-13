@@ -134,7 +134,7 @@ public class MazeQueries {
                 throw new IllegalArgumentException(queryName + " is not a valid query name");
         }
 
-        return null;
+        return query;
     }
 
     private static void checkArguments(String queryName, int requiredArguments, Object... arguments) throws IllegalArgumentException{

@@ -46,7 +46,7 @@ public class STQueryRunner {
         Integer threadCount = Integer.parseInt(line.getOptionValue("tc", "1"));
 
         String semantics = line.getOptionValue("ps");
-        PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
+        Semantics pathSemantics = Semantics.fromValue(semantics);
 
         String recordCSVFilePath = line.getOptionValue("r");
 
