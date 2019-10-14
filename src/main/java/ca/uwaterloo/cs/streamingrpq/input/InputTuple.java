@@ -56,6 +56,26 @@ public class InputTuple<S,T,L> {
         return label;
     }
 
+    public void setSource(S source) {
+        this.source = source;
+    }
+
+    public void setTarget(T target) {
+        this.target = target;
+    }
+
+    public void setLabel(L label) {
+        this.label = label;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setType(TupleType type) {
+        this.type = type;
+    }
+
     public boolean isDeletion() {
         return this.type == TupleType.DELETE;
     }

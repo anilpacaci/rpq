@@ -27,6 +27,8 @@ public class LDBCStream implements TextStream{
 
     Long startTimestamp = -1L;
 
+    InputTuple tuple = null;
+
     private String splitResults[];
 
 
@@ -67,6 +69,8 @@ public class LDBCStream implements TextStream{
         executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
 
         splitResults = new String[4];
+
+        tuple = new InputTuple(null, null, null, 0);
     }
 
     public void close() {
@@ -82,7 +86,6 @@ public class LDBCStream implements TextStream{
 
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
-        InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
@@ -93,7 +96,10 @@ public class LDBCStream implements TextStream{
                 // only if we fully
                 if(i == 4) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(splitResults[0].hashCode(), splitResults[2].hashCode(), splitResults[1], Long.parseLong(splitResults[3]) - startTimestamp);
+                    tuple.setSource(splitResults[0].hashCode());
+                    tuple.setLabel(splitResults[1]);
+                    tuple.setTarget(splitResults[2].hashCode());
+                    tuple.setTimestamp(Long.parseLong(splitResults[3]) - startTimestamp);
                     localCounter++;
                     globalCounter++;
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);

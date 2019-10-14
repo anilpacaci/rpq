@@ -4,6 +4,8 @@ import java.util.Map;
 
 public class Hasher {
 
+    private static ThreadLocal<MapKey> threadLocalKey = new ThreadLocal<>();
+
     public static int TreeNodeHasher(int vertex, int state) {
         int h = 17;
         h = 31 * h + vertex;
@@ -19,15 +21,21 @@ public class Hasher {
     }
 
     public static <V> MapKey<V> getTreeNodePairKey(V vertex, int state) {
-        return new MapKey<>(vertex, state);
+        MapKey mapKey = threadLocalKey.get();
+        if(mapKey == null) {
+            mapKey = new MapKey(vertex, state);
+        }
+        mapKey.X = vertex;
+        mapKey.Y = state;
+        return mapKey;
     }
 
     public static class MapKey<V> {
 
-        public final V X;
-        public final int Y;
+        public V X;
+        public int Y;
 
-        public MapKey(final V X, final int Y) {
+        public MapKey(V X, int Y) {
             this.X = X;
             this.Y = Y;
         }
