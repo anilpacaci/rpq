@@ -88,6 +88,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         } else {
             // add edge to the snapshot productGraph
             productGraph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
+            edgeCount++;
         }
 
         //create a spanning tree for the source node in case it does not exists
