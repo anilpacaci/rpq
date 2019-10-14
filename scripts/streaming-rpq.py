@@ -92,7 +92,7 @@ with open(parameters, 'rb') as parameters_handle:
 # iterate over runs and run the experiments
 for run in run_list:
     commandString = run.produceCommandString()
-    javaCommand = "java -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
+    javaCommand = "java -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
 
     print "Executing command {} ".format(javaCommand)
     sys.stdout.flush()
