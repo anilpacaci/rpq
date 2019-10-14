@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -26,8 +27,8 @@ public class DeltaRSPQ<V> {
     private final Logger LOG = LoggerFactory.getLogger(DeltaRSPQ.class);
 
     public DeltaRSPQ(int capacity) {
-        treeIndex = Maps.newConcurrentMap();
-        nodeToTreeIndex = Maps.newConcurrentMap();
+        treeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
+        nodeToTreeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
     }
 
     public Collection<SpanningTreeRSPQ> getTrees(V vertex, int state) {

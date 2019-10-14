@@ -21,12 +21,7 @@ public class Hasher {
     }
 
     public static <V> MapKey<V> getTreeNodePairKey(V vertex, int state) {
-        MapKey mapKey = threadLocalKey.get();
-        if(mapKey == null) {
-            mapKey = new MapKey(vertex, state);
-        }
-        mapKey.X = vertex;
-        mapKey.Y = state;
+        MapKey<V> mapKey = new MapKey<V>(vertex, state);
         return mapKey;
     }
 

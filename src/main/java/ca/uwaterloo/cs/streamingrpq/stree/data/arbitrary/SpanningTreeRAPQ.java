@@ -28,7 +28,7 @@ public class SpanningTreeRAPQ<V> {
     protected SpanningTreeRAPQ(DeltaRAPQ<V> deltaRAPQ, V rootVertex, long timestamp) {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.deltaRAPQ = deltaRAPQ;
-        this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREES);
+        this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREE_SIZE);
         nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
         this.minTimestamp = timestamp;
     }

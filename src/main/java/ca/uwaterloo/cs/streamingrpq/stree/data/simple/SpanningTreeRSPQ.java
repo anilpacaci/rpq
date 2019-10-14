@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -28,7 +29,7 @@ public class SpanningTreeRSPQ<V> {
     protected SpanningTreeRSPQ(DeltaRSPQ<V> delta, V rootVertex, long timestamp) {
         this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
-        this.nodeIndex = HashMultimap.create();
+        this.nodeIndex = HashMultimap.create(Constants.EXPECTED_TREE_SIZE, Constants.EXPECTED_LABELS);
         nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
         this.markings = Sets.newHashSet();
         this.minTimestamp = timestamp;
