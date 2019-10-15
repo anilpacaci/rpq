@@ -83,6 +83,7 @@ public class Yago2sTSVStream implements TextStream{
 
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
+
         try {
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
