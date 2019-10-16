@@ -1,5 +1,5 @@
 {
-  "name" : "ldbc-sf3",
+  "name" : "ldbc-sf1",
   "dataset" : "/hdd1/apacaci/datasets/ldbc/sf3/update-sorted-unixts.csv",
   "input-type" : "ldbc",
   "report-folder" : "/home/apacaci/sgraffito/results/ldbc-sf3/",
@@ -12,7 +12,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -23,7 +23,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -35,7 +35,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -49,7 +49,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -62,7 +62,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -75,7 +75,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
@@ -88,96 +88,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic3",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator",
-        "knows"
-      ]
-    },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic6",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "replyOf",
-        "hasCreator",
-        "knows"
-      ]
-    },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "simple",
-      "window-size" : 2629743,
+      "window-size" : 864000,
       "slide-size" : 86400,
       "thread-count" : 32,
       "labels" : [
