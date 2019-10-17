@@ -1,9 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TreeNode<V> {
 
@@ -27,7 +30,7 @@ public class TreeNode<V> {
         this.vertex = vertex;
         this.state = state;
         this.parent = parent;
-        this.children = new HashSet<>();
+        this.children = Collections.newSetFromMap(new ConcurrentHashMap<TreeNode, Boolean>());
         this.tree = t;
         this.timestamp = timestamp;
         // set this as a child of the parent if it is not null

@@ -6,8 +6,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TreeNodeRSPQ<V> {
 
@@ -30,7 +32,7 @@ public class TreeNodeRSPQ<V> {
         this.vertex = vertex;
         this.state = state;
         this.parent = parent;
-        this.children = new HashSet<>();
+        this.children = Collections.newSetFromMap(new ConcurrentHashMap<TreeNodeRSPQ<V>, Boolean>());;
         this.tree = t;
         this.timestamp = timestamp;
         // set this as a child of the parent if it is not null
