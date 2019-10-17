@@ -8,7 +8,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Queues;
 
+import java.sql.Time;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by anilpacaci on 2019-10-02.
@@ -51,11 +53,11 @@ public abstract class RPQEngine<L> {
         // register all the matrics
         this.resultCounter = metricRegistry.counter("result-counter");
         this.fullHistogram = metricRegistry.histogram("full-histogram");
-        this.processedHistogram = new Histogram(new UniformReservoir(Constants.HISTOGRAM_BUCKET_SIZE));
+        this.processedHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("processed-histogram", this.processedHistogram);
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
-        this.windowManagementHistogram = new Histogram(new UniformReservoir(Constants.HISTOGRAM_BUCKET_SIZE));
+        this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("window-histogram", windowManagementHistogram);
         edgeCountHistogram = metricRegistry.histogram("edgecount-histogram");
 
