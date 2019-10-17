@@ -26,6 +26,11 @@ public class SpanningTreeRSPQ<V> {
 
     private long minTimestamp;
 
+    //expiry related data structures
+    private HashSet<TreeNodeRSPQ<V>> candidates;
+    private HashSet<TreeNodeRSPQ<V>> candidateRemoval;
+    private HashSet<TreeNodeRSPQ<V>> visited;
+
     protected SpanningTreeRSPQ(DeltaRSPQ<V> delta, V rootVertex, long timestamp) {
         this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
@@ -33,6 +38,10 @@ public class SpanningTreeRSPQ<V> {
         nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
         this.markings = Sets.newHashSet();
         this.minTimestamp = timestamp;
+
+        candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
+        candidateRemoval = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
+        visited = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
     }
 
     protected int getSize() {
@@ -169,8 +178,8 @@ public class SpanningTreeRSPQ<V> {
 //        }
 
         // potentially expired nodes
-        HashSet<TreeNodeRSPQ<V>> candidates = new HashSet<>();
-        HashSet<TreeNodeRSPQ<V>> candidateRemoval = new HashSet<>();
+        candidates.clear();
+        candidateRemoval.clear();
 
         // perform a bfs traversal on tree, no need for visited as it is a three
         LinkedList<TreeNodeRSPQ<V>> queue = new LinkedList<>();
@@ -204,7 +213,7 @@ public class SpanningTreeRSPQ<V> {
         this.minTimestamp = minimumValidTimetamp;
 
         Iterator<TreeNodeRSPQ<V>> candidateIterator = candidates.iterator();
-        HashSet<TreeNodeRSPQ> visited = new HashSet<>();
+        visited.clear();
 
         LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
 
