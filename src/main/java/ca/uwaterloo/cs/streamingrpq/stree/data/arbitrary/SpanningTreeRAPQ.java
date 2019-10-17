@@ -34,7 +34,7 @@ public class SpanningTreeRAPQ<V> {
         this.rootNode = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.deltaRAPQ = deltaRAPQ;
         this.nodeIndex = new HashMap<>(Constants.EXPECTED_TREE_SIZE);
-        nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
+        nodeIndex.put(Hasher.createTreeNodePairKey(rootVertex, 0), rootNode);
         this.minTimestamp = timestamp;
 
         candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
@@ -55,7 +55,7 @@ public class SpanningTreeRAPQ<V> {
         }
 
         TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
-        nodeIndex.put(Hasher.getTreeNodePairKey(childVertex, childState), child);
+        nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
         this.deltaRAPQ.addToTreeNodeIndex(this, child);
@@ -66,11 +66,11 @@ public class SpanningTreeRAPQ<V> {
     }
 
     public boolean exists(V vertex, int state) {
-        return nodeIndex.containsKey(Hasher.getTreeNodePairKey(vertex, state));
+        return nodeIndex.containsKey(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
     }
 
     public TreeNode getNode(V vertex, int state) {
-        TreeNode node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
+        TreeNode node = nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state ));
         return node;
     }
 
@@ -215,7 +215,7 @@ public class SpanningTreeRAPQ<V> {
         // so simply clean the indexes and generate negative result if necessary
         for(TreeNode<V> currentVertex : candidates) {
             // remove this node from the node index
-            nodeIndex.remove(Hasher.getTreeNodePairKey(currentVertex.getVertex(), currentVertex.getState()));
+            nodeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(currentVertex.getVertex(), currentVertex.getState()));
             //remove this node from parent's chilren list
             currentVertex.setParent(null);
 

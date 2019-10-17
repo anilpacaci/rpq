@@ -20,8 +20,21 @@ public class Hasher {
         return h;
     }
 
-    public static <V> MapKey<V> getTreeNodePairKey(V vertex, int state) {
+    public static <V> MapKey<V> createTreeNodePairKey(V vertex, int state) {
         MapKey<V> mapKey = new MapKey<V>(vertex, state);
+        return mapKey;
+    }
+
+    public static <V> MapKey<V> getThreadLocalTreeNodePairKey(V vertex, int state) {
+
+        MapKey<V> mapKey = threadLocalKey.get();
+        if(mapKey == null) {
+         mapKey = new MapKey<V>(vertex, state);
+         threadLocalKey.set(mapKey);
+        } else {
+            mapKey.X = vertex;
+            mapKey.Y = state;
+        }
         return mapKey;
     }
 

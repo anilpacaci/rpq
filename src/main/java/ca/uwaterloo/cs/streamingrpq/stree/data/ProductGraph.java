@@ -1,14 +1,11 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.Query;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -49,10 +46,10 @@ public class ProductGraph<V,L> {
     }
 
     private ProductGraphNode<V> getNode(V vertex, int state) {
-        ProductGraphNode<V> node = this.nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state));
+        ProductGraphNode<V> node = this.nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
         if(node == null) {
             node = new ProductGraphNode<>(vertex, state);
-            this.nodeIndex.put(Hasher.getTreeNodePairKey(vertex, state), node);
+            this.nodeIndex.put(Hasher.createTreeNodePairKey(vertex, state), node);
         }
         return node;
     }

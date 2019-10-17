@@ -2,13 +2,11 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +30,7 @@ public class DeltaRSPQ<V> {
     }
 
     public Collection<SpanningTreeRSPQ> getTrees(V vertex, int state) {
-        Set<SpanningTreeRSPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key ->
+        Set<SpanningTreeRSPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.createTreeNodePairKey(vertex, state), key ->
                 Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRSPQ, Boolean>()) );
         return containingTrees;
     }
@@ -60,7 +58,7 @@ public class DeltaRSPQ<V> {
         Collection<SpanningTreeRSPQ> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
-            nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
+            nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
         }
 
         treeCounter.dec();
@@ -75,7 +73,7 @@ public class DeltaRSPQ<V> {
         Collection<SpanningTreeRSPQ> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
-            this.nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
+            this.nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
         }
     }
 

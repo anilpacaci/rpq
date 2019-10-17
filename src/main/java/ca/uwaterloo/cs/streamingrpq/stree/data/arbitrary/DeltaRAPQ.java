@@ -1,7 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.AbstractTreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
@@ -30,7 +29,7 @@ public class DeltaRAPQ<V>{
     }
 
     public Collection<SpanningTreeRAPQ> getTrees(V vertex, int state) {
-        Set<SpanningTreeRAPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.getTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRAPQ, Boolean>()) );
+        Set<SpanningTreeRAPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.createTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRAPQ, Boolean>()) );
         return containingTrees;
     }
 
@@ -59,7 +58,7 @@ public class DeltaRAPQ<V>{
         Collection<SpanningTreeRAPQ> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
-            nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
+            nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
         }
 
         treeCounter.dec();
@@ -74,7 +73,7 @@ public class DeltaRAPQ<V>{
         Collection<SpanningTreeRAPQ> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
-            this.nodeToTreeIndex.remove(Hasher.getTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
+            this.nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
         }
     }
 

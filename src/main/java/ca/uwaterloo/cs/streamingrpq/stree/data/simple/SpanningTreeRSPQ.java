@@ -1,8 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
@@ -35,7 +33,7 @@ public class SpanningTreeRSPQ<V> {
         this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
         this.delta = delta;
         this.nodeIndex = HashMultimap.create(Constants.EXPECTED_TREE_SIZE, Constants.EXPECTED_LABELS);
-        nodeIndex.put(Hasher.getTreeNodePairKey(rootVertex, 0), rootNode);
+        nodeIndex.put(Hasher.createTreeNodePairKey(rootVertex, 0), rootNode);
         this.markings = Sets.newHashSet();
         this.minTimestamp = timestamp;
 
@@ -57,7 +55,7 @@ public class SpanningTreeRSPQ<V> {
         }
 
         TreeNodeRSPQ<V> child = new TreeNodeRSPQ<>(childVertex, childState, parentNode, this, timestamp);
-        nodeIndex.put(Hasher.getTreeNodePairKey(childVertex, childState), child);
+        nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
         this.delta.addToTreeNodeIndex(this, child);
@@ -68,11 +66,11 @@ public class SpanningTreeRSPQ<V> {
     }
 
     public boolean exists(V vertex, int state) {
-        return nodeIndex.containsKey(Hasher.getTreeNodePairKey(vertex, state));
+        return nodeIndex.containsKey(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
     }
 
     public Collection<TreeNodeRSPQ<V>>  getNodes(V vertex, int state) {
-        Collection<TreeNodeRSPQ<V>> node = nodeIndex.get(Hasher.getTreeNodePairKey(vertex, state ));
+        Collection<TreeNodeRSPQ<V>> node = nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state ));
         return node;
     }
 
@@ -96,7 +94,7 @@ public class SpanningTreeRSPQ<V> {
      * @param node
      */
     private void removeNode(TreeNodeRSPQ<V> node) {
-        Hasher.MapKey<V> nodeKey = Hasher.getTreeNodePairKey(node.getVertex(), node.getState());
+        Hasher.MapKey<V> nodeKey = Hasher.getThreadLocalTreeNodePairKey(node.getVertex(), node.getState());
         this.nodeIndex.remove(nodeKey, node);
         //remove this node from parent's chilren list
         node.setParent(null);
@@ -110,15 +108,15 @@ public class SpanningTreeRSPQ<V> {
     }
 
     public void addMarking(V vertex, int state) {
-        markings.add(Hasher.getTreeNodePairKey(vertex, state));
+        markings.add(Hasher.createTreeNodePairKey(vertex, state));
     }
 
     public boolean isMarked(V vertex, int state) {
-        return markings.contains(Hasher.getTreeNodePairKey(vertex, state));
+        return markings.contains(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
     }
 
     public void removeMarking(V vertex, int state) {
-        markings.remove(Hasher.getTreeNodePairKey(vertex, state));
+        markings.remove(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
     }
 
     /**
