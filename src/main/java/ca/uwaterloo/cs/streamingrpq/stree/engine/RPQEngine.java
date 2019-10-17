@@ -50,10 +50,12 @@ public abstract class RPQEngine<L> {
         // register all the matrics
         this.resultCounter = metricRegistry.counter("result-counter");
         this.fullHistogram = metricRegistry.histogram("full-histogram");
-        this.processedHistogram = metricRegistry.histogram("processed-histogram");
+        this.processedHistogram = new Histogram(new UniformReservoir());
+        metricRegistry.register("processed-histogram", this.processedHistogram);
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
-        windowManagementHistogram = metricRegistry.histogram("window-histogram");
+        this.windowManagementHistogram = new Histogram(new UniformReservoir());
+        metricRegistry.register("window-histogram", windowManagementHistogram);
         edgeCountHistogram = metricRegistry.histogram("edgecount-histogram");
 
         this.productGraph.addMetricRegistry(metricRegistry);
