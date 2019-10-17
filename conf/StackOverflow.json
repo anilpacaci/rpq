@@ -9,111 +9,11 @@
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
     {
-      "query-name" : "maze1",
+      "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
       "window-size" : 2629743,
       "slide-size" : 86400,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },
-    {
-      "query-name" : "maze2",
-      "index" : 2,
-      "semantics" : "arbitrary",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze3",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze4",
-      "index" : 47,
-      "semantics" : "arbitrary",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze5",
-      "index" : 51,
-      "semantics" : "arbitrary",
-      "window-size" : 2629743,
-      "slide-size" : 86400,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 31556926,
-      "slide-size" : 2629743,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze2",
-      "index" : 2,
-      "semantics" : "arbitrary",
-      "window-size" : 31556926,
-      "slide-size" : 2629743,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze3",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 31556926,
-      "slide-size" : 2629743,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze4",
-      "index" : 47,
-      "semantics" : "arbitrary",
-      "window-size" : 31556926,
-      "slide-size" : 2629743,
-      "labels" : [
-        "a2q",
-        "c2a",
-        "c2q"
-      ]
-    },{
-      "query-name" : "maze5",
-      "index" : 51,
-      "semantics" : "arbitrary",
-      "window-size" : 31556926,
-      "slide-size" : 2629743,
       "labels" : [
         "a2q",
         "c2a",
