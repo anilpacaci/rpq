@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -50,11 +51,11 @@ public abstract class RPQEngine<L> {
         // register all the matrics
         this.resultCounter = metricRegistry.counter("result-counter");
         this.fullHistogram = metricRegistry.histogram("full-histogram");
-        this.processedHistogram = new Histogram(new UniformReservoir());
+        this.processedHistogram = new Histogram(new UniformReservoir(Constants.HISTOGRAM_BUCKET_SIZE));
         metricRegistry.register("processed-histogram", this.processedHistogram);
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
-        this.windowManagementHistogram = new Histogram(new UniformReservoir());
+        this.windowManagementHistogram = new Histogram(new UniformReservoir(Constants.HISTOGRAM_BUCKET_SIZE));
         metricRegistry.register("window-histogram", windowManagementHistogram);
         edgeCountHistogram = metricRegistry.histogram("edgecount-histogram");
 

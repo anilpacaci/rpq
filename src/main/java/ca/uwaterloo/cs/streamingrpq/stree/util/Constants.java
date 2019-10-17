@@ -19,4 +19,6 @@ public class Constants {
     public static final int EXPECTED_BATCH_SIZE = 64;
 
     public static final int EXPECTED_TREE_SIZE = 8192;
+
+    public static final int HISTOGRAM_BUCKET_SIZE = 131584;
 }
