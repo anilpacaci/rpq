@@ -14,7 +14,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "replyOf"
       ]
@@ -25,7 +25,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "likes",
         "replyOf"
@@ -37,7 +37,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "likes",
         "replyOf",
@@ -51,7 +51,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "likes",
         "replyOf",
@@ -64,7 +64,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "replyOf",
         "hasCreator",
@@ -77,7 +77,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "knows",
         "likes",
@@ -90,7 +90,7 @@
       "semantics" : "arbitrary",
       "window-size" : 864000,
       "slide-size" : 86400,
-      "thread-count" : 32,
+      "thread-count" : 64,
       "labels" : [
         "creatorOf",
         "replyOf",
