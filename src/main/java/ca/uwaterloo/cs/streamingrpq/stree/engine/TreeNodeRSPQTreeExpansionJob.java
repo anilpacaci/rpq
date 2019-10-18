@@ -79,7 +79,9 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
 
         // call each job in teh buffer
         for(int i = 0; i < currentSize; i++) {
-            processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+            if(!parentNode[i].containsCM(targetVertex[i], targetState[i]) && !spanningTree[i].isMarked(targetVertex[i], targetState[i])) {
+                processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+            }
         }
 
         return this.resultCount;
@@ -89,8 +91,6 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
         if(!automata.hasContainment(parentNode.getFirstCM(childVertex), childState)) {
             // detected conflict parent node needs to be unmarked
             unmark(tree, parentNode);
-        } else if(tree.isMarked(childVertex, childState)) {
-            // target is already marked and exists in this tree so no need to visit again
         } else {
             // if this is the first target product node is visited, simply add it to the markings
             if(!tree.exists(childVertex, childState)) {
@@ -121,7 +121,7 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
                 for (GraphEdge<ProductGraphNode<Integer>> forwardEdge : forwardEdges) {
                     int targetVertex = forwardEdge.getTarget().getVertex();
                     int targetState = forwardEdge.getTarget().getState();
-                    if(!childNode.containsCM(targetVertex, targetState)) {
+                    if(!childNode.containsCM(targetVertex, targetState) && !tree.isMarked(targetVertex, targetState)) {
                         // visit a node only if that same node is not visited at the same state before
                         // simply prevent cycles in product graph
                         processTransition(tree, childNode, targetVertex, targetState, forwardEdge.getTimestamp());
