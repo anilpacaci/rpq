@@ -4,8 +4,8 @@
   "input-type" : "snap-sx",
   "report-folder" : "/home/apacaci/sgraffito/rpq/results-stackoverflow",
   "buffer-size" : 50000000,
-  "heap-size" : 128,
-  "timeout" : 600,
+  "heap-size" : 192,
+  "timeout" : 300,
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
     {
@@ -14,6 +14,1058 @@
       "semantics" : "arbitrary",
       "window-size" : 2629743,
       "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 1728000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 3456000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 4320000,
+      "slide-size" : 86400,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 43200,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 129600,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q",
+        "a2q"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
+      "labels" : [
+        "a2q",
+        "c2a",
+        "c2q"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 2629743,
+      "slide-size" : 172800,
       "labels" : [
         "a2q",
         "c2a",
