@@ -22,7 +22,7 @@ with open(aggregated_results_file, 'w') as csv_file:
     fieldnames = ['query', 'semantics', 'binding', 'window-size', 'slide-size', 'containing-tree-mean', 'results',
                   'tree-count', 'tree-size-mean', 'tree-size-max', 'window-mean', 'window-p99', 'slide-count-mean',
                   'processed-edge-count', 'processed-mean', 'processed-min', 'processed-p50', 'processed-p75', 'processed-p95',
-                  'processed-p98', 'processed-p99', 'time']
+                  'processed-p98', 'processed-p99', 'processed-p999', 'time']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
 
@@ -74,6 +74,7 @@ with open(aggregated_results_file, 'w') as csv_file:
             processed_p95 = row[8]
             processed_p98 = row[9]
             processed_p99 = row[10]
+            processed_p999 = row[11]
             time = len(row_list)
 
         query = log_folder.split("-")[0]
@@ -104,6 +105,7 @@ with open(aggregated_results_file, 'w') as csv_file:
             'processed-p95' : processed_p95,
             'processed-p98' : processed_p98,
             'processed-p99' : processed_p99,
+            'processed-p999' : processed_p999,
             'time' : time
         })
 
