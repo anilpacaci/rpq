@@ -12,6 +12,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -24,6 +25,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -36,6 +38,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -49,6 +52,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -61,6 +65,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -73,6 +78,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -85,6 +91,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -97,6 +104,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -109,6 +117,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -121,6 +130,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -133,6 +143,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 86400,
       "labels" : [
@@ -145,6 +156,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -157,6 +169,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -169,6 +182,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -182,6 +196,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -194,6 +209,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -206,6 +222,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -218,6 +235,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -230,6 +248,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -242,6 +261,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -254,6 +274,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -266,6 +287,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 864000,
       "slide-size" : 86400,
       "labels" : [
@@ -278,6 +300,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -290,6 +313,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -302,6 +326,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -315,6 +340,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -327,6 +353,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -339,6 +366,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -351,6 +379,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -363,6 +392,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -375,6 +405,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -387,6 +418,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -399,6 +431,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 1728000,
       "slide-size" : 86400,
       "labels" : [
@@ -411,6 +444,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -423,6 +457,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -435,6 +470,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -448,6 +484,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -460,6 +497,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -472,6 +510,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -484,6 +523,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -496,6 +536,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -508,6 +549,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -520,6 +562,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -532,6 +575,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 3456000,
       "slide-size" : 86400,
       "labels" : [
@@ -544,6 +588,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -556,6 +601,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -568,6 +614,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -581,6 +628,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -593,6 +641,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -605,6 +654,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -617,6 +667,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -629,6 +680,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -641,6 +693,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -653,6 +706,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -665,6 +719,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 4320000,
       "slide-size" : 86400,
       "labels" : [
@@ -677,6 +732,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -689,6 +745,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -701,6 +758,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -714,6 +772,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -726,6 +785,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -738,6 +798,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -750,6 +811,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -762,6 +824,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -774,6 +837,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -786,6 +850,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -798,6 +863,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 43200,
       "labels" : [
@@ -810,6 +876,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -822,6 +889,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -834,6 +902,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -847,6 +916,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -859,6 +929,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -871,6 +942,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -883,6 +955,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -895,6 +968,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -907,6 +981,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -919,6 +994,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -931,6 +1007,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 129600,
       "labels" : [
@@ -943,6 +1020,7 @@
       "query-name" : "robotic1",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -955,6 +1033,7 @@
       "query-name" : "robotic2",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -967,6 +1046,7 @@
       "query-name" : "robotic3",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -980,6 +1060,7 @@
       "query-name" : "robotic4",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -992,6 +1073,7 @@
       "query-name" : "robotic5",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1004,6 +1086,7 @@
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1016,6 +1099,7 @@
       "query-name" : "robotic7",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1028,6 +1112,7 @@
       "query-name" : "robotic8",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1040,6 +1125,7 @@
       "query-name" : "robotic9",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1052,6 +1138,7 @@
       "query-name" : "robotic10",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
@@ -1064,6 +1151,7 @@
       "query-name" : "robotic11",
       "index" : 1,
       "semantics" : "arbitrary",
+      "thread-count" : 32,
       "window-size" : 2629743,
       "slide-size" : 172800,
       "labels" : [
