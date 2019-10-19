@@ -15,6 +15,7 @@
       "window-size" : 800000000,
       "slide-size" : 80000000,
       "thread-count" : 32,
+      "delete-ratio" : 0,
       "labels" : [
         "http://db.uwaterloo.ca/~galuc/wsdbm/follows"
       ]
@@ -26,6 +27,7 @@
       "window-size" : 800000000,
       "slide-size" : 80000000,
       "thread-count" : 32,
+      "delete-ratio" : 0,
       "labels" : [
         "http://purl.org/stuff/rev#reviewer",
         "http://db.uwaterloo.ca/~galuc/wsdbm/follows"
@@ -38,6 +40,7 @@
       "window-size" : 800000000,
       "slide-size" : 80000000,
       "thread-count" : 32,
+      "delete-ratio" : 0,
       "labels" : [
         "http://purl.org/stuff/rev#reviewer",
         "http://db.uwaterloo.ca/~galuc/wsdbm/follows",
@@ -51,6 +54,7 @@
       "window-size" : 800000000,
       "slide-size" : 80000000,
       "thread-count" : 32,
+      "delete-ratio" : 0,
       "labels" : [
         "http://purl.org/stuff/rev#hasReview",
         "http://purl.org/stuff/rev#reviewer",
@@ -64,6 +68,7 @@
       "window-size" : 800000000,
       "slide-size" : 80000000,
       "thread-count" : 32,
+      "delete-ratio" : 0,
       "labels" : [
         "http://db.uwaterloo.ca/~galuc/wsdbm/likes",
         "http://purl.org/stuff/rev#hasReview",
