@@ -99,7 +99,7 @@ public class SpanningTreeRAPQ<V> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    protected <L> void removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
+    public <L> void removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
