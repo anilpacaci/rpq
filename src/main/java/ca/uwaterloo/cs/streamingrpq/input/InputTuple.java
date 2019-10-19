@@ -37,10 +37,11 @@ public class InputTuple<S,T,L> {
      * @param label
      * @param type @{@link TupleType}, INSERT by default
      */
-    public InputTuple(S source, T target, L label, TupleType type) {
+    public InputTuple(S source, T target, L label, long timestamp, TupleType type) {
         this.source = source;
         this.target = target;
         this.label = label;
+        this.timestamp = timestamp;
         this.type = type;
     }
 

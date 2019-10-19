@@ -62,7 +62,7 @@ public class SimpleTextStream implements TextStream{
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
 
-        splitResults = new String[3];
+        splitResults = new String[4];
 
     }
 
@@ -84,12 +84,16 @@ public class SimpleTextStream implements TextStream{
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
                 int i = 0;
-                for(i = 0; iterator.hasNext() && i < 3; i++) {
+                for(i = 0; iterator.hasNext() && i < 4; i++) {
                     splitResults[i] = iterator.next();
                 }
-                if(i == 3) {
+                if(i == 4) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], globalCounter);
+                    if(splitResults[3].equals("+")) {
+                        tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], globalCounter);
+                    } else {
+                        tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], globalCounter, InputTuple.TupleType.DELETE);
+                    }
                     break;
                 }
             }

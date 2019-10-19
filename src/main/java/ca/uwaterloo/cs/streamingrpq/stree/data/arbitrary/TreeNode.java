@@ -61,6 +61,14 @@ public class TreeNode<V> {
         this.tree.updateTimestamp(timestamp);
     }
 
+    /**
+     * Sets the timestamp of this node to Long.MIN for expiry ro remove after an explicit deletion
+     * it does not set the timestamp for the tree
+     */
+    public void setDeleted() {
+        this.timestamp = Long.MIN_VALUE;
+    }
+
     public TreeNode getParent() {
         return parent;
     }

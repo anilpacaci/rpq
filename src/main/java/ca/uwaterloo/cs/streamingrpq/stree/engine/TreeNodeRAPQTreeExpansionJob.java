@@ -1,10 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
+import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Queue;
 
@@ -17,6 +19,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
     private int targetVertex[];
     private int targetState[];
     private long edgeTimestamp[];
+    private boolean isDeletion;
 
     private int currentSize;
 
@@ -24,7 +27,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
 
     private Queue<ResultPair<Integer>> results;
 
-    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
+    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         this.productGraph = productGraph;
         this.automata = automata;
         this.spanningTree = new SpanningTreeRAPQ[Constants.EXPECTED_BATCH_SIZE];
@@ -32,6 +35,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
         this.targetVertex = new int[Constants.EXPECTED_BATCH_SIZE];
         this.targetState = new int[Constants.EXPECTED_BATCH_SIZE];
         this.edgeTimestamp = new long[Constants.EXPECTED_BATCH_SIZE];
+        this.isDeletion = isDeletion;
         this.results = results;
         this.currentSize = 0;
         this.resultCount = 0;
@@ -76,11 +80,17 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
     @Override
     public Integer call() throws Exception {
 
-        // call each job in teh buffer
-        for(int i = 0; i < currentSize; i++) {
-            processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+        if(isDeletion) {
+            // call each job in teh buffer
+            for (int i = 0; i < currentSize; i++) {
+                markExpired(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+            }
+        } else {
+            // call each job in teh buffer
+            for (int i = 0; i < currentSize; i++) {
+                processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
+            }
         }
-
         return this.resultCount;
     }
 
@@ -140,6 +150,38 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<Sp
                     processTransition(tree, childNode, forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState(), forwardEdge.getTimestamp());
                 }
             }
+        }
+    }
+
+    public void markExpired(SpanningTreeRAPQ<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
+        // update the timestamp of the entire subtree of such node exists
+        if(tree.exists(childVertex, childState)) {
+            // if the child node already exists, we might need to update timestamp
+            TreeNode<Integer> childNode = tree.getNode(childVertex, childState);
+
+            Queue<TreeNode<Integer>> queue = new ArrayDeque<>();
+            queue.offer(childNode);
+            while(!queue.isEmpty()) {
+                TreeNode currentNode = queue.poll();
+                currentNode.setDeleted();
+                queue.addAll(currentNode.getChildren());
+            }
+
+            // allnodes are marked,
+            // simply call expiry on the spanning tree
+
+            // it is OK to remove the deletion with timestamp 0 because we only want to delete nodes that are set to Long.MIN
+            Collection<TreeNode<Integer>> removedNodes = tree.removeOldEdges(0, productGraph);
+
+            for(TreeNode<Integer> removedNode : removedNodes) {
+                if(automata.isFinalState(removedNode.getState())) {
+                    results.offer(new ResultPair<Integer>(tree.getRootVertex(), removedNode.getVertex(), true));
+                    resultCount--;
+                }
+            }
+
+        } else {
+            // there is no such edge so no need for deletion
         }
     }
 }

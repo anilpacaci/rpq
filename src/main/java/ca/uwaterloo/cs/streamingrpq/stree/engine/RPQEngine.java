@@ -22,6 +22,7 @@ public abstract class RPQEngine<L> {
     protected Histogram containingTreeHistogram;
     protected Histogram fullHistogram;
     protected Histogram processedHistogram;
+    protected Histogram explicitDeletionHistogram;
     protected Histogram windowManagementHistogram;
     protected Histogram edgeCountHistogram;
     protected Timer fullTimer;
@@ -55,6 +56,8 @@ public abstract class RPQEngine<L> {
         this.fullHistogram = metricRegistry.histogram("full-histogram");
         this.processedHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("processed-histogram", this.processedHistogram);
+        this.explicitDeletionHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
+        metricRegistry.register("explicit-deletion-histogram", this.explicitDeletionHistogram);
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
         this.fullTimer = metricRegistry.timer("full-timer");
         this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));

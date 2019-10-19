@@ -87,12 +87,18 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             return;
         } else {
             // add edge to the snapshot productGraph
-            productGraph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
-            edgeCount++;
+            if(inputTuple.isDeletion()) {
+                productGraph.removeEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
+                edgeCount--;
+            } else {
+                productGraph.addEdge(inputTuple.getSource(), inputTuple.getTarget(), inputTuple.getLabel(), inputTuple.getTimestamp());
+                edgeCount++;
+            }
         }
 
+            // edge is an insertion
         //create a spanning tree for the source node in case it does not exists
-        if(transitions.keySet().contains(0) && !deltaRAPQ.exists(inputTuple.getSource())) {
+        if (transitions.keySet().contains(0) && !deltaRAPQ.exists(inputTuple.getSource())) {
             // if there exists a start transition with given label, there should be a spanning tree rooted at source vertex
             deltaRAPQ.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
         }
@@ -101,9 +107,9 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         CompletionService<Integer> completionService = new ExecutorCompletionService<>(this.executorService);
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
-        TreeNodeRAPQTreeExpansionJob treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
+        TreeNodeRAPQTreeExpansionJob treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
 
-           // for each transition that given label satisy
+        // for each transition that given label satisy
         for (Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
             int targetState = transition.getValue();
@@ -113,7 +119,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
             boolean runParallel = containingTrees.size() > Constants.EXPECTED_BATCH_SIZE * this.numOfThreads;
             // iterate over spanning trees that include the source node
-        for (SpanningTreeRAPQ<Integer> spanningTree : containingTrees) {
+            for (SpanningTreeRAPQ<Integer> spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
@@ -123,11 +129,11 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 if (treeExpansionJob.isFull()) {
                     if (runParallel) {
                         futureList.add(completionService.submit(treeExpansionJob));
-                        treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
+                        treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
                     } else {
                         try {
                             Integer partialResultCount = treeExpansionJob.call();
-                            treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results);
+                            treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
                             resultCounter.inc(partialResultCount);
                         } catch (Exception e) {
                             LOG.error("SpanningTreeExpansion exception on main thread", e);
@@ -135,17 +141,19 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                     }
                 }
             }
-        }
 
-
-        for (int i = 0; i < futureList.size(); i++) {
-            try {
-                Integer partialResultCount = completionService.take().get();
-                resultCounter.inc(partialResultCount);
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("SpanningTreeExpansion interrupted during execution", e);
+            // wait for results of al jobs before moving to next transition to ensure that there is a single thread working on a tree
+            for (int i = 0; i < futureList.size(); i++) {
+                try {
+                    Integer partialResultCount = completionService.take().get();
+                    resultCounter.inc(partialResultCount);
+                } catch (InterruptedException | ExecutionException e) {
+                    LOG.error("SpanningTreeExpansion interrupted during execution", e);
+                }
             }
+
         }
+
 
 
         // if there is any remaining job in the buffer, run them in main thread
@@ -168,6 +176,11 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             // it implies that edge is processed
             processedHistogram.update(edgeElapsedTime);
             containingTreeHistogram.update(treeCount);
+        }
+
+        if(inputTuple.isDeletion()) {
+            // log explicit deletion time separately
+            explicitDeletionHistogram.update(edgeElapsedTime);
         }
 
     }

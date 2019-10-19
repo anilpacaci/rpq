@@ -65,7 +65,7 @@ public class ProductGraphNode<V> {
 
         ProductGraphNode pair = (ProductGraphNode) o;
 
-        return pair.vertex == this.vertex && pair.state == this.state;
+        return pair.vertex .equals(this.vertex) && pair.state == this.state;
     }
 
     // implementation from effective Java : Item 9

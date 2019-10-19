@@ -45,6 +45,21 @@ public class ProductGraph<V,L> {
         }
     }
 
+    public void removeEdge(V source, V target, L label, long timestamp) {
+        Map<Integer, Integer> transitions = automata.getTransition(label);
+        for(Map.Entry<Integer, Integer> transition : transitions.entrySet()) {
+            int sourceState = transition.getKey();
+            int targetState = transition.getValue();
+            ProductGraphNode<V> sourceNode = this.getNode(source, sourceState);
+            ProductGraphNode<V> targetNode = this.getNode(target, targetState);
+            GraphEdge<ProductGraphNode<V>> forwardEdge = new GraphEdge<>(sourceNode, targetNode, timestamp);
+            sourceNode.removeForwardEdge(forwardEdge);
+            targetNode.removeBackwardEdge(forwardEdge);
+            //timeOrderedEdges.add(forwardEdge);
+            edgeCount--;
+        }
+    }
+
     private ProductGraphNode<V> getNode(V vertex, int state) {
         ProductGraphNode<V> node = this.nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
         if(node == null) {

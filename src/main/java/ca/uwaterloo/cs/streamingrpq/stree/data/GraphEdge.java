@@ -37,7 +37,7 @@ public class GraphEdge<V> {
         GraphEdge<?> graphEdge = (GraphEdge<?>) o;
 
         if (!source.equals(graphEdge.source)) return false;
-        return (!target.equals(graphEdge.target));
+        return (target.equals(graphEdge.target));
     }
 
     @Override
