@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Yago2sTSVStream implements TextStream{
@@ -26,6 +27,7 @@ public class Yago2sTSVStream implements TextStream{
 
     Integer localCounter = 0;
     Integer globalCounter = 0;
+    Integer deleteCounter = 0;
 
     private String splitResults[];
 
@@ -34,7 +36,7 @@ public class Yago2sTSVStream implements TextStream{
 
     Queue<String> deletionBuffer = new ArrayDeque<>();
     int deletionPercentage = 0;
-
+    long lastTimetamp = Long.MIN_VALUE;
 
 
     public boolean isOpen() {
@@ -47,6 +49,7 @@ public class Yago2sTSVStream implements TextStream{
 
     @Override
     public void open(String filename, int size, long startTimestamp, int deletionPercentage) {
+        this.deletionPercentage = deletionPercentage;
         open(filename, size);
     }
 
@@ -64,8 +67,9 @@ public class Yago2sTSVStream implements TextStream{
 
             @Override
             public void run() {
-                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
+                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter + " -- deletes: " + deleteCounter);
                 localCounter = 0;
+                deleteCounter++;
             }
         };
 
@@ -91,6 +95,26 @@ public class Yago2sTSVStream implements TextStream{
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
 
+        //generate negative tuple if necessary
+        if(!deletionBuffer.isEmpty() && ThreadLocalRandom.current().nextInt(100) < deletionPercentage) {
+            line = deletionBuffer.poll();
+            Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
+            int i = 0;
+            for(i = 0; iterator.hasNext() && i < 3; i++) {
+                splitResults[i] = iterator.next();
+            }
+            // only if we fully
+            if(i == 3) {
+                tuple.setSource(splitResults[0].hashCode());
+                tuple.setTarget(splitResults[2].hashCode());
+                tuple.setLabel(splitResults[1]);
+                tuple.setTimestamp(globalCounter);
+                tuple.setType(InputTuple.TupleType.DELETE);
+                deleteCounter++;
+                return tuple;
+            }
+        }
+
         try {
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
@@ -101,13 +125,22 @@ public class Yago2sTSVStream implements TextStream{
                 // only if we fully
                 if(i == 3) {
 //                    tuple = new InputTuple(1,2,3);
+                    lastTimetamp = globalCounter;
+
                     tuple.setSource(splitResults[0].hashCode());
                     tuple.setTarget(splitResults[2].hashCode());
                     tuple.setLabel(splitResults[1]);
                     tuple.setTimestamp(globalCounter);
+                    tuple.setType(InputTuple.TupleType.INSERT);
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
                     localCounter++;
                     globalCounter++;
+
+                    // store this tuple for later deletion
+                    if(ThreadLocalRandom.current().nextInt(100) < 2 * deletionPercentage) {
+                        deletionBuffer.offer(line);
+                    }
+
                     break;
                 }
             }
