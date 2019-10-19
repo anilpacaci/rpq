@@ -28,6 +28,8 @@ public class LDBCStream implements TextStream{
     Integer localCounter = 0;
     Integer globalCounter = 0;
 
+    Integer deleteCounter = 0;
+
     Long startTimestamp = -1L;
 
     long lastTimetamp = Long.MIN_VALUE;
@@ -69,8 +71,9 @@ public class LDBCStream implements TextStream{
 
             @Override
             public void run() {
-                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
+                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter + " -- deletes: " + deleteCounter);
                 localCounter = 0;
+                deleteCounter = 0;
             }
         };
 
@@ -112,7 +115,7 @@ public class LDBCStream implements TextStream{
                 tuple.setTarget(splitResults[2].hashCode());
                 tuple.setType(InputTuple.TupleType.DELETE);
                 tuple.setTimestamp(lastTimetamp);
-
+                deleteCounter++;
                 return tuple;
             }
         }
