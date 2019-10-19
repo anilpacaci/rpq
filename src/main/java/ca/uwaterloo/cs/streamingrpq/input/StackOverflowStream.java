@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,11 @@ public class StackOverflowStream implements TextStream{
     Long startTimestamp = -1L;
 
 
+    Queue<String> deletionBuffer = new ArrayDeque<>();
+    int deletionPercentage = 0;
+
+
+
     public boolean isOpen() {
         return false;
     }
@@ -36,7 +43,7 @@ public class StackOverflowStream implements TextStream{
         open(filename);
     }
 
-    public void open(String filename, int maxSize, long startTimestamp) {
+    public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
         this.startTimestamp = startTimestamp;
         open(filename);
     }

@@ -7,9 +7,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class LDBCStream implements TextStream{
@@ -27,9 +30,14 @@ public class LDBCStream implements TextStream{
 
     Long startTimestamp = -1L;
 
+    long lastTimetamp = Long.MIN_VALUE;
+
     InputTuple tuple = null;
 
     private String splitResults[];
+
+    Queue<String> deletionBuffer = new ArrayDeque<>();
+    int deletionPercentage = 0;
 
 
     public boolean isOpen() {
@@ -41,8 +49,9 @@ public class LDBCStream implements TextStream{
         open(filename);
     }
 
-    public void open(String filename, int maxSize, long startTimestamp) {
+    public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
         this.startTimestamp = startTimestamp;
+        this.deletionPercentage = deletionPercentage;
         open(filename);
     }
 
@@ -86,23 +95,53 @@ public class LDBCStream implements TextStream{
 
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
+        int i = 0;
+
+        //generate negative tuple if necessary
+        if(!deletionBuffer.isEmpty() && ThreadLocalRandom.current().nextInt(100) < deletionPercentage) {
+            line = deletionBuffer.poll();
+            Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
+            for (i = 0; iterator.hasNext() && i < 4; i++) {
+                splitResults[i] = iterator.next();
+            }
+            // only if we fully
+            if (i == 4) {
+//                    tuple = new InputTuple(1,2,3);
+                tuple.setSource(splitResults[0].hashCode());
+                tuple.setLabel(splitResults[1]);
+                tuple.setTarget(splitResults[2].hashCode());
+                tuple.setType(InputTuple.TupleType.DELETE);
+                tuple.setTimestamp(lastTimetamp);
+
+                return tuple;
+            }
+        }
+
         try {
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
-                int i = 0;
                 for(i = 0; iterator.hasNext() && i < 4; i++) {
                     splitResults[i] = iterator.next();
                 }
                 // only if we fully
                 if(i == 4) {
 //                    tuple = new InputTuple(1,2,3);
+                    lastTimetamp = Long.parseLong(splitResults[3]) - startTimestamp;
+
                     tuple.setSource(splitResults[0].hashCode());
                     tuple.setLabel(splitResults[1]);
                     tuple.setTarget(splitResults[2].hashCode());
-                    tuple.setTimestamp(Long.parseLong(splitResults[3]) - startTimestamp);
+                    tuple.setType(InputTuple.TupleType.INSERT);
+                    tuple.setTimestamp(lastTimetamp);
                     localCounter++;
                     globalCounter++;
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
+
+                    // store this tuple for later deletion
+                    if(ThreadLocalRandom.current().nextInt(100) < 2 * deletionPercentage) {
+                        deletionBuffer.offer(line);
+                    }
+
                     break;
                 }
             }

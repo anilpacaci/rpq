@@ -44,6 +44,7 @@ public class STQueryRunner {
         Long slideSize = Long.parseLong(line.getOptionValue("ss"));
         Long startTimestamp = Long.parseLong(line.getOptionValue("st", "0"));
         Integer threadCount = Integer.parseInt(line.getOptionValue("tc", "1"));
+        Integer deletionPercentage = Integer.parseInt(line.getOptionValue("dr", "0"));
 
         String semantics = line.getOptionValue("ps");
         Semantics pathSemantics = Semantics.fromValue(semantics);
@@ -92,7 +93,7 @@ public class STQueryRunner {
             rpq = new WindowedRSPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
         }
 
-        stream.open(filename, inputSize, startTimestamp);
+        stream.open(filename, inputSize, startTimestamp, deletionPercentage);
         task = new SingleThreadedRun<String>(queryName, stream, rpq);
 
         MetricRegistry metricRegistry = new MetricRegistry();

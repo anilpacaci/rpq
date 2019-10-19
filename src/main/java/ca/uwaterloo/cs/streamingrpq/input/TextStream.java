@@ -1,10 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 /**
  * Created by anilpacaci on 2019-01-31.
  */
 public interface TextStream {
-
 
     public boolean isOpen();
 
@@ -12,7 +14,7 @@ public interface TextStream {
 
     public void open(String filename, int size);
 
-    public void open(String filename, int size, long startTimestamp);
+    public void open(String filename, int size, long startTimestamp, int deletionPercentage);
 
     public InputTuple next();
 
