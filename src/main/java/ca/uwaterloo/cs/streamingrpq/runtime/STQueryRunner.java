@@ -139,6 +139,7 @@ public class STQueryRunner {
         options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
         options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");
         options.addOption("tc", "threadCount", true, "# of Threads for inter-query parallelism");
+        options.addOption("dr", "deleteRatio", true, "percentage of deletions in the stream");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);
