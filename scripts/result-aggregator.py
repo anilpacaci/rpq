@@ -84,17 +84,17 @@ with open(aggregated_results_file, 'w') as csv_file:
         window_size = re.search('ws:(.*)-ss', log_folder).group(1)
         slide_size = re.search('ss:(.*)-tc', log_folder).group(1)
 
+        delete_ratio = 0
+        delete_mean = 0
+        delete_p99 = 0
+
         if "-dr" in log_folder:
             delete_ratio = re.search('-dr:(.*)', log_folder).group(1)
             with open(deletion_histogram, 'r') as f:
                 row = reversed(list(csv.reader(f))).next()
-                delete_mean_mean = row[3]
-                delete_p99_p99 = row[10]
+                delete_mean = row[3]
+                delete_p99 = row[10]
             print delete_ratio
-        else:
-            delete_ratio = 0
-            delete_mean = 0
-            delete_p99 = 0
 
         writer.writerow({
             'query' : query,
