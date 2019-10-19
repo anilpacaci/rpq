@@ -152,19 +152,18 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
                 }
             }
 
-        }
-
-
-
-        // if there is any remaining job in the buffer, run them in main thread
-        if (!treeExpansionJob.isEmpty()) {
-            try {
-                Integer partialResultCount = treeExpansionJob.call();
-                resultCounter.inc(partialResultCount);
-            } catch (Exception e) {
-                LOG.error("SpanningTreeExpansion exception on main thread", e);
+            // if there is any remaining job in the buffer, run them in main thread
+            if (!treeExpansionJob.isEmpty()) {
+                try {
+                    Integer partialResultCount = treeExpansionJob.call();
+                    resultCounter.inc(partialResultCount);
+                } catch (Exception e) {
+                    LOG.error("SpanningTreeExpansion exception on main thread", e);
+                }
             }
+
         }
+
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;

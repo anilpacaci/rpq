@@ -8,31 +8,7 @@
   "timeout" : 300,
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 2,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 2,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -49,20 +25,6 @@
       ]
     },
     {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 2,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
       "query-name" : "robotic6",
       "index" : 1,
       "semantics" : "arbitrary",
@@ -76,59 +38,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 2,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 2,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 1,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 1,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -144,20 +54,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 1,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -172,59 +69,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 1,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 1,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 3,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 3,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -240,20 +85,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 3,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -268,59 +100,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 3,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 3,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 4,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 4,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -336,20 +116,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 4,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -364,59 +131,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 4,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 4,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 5,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 5,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -432,20 +147,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 5,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -460,59 +162,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 5,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 5,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -528,20 +178,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -556,59 +193,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -624,20 +209,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -652,59 +224,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "likes",
-        "replyOf"
-      ]
-    },
+
     {
       "query-name" : "robotic3",
       "index" : 1,
@@ -720,20 +240,7 @@
         "knows"
       ]
     },
-    {
-      "query-name" : "robotic5",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "likes",
-        "replyOf",
-        "hasCreator"
-      ]
-    },
+
     {
       "query-name" : "robotic6",
       "index" : 1,
@@ -746,34 +253,6 @@
         "replyOf",
         "hasCreator",
         "knows"
-      ]
-    },
-    {
-      "query-name" : "robotic7",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "knows",
-        "likes",
-        "replyOf"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 1,
-      "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "creatorOf",
-        "replyOf",
-        "hasCreator"
       ]
     }
   ]

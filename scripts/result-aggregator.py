@@ -21,7 +21,7 @@ log_folders = get_immediate_subdirectories(results_folder)
 with open(aggregated_results_file, 'w') as csv_file:
     fieldnames = ['query', 'semantics', 'binding', 'window-size', 'slide-size', 'containing-tree-mean', 'results',
                   'tree-count', 'tree-size-mean', 'tree-size-max', 'window-mean', 'window-p99', 'slide-count-mean',
-                  'processed-edge-count', 'processed-mean', 'processed-min', 'processed-p50', 'processed-p75', 'processed-p95',
+                  'processed-edge-count', 'delete-ratio' , 'delete-mean', 'delete-p99', 'processed-mean', 'processed-min', 'processed-p50', 'processed-p75', 'processed-p95',
                   'processed-p98', 'processed-p99', 'processed-p999', 'time']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     writer.writeheader()
@@ -34,6 +34,7 @@ with open(aggregated_results_file, 'w') as csv_file:
         tree_counter = os.path.join(results_folder, log_folder, "tree-counter.csv")
         treesize_histogram = os.path.join(results_folder, log_folder, "tree-size-histogram.csv")
         window_histogram = os.path.join(results_folder, log_folder, "window-histogram.csv")
+        deletion_histogram = os.path.join(results_folder, log_folder, "explicit-deletion-histogram.csv")
 
         print "Opening {}".format(log_folder)
 
@@ -83,6 +84,18 @@ with open(aggregated_results_file, 'w') as csv_file:
         window_size = re.search('ws:(.*)-ss', log_folder).group(1)
         slide_size = re.search('ss:(.*)-tc', log_folder).group(1)
 
+        if "-dr" in log_folder:
+            delete_ratio = re.search('-dr:(.*)', log_folder).group(1)
+            with open(deletion_histogram, 'r') as f:
+                row = reversed(list(csv.reader(f))).next()
+                delete_mean_mean = row[3]
+                delete_p99_p99 = row[10]
+            print delete_ratio
+        else:
+            delete_ratio = 0
+            delete_mean = 0
+            delete_p99 = 0
+
         writer.writerow({
             'query' : query,
             'semantics' : semantics,
@@ -97,6 +110,9 @@ with open(aggregated_results_file, 'w') as csv_file:
             'window-mean' : window_mean,
             'window-p99' : window_p99,
             'slide-count-mean' : slide_count_mean,
+            'delete-ratio' : delete_ratio,
+            'delete-mean' : delete_mean,
+            'delete-p99' : delete_p99,
             'processed-edge-count' : processed_edge_count,
             'processed-mean' : processed_mean,
             'processed-min' : processed_min,
