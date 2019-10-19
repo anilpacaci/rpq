@@ -15,7 +15,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -29,7 +29,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -43,7 +43,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -58,7 +58,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -72,7 +72,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -86,7 +86,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -100,7 +100,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -114,7 +114,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -128,7 +128,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -142,7 +142,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -156,7 +156,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 2,
+      "delete-ratio" : 1,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -170,7 +170,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -184,7 +184,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -198,7 +198,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -213,7 +213,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -227,7 +227,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -241,7 +241,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -255,7 +255,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -269,7 +269,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -283,7 +283,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -297,7 +297,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -311,7 +311,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 4,
+      "delete-ratio" : 3,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -325,7 +325,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -339,7 +339,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -353,7 +353,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -368,7 +368,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -382,7 +382,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -396,7 +396,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -410,7 +410,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -424,7 +424,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -438,7 +438,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -452,7 +452,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
@@ -466,317 +466,7 @@
       "window-size" : 10000000,
       "slide-size" : 1000000,
       "thread-count" : 32,
-      "delete-ratio" : 6,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic3",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn",
-        "http://yago-knowledge.org/resource/happenedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic4",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic5",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic6",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic7",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic8",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic9",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic10",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 8,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic1",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic2",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic3",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn",
-        "http://yago-knowledge.org/resource/happenedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic4",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic5",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic6",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic7",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic8",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic9",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic10",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
-      "labels" : [
-        "http://yago-knowledge.org/resource/happenedIn",
-        "http://yago-knowledge.org/resource/hasCapital",
-        "http://yago-knowledge.org/resource/participatedIn"
-      ]
-    },
-    {
-      "query-name" : "robotic11",
-      "index" : 21,
-      "semantics" : "arbitrary",
-      "window-size" : 10000000,
-      "slide-size" : 1000000,
-      "thread-count" : 32,
-      "delete-ratio" : 10,
+      "delete-ratio" : 5,
       "labels" : [
         "http://yago-knowledge.org/resource/happenedIn",
         "http://yago-knowledge.org/resource/hasCapital",
