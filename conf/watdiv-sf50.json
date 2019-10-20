@@ -1,19 +1,19 @@
 {
-  "name" : "watdiv-sf100",
-  "dataset" : "/home/apacaci/sgraffito/Stream-WatDiv/bin/Release/stream-sf100",
+  "name" : "watdiv-sf50",
+  "dataset" : "/hdd1/apacaci/datasets/stream-watdiv/stream-sf50",
   "input-type" : "ldbc",
-  "report-folder" : "/home/apacaci/sgraffito/results/watdiv-sf100/",
+  "report-folder" : "/home/apacaci/sgraffito/results/watdiv-sf50/",
   "buffer-size" : 50000000,
-  "heap-size" : 28,
+  "heap-size" : 192,
   "timeout" : 300,
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
    {
       "query-name" : "robotic1",
-      "index" : 21,
+      "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 800000000,
-      "slide-size" : 80000000,
+      "window-size" : 86400000,
+      "slide-size" : 3600000,
       "thread-count" : 32,
       "delete-ratio" : 0,
       "labels" : [
@@ -22,10 +22,10 @@
     },
     {
       "query-name" : "robotic2",
-      "index" : 21,
+      "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 800000000,
-      "slide-size" : 80000000,
+      "window-size" : 86400000,
+      "slide-size" : 3600000,
       "thread-count" : 32,
       "delete-ratio" : 0,
       "labels" : [
@@ -35,10 +35,10 @@
     },
     {
       "query-name" : "robotic5",
-      "index" : 21,
+      "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 800000000,
-      "slide-size" : 80000000,
+      "window-size" : 86400000,
+      "slide-size" : 3600000,
       "thread-count" : 32,
       "delete-ratio" : 0,
       "labels" : [
@@ -49,10 +49,10 @@
     },
     {
       "query-name" : "robotic7",
-      "index" : 21,
+      "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 800000000,
-      "slide-size" : 80000000,
+      "window-size" : 86400000,
+      "slide-size" : 3600000,
       "thread-count" : 32,
       "delete-ratio" : 0,
       "labels" : [
@@ -63,10 +63,10 @@
     },
     {
       "query-name" : "robotic11",
-      "index" : 21,
+      "index" : 1,
       "semantics" : "arbitrary",
-      "window-size" : 800000000,
-      "slide-size" : 80000000,
+      "window-size" : 86400000,
+      "slide-size" : 3600000,
       "thread-count" : 32,
       "delete-ratio" : 0,
       "labels" : [
