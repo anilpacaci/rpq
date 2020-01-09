@@ -1,10 +1,11 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sHashStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
+import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
@@ -39,9 +40,14 @@ public class STQueryRunner {
         Integer inputSize = Integer.parseInt(line.getOptionValue("s"));
         Integer maxSize = Integer.parseInt(line.getOptionValue("s"));
         String queryName = line.getOptionValue("n");
+        Long windowSize = Long.parseLong(line.getOptionValue("ws"));
+        Long slideSize = Long.parseLong(line.getOptionValue("ss"));
+        Long startTimestamp = Long.parseLong(line.getOptionValue("st", "0"));
+        Integer threadCount = Integer.parseInt(line.getOptionValue("tc", "1"));
+        Integer deletionPercentage = Integer.parseInt(line.getOptionValue("dr", "0"));
 
         String semantics = line.getOptionValue("ps");
-        PathSemantics pathSemantics = PathSemantics.fromValue(semantics);
+        Semantics pathSemantics = Semantics.fromValue(semantics);
 
         String recordCSVFilePath = line.getOptionValue("r");
 
@@ -57,48 +63,48 @@ public class STQueryRunner {
             case "hash":
                 stream = new Yago2sHashStream();
                 break;
+            case "text":
+                stream = new SimpleTextStream();
+                break;
+            case "snap-sx":
+                stream = new StackOverflowStream();
+                break;
+            case "ldbc":
+                stream = new LDBCStream();
+                break;
             default:
                 stream = new Yago2sTSVStream();
         }
 
-        stream.open(filename, inputSize);
-
-
-        QueryAutomata<Integer> query;
-
-        if(queryName.equals("waveguide6")) {
-            query = new QueryAutomata<>(4);
-            query.addTransition(0, predicates[0], 1);
-            query.addTransition(1, predicates[1], 2);
-            query.addTransition(2, predicates[2], 3);
-            query.addTransition(3, predicates[0], 1);
-            query.addFinalState(3);
-
-        } else if(queryName.equals("waveguide5")) {
-            query = new QueryAutomata<>(4);
-            query.addTransition(0, predicates[0], 1);
-            query.addTransition(1, predicates[1], 2);
-            query.addTransition(2, predicates[1], 2);
-            query.addTransition(2, predicates[2], 3);
-            query.addTransition(3, predicates[2], 3);
-            query.addFinalState(3);
-        } else {
-            logger.error("Not a valid queryname: " + queryName);
+        RPQEngine rpq;
+        QueryAutomata<String> query;
+        SingleThreadedRun task;
+        try {
+            query = MazeQueries.getMazeQuery(queryName, predicateString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error creating the query", e);
             return;
         }
 
-        IncrementalRAPQ<Integer> rapq = new IncrementalRAPQ<Integer>(query, maxSize);
+
+        if(pathSemantics.equals(Semantics.ARBITRARY)) {
+            rpq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
+        } else {
+            rpq = new WindowedRSPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
+        }
+
+        stream.open(filename, inputSize, startTimestamp, deletionPercentage);
+        task = new SingleThreadedRun<String>(queryName, stream, rpq);
 
         MetricRegistry metricRegistry = new MetricRegistry();
 
-        rapq.addMetricRegistry(metricRegistry);
+        rpq.addMetricRegistry(metricRegistry);
         // create the metrics directory
         File resultDirectory = new File(recordCSVFilePath);
         resultDirectory.mkdirs();
         CsvReporter reporter = CsvReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(resultDirectory);
-        reporter.start(10, TimeUnit.SECONDS);
+        reporter.start(1, TimeUnit.SECONDS);
 
-        SingleThreadedRun task = new SingleThreadedRun(queryName, stream, rapq);
         try {
             task.call();
         } catch (Exception e) {
@@ -108,6 +114,9 @@ public class STQueryRunner {
         // shutdown the reporter
         reporter.stop();
         reporter.close();
+
+        //shutdown the engine
+        rpq.shutDown();
 
         //shut down the executor
         //reset the stream so we can reuse it for the next query
@@ -126,6 +135,11 @@ public class STQueryRunner {
         options.addRequiredOption("n", "name", true, "name of the query to be run");
         options.addRequiredOption("ps", "semantics", true, "path semantics");
         options.addRequiredOption("r", "report-path", true, "CSV file to record execution metrics");
+        options.addRequiredOption("ws", "window-size", true, "Size of the window in milliseconds");
+        options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
+        options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");
+        options.addOption("tc", "threadCount", true, "# of Threads for inter-query parallelism");
+        options.addOption("dr", "deleteRatio", true, "percentage of deletions in the stream");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);

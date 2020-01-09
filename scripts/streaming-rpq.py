@@ -12,23 +12,33 @@ class RPQRun:
     input_type  =   ""
     report      =   ""
     buffer_size =   100000000
+    window_size =   50000000
+    slide_size  =   10000000
     semantics   =   ""
     labels      =   []
 
-    def __init__(self, name, input, input_type, report, buffer_size, semantics, labels):
+    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels):
         self.name = name
         self.input = input
         self.input_type = input_type
         self.report_file = report
         self.buffer_size = buffer_size
+        self.window_size = window_size
+        self.slide_size = slide_size
         self.semantics = semantics
         self.labels = labels
+        self.thread_count = thread_count
+        self.delete_ratio = delete_ratio
 
     def produceCommandString(self):
-        command = "-f {} -t {} -s {} -n {} -ps {} -r {} -l {} ".format(
+        command = "-f {} -t {} -tc {}  -dr {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -l {}".format(
             self.input,
             self.input_type,
+            str(self.thread_count),
+            str(self.delete_ratio),
             str(self.buffer_size),
+            str(self.window_size),
+            str(self.slide_size),
             self.name,
             self.semantics,
             self.report_file,
@@ -71,20 +81,24 @@ with open(parameters, 'rb') as parameters_handle:
         index = run_config["index"]
         semantics = run_config["semantics"]
         labels = run_config["labels"]
-
+        window_size = run_config["window-size"]
+        slide_size = run_config["slide-size"]
+        thread_count = run_config["thread-count"]
+        delete_ratio = run_config["delete-ratio"]
         # reporting folder
-        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics)
+        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
 
         # create the run object
-        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, semantics, labels))
+        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels))
 
 
 # iterate over runs and run the experiments
 for run in run_list:
     commandString = run.produceCommandString()
-    javaCommand = "java -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768 -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
+    javaCommand = "java -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
 
     print "Executing command {} ".format(javaCommand)
+    sys.stdout.flush()
 
     elapsedTime = 0
     interval = 5
@@ -98,7 +112,10 @@ for run in run_list:
         # kill after timeout if process is still alive
         if elapsedTime > timeout and proc.poll() is None:
             print "Killing pid {} after timeout {}".format(str(proc.pid), str(timeout))
+            sys.stdout.flush()
             proc.kill()
+            # sleep before starting new job for java to release the memory
+            time.sleep(interval)
             break
 
         if proc.poll() is not None:

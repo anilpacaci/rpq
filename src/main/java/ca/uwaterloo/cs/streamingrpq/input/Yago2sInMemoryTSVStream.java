@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,9 @@ public class Yago2sInMemoryTSVStream implements TextStream{
     Integer globalCounter = 0;
 
 
+    Queue<String> deletionBuffer = new ArrayDeque<>();
+    int deletionPercentage = 0;
+
 
     public boolean isOpen() {
         return false;
@@ -38,6 +43,11 @@ public class Yago2sInMemoryTSVStream implements TextStream{
 
     public void open(String filename)  {
         open(filename, MAX_STREAM_SIZE);
+    }
+
+    @Override
+    public void open(String filename, int size, long startTimestamp, int deletionPercentage) {
+        open(filename, size);
     }
 
     public void open(String filename, int maxSize) {

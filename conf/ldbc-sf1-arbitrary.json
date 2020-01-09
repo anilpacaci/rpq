@@ -1,0 +1,101 @@
+{
+  "name" : "ldbc-sf1",
+  "dataset" : "/hdd1/apacaci/datasets/ldbc/sf1/update-sorted-unixts.csv",
+  "input-type" : "ldbc",
+  "report-folder" : "/home/apacaci/sgraffito/results/ldbc-sf1/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 300,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "replyOf"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "likes",
+        "replyOf"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "knows",
+        "likes",
+        "replyOf"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "creatorOf",
+        "replyOf",
+        "hasCreator"
+      ]
+    }
+  ]
+}

@@ -3,15 +3,16 @@ package ca.uwaterloo.cs.streamingrpq;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
 import ca.uwaterloo.cs.streamingrpq.input.TextStream;
-import ca.uwaterloo.cs.streamingrpq.input.Yago2sTSVStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.IncrementalRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRSPQ;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 
 import java.util.concurrent.TimeUnit;
 
-public class SpanningTreeTest {
+public class WindowedSpanningTreeTest {
 
     static String filename = "src/main/resources/diamondgraph.txt";
 
@@ -22,7 +23,7 @@ public class SpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        IncrementalRAPQ<String> rapqEngine = new IncrementalRAPQ(query, 100);
+        RPQEngine<String> rapqEngine = new WindowedRAPQ<>(query, 100, 5, 1, 10);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 
@@ -42,7 +43,13 @@ public class SpanningTreeTest {
             input = stream.next();
         }
 
-        rapqEngine.getResults().entries().iterator().forEachRemaining(t-> {System.out.println(t.getKey() + " --> " + t.getValue());});
+        rapqEngine.getResults().iterator().forEachRemaining(t-> {System.out.println(t.getSource() + " --> " + t.getTarget() + " " + !t.isDeletion());});
+
+        rapqEngine.shutDown();
+
+        stream.close();
+
+        reporter.stop();
 
     }
 }

@@ -1,0 +1,732 @@
+{
+  "name" : "yago2s",
+  "dataset" : "/hdd1/apacaci/datasets/yago2s/tsv/yago2s_full_shuffle_virtuoso_tem53.tsv",
+  "input-type" : "tsv",
+  "report-folder" : "/home/apacaci/sgraffito/results/yago2s/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 600,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "robotic1",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/wasBornIn"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : "B3-8",
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/owns",
+        "http://yago-knowledge.org/resource/isConnectedTo",
+        "http://yago-knowledge.org/resource/isLocatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn",
+        "http://yago-knowledge.org/resource/happenedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 5,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/happenedIn",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/participatedIn"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital",
+        "http://yago-knowledge.org/resource/wasBornIn"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 21,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isLocatedIn",
+        "http://yago-knowledge.org/resource/dealsWith",
+        "http://yago-knowledge.org/resource/hasCapital"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo",
+        "http://yago-knowledge.org/resource/wasBornIn"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 40,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/marriedTo"
+      ]
+    },
+    {
+      "query-name" : "robotic1",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic2",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic3",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild",
+        "http://yago-knowledge.org/resource/wasBornIn"
+      ]
+    },
+    {
+      "query-name" : "robotic4",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic5",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic7",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic8",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic9",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic10",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    },
+    {
+      "query-name" : "robotic11",
+      "index" : 51,
+      "semantics" : "arbitrary",
+      "window-size" : 10000000,
+      "slide-size" : 1000000,
+      "thread-count" : 32,
+      "labels" : [
+        "http://yago-knowledge.org/resource/isKnownFor",
+        "http://yago-knowledge.org/resource/influences",
+        "http://yago-knowledge.org/resource/hasChild"
+      ]
+    }
+  ]
+}

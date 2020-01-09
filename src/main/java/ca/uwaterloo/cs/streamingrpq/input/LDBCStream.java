@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class Yago2sTSVStream implements TextStream{
+public class LDBCStream implements TextStream{
 
 
     FileReader fileStream;
@@ -27,16 +27,19 @@ public class Yago2sTSVStream implements TextStream{
 
     Integer localCounter = 0;
     Integer globalCounter = 0;
+
     Integer deleteCounter = 0;
 
-    private String splitResults[];
+    Long startTimestamp = -1L;
+
+    long lastTimetamp = Long.MIN_VALUE;
 
     InputTuple tuple = null;
 
+    private String splitResults[];
 
     Queue<String> deletionBuffer = new ArrayDeque<>();
     int deletionPercentage = 0;
-    long lastTimetamp = Long.MIN_VALUE;
 
 
     public boolean isOpen() {
@@ -44,13 +47,14 @@ public class Yago2sTSVStream implements TextStream{
     }
 
     public void open(String filename, int maxSize) {
+        this.startTimestamp = 0L;
         open(filename);
     }
 
-    @Override
-    public void open(String filename, int size, long startTimestamp, int deletionPercentage) {
+    public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
+        this.startTimestamp = startTimestamp;
         this.deletionPercentage = deletionPercentage;
-        open(filename, size);
+        open(filename);
     }
 
     public void open(String filename) {
@@ -69,7 +73,7 @@ public class Yago2sTSVStream implements TextStream{
             public void run() {
                 System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter + " -- deletes: " + deleteCounter);
                 localCounter = 0;
-                deleteCounter++;
+                deleteCounter = 0;
             }
         };
 
@@ -94,22 +98,23 @@ public class Yago2sTSVStream implements TextStream{
 
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
+        int i = 0;
 
         //generate negative tuple if necessary
         if(!deletionBuffer.isEmpty() && ThreadLocalRandom.current().nextInt(100) < deletionPercentage) {
             line = deletionBuffer.poll();
             Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
-            int i = 0;
-            for(i = 0; iterator.hasNext() && i < 3; i++) {
+            for (i = 0; iterator.hasNext() && i < 4; i++) {
                 splitResults[i] = iterator.next();
             }
             // only if we fully
-            if(i == 3) {
+            if (i == 4) {
+//                    tuple = new InputTuple(1,2,3);
                 tuple.setSource(splitResults[0].hashCode());
-                tuple.setTarget(splitResults[2].hashCode());
                 tuple.setLabel(splitResults[1]);
-                tuple.setTimestamp(globalCounter);
+                tuple.setTarget(splitResults[2].hashCode());
                 tuple.setType(InputTuple.TupleType.DELETE);
+                tuple.setTimestamp(lastTimetamp);
                 deleteCounter++;
                 return tuple;
             }
@@ -118,23 +123,22 @@ public class Yago2sTSVStream implements TextStream{
         try {
             while((line = bufferedReader.readLine()) != null) {
                 Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
-                int i = 0;
-                for(i = 0; iterator.hasNext() && i < 3; i++) {
+                for(i = 0; iterator.hasNext() && i < 4; i++) {
                     splitResults[i] = iterator.next();
                 }
                 // only if we fully
-                if(i == 3) {
+                if(i == 4) {
 //                    tuple = new InputTuple(1,2,3);
-                    lastTimetamp = globalCounter;
+                    lastTimetamp = Long.parseLong(splitResults[3]) - startTimestamp;
 
                     tuple.setSource(splitResults[0].hashCode());
-                    tuple.setTarget(splitResults[2].hashCode());
                     tuple.setLabel(splitResults[1]);
-                    tuple.setTimestamp(globalCounter);
+                    tuple.setTarget(splitResults[2].hashCode());
                     tuple.setType(InputTuple.TupleType.INSERT);
-//                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
+                    tuple.setTimestamp(lastTimetamp);
                     localCounter++;
                     globalCounter++;
+//                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
 
                     // store this tuple for later deletion
                     if(ThreadLocalRandom.current().nextInt(100) < 2 * deletionPercentage) {

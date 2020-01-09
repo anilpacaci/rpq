@@ -1,0 +1,259 @@
+{
+  "name" : "ldbc-sf10",
+  "dataset" : "/hdd1/apacaci/datasets/ldbc/sf10/update-sorted-unixts.csv",
+  "input-type" : "ldbc",
+  "report-folder" : "/home/apacaci/sgraffito/results/ldbc-sf10/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 300,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 2,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 2,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 1,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 1,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 3,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 3,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 4,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 4,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 5,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 5,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 6,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 6,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 8,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 8,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic3",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 10,
+      "labels" : [
+        "likes",
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    },
+
+    {
+      "query-name" : "robotic6",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "delete-ratio" : 10,
+      "labels" : [
+        "replyOf",
+        "hasCreator",
+        "knows"
+      ]
+    }
+  ]
+}

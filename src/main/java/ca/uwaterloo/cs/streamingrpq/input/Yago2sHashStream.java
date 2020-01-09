@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +27,22 @@ public class Yago2sHashStream implements TextStream{
     Integer globalCounter = 0;
 
 
+    Queue<String> deletionBuffer = new ArrayDeque<>();
+    int deletionPercentage = 0;
+
+
+
     public boolean isOpen() {
         return false;
     }
 
     public void open(String filename, int maxSize) {
         open(filename);
+    }
+
+    @Override
+    public void open(String filename, int size, long startTimestamp, int deletionPercentage) {
+        open(filename, size);
     }
 
     public void open(String filename) {
@@ -76,7 +88,9 @@ public class Yago2sHashStream implements TextStream{
                 String[] splitResults = Iterables.toArray(Splitter.on(' ').split(line), String.class);
                 if(splitResults.length == 3) {
 //                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), Integer.parseInt(splitResults[1]));
+                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), Integer.parseInt(splitResults[1]), globalCounter);
+                    localCounter++;
+                    globalCounter++;
 //                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
                     break;
                 }
@@ -87,8 +101,7 @@ public class Yago2sHashStream implements TextStream{
         if (line == null) {
             return null;
         }
-        localCounter++;
-        globalCounter++;
+
         return tuple;
     }
 
