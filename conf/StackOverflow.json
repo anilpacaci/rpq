@@ -2,7 +2,7 @@
   "name" : "stackoverflow",
   "dataset" : "/hdd1/apacaci/datasets/stackoverflow/labeled-sorted.txt",
   "input-type" : "snap-sx",
-  "report-folder" : "/home/apacaci/sgraffito/rpq/results-stackoverflow",
+  "report-folder" : "/home/apacaci/sgraffito/results/stackoverflow",
   "buffer-size" : 50000000,
   "heap-size" : 192,
   "timeout" : 300,
