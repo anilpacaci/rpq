@@ -1,0 +1,77 @@
+package ca.uwaterloo.cs.streamingrpq.stree.data;
+
+import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractSpanningTree;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
+
+import java.util.Collection;
+
+public abstract class AbstractTreeNode<V> {
+
+    protected SpanningTreeRAPQ<V> tree;
+    protected V vertex;
+    protected int state;
+    protected long timestamp;
+    protected AbstractTreeNode<V> parent;
+    protected Collection<AbstractTreeNode<V>> children;
+
+    public abstract AbstractSpanningTree<V> getTree();
+
+    public V getVertex() {
+        return vertex;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+        this.tree.updateTimestamp(timestamp);
+    }
+
+    /**
+     * Sets the timestamp of this node to Long.MIN for expiry ro remove after an explicit deletion
+     * it does not set the timestamp for the tree
+     */
+    public void setDeleted() {
+        this.timestamp = Long.MIN_VALUE;
+    }
+
+    public AbstractTreeNode<V> getParent() {
+        return parent;
+    }
+
+    /**
+     * Changes the parent of the current node. Removes this node from previous parent's children nodes, and
+     * adds it into new parent's children nodes.
+     * @param parent new parent. <code>null</code> only if this node is deleted
+     */
+    public void setParent(AbstractTreeNode<V> parent) {
+        // remove this node from previous parent
+        if(this.parent != null) {
+            this.parent.children.remove(this);
+        }
+        // set a new parent
+        this.parent = parent;
+        // if it is set null, then it is time to remove this node
+        if(this.parent != null) {
+            // add this as a child to new parent
+            if (parent != null) ;
+            this.parent.addChildren(this);
+        }
+    }
+
+    public Collection<? extends AbstractTreeNode> getChildren() {
+        return children;
+    }
+
+    protected void addChildren(AbstractTreeNode<V> child) {
+        this.children.add(child);
+    }
+}

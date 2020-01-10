@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
+import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractSpanningTree;
 import ca.uwaterloo.cs.streamingrpq.stree.data.GraphEdge;
 import ca.uwaterloo.cs.streamingrpq.stree.data.ProductGraph;
 import ca.uwaterloo.cs.streamingrpq.stree.data.ProductGraphNode;
@@ -10,21 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTreeRAPQ<V> {
-
-    private TreeNode<V> rootNode;
-    private DeltaRAPQ<V> deltaRAPQ;
-
-    private Map<Hasher.MapKey<V>, TreeNode> nodeIndex;
-
-    private final Logger LOG = LoggerFactory.getLogger(SpanningTreeRAPQ.class);
-
-    private long minTimestamp;
-
-    //expiry related data structures
-    private HashSet<TreeNode<V>> candidates;
-    private HashSet<TreeNode<V>> candidateRemoval;
-    private HashSet<TreeNode<V>> visited;
+public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V> {
 
     protected SpanningTreeRAPQ() {
         // empty constructor
@@ -40,56 +27,6 @@ public class SpanningTreeRAPQ<V> {
         candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         candidateRemoval = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         visited = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
-    }
-
-    protected int getSize() {
-        return nodeIndex.size();
-    }
-
-    public TreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
-        if(parentNode == null) {
-            // TODO no object found
-        }
-        if(parentNode.getTree().equals(this)) {
-            // TODO wrong tree
-        }
-
-        TreeNode<V> child = new TreeNode<>(childVertex, childState, parentNode, this, timestamp);
-        nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
-
-        // a new node is added to the spanning tree. update delta index
-        this.deltaRAPQ.addToTreeNodeIndex(this, child);
-
-        this.updateTimestamp(timestamp);
-
-        return child;
-    }
-
-    public boolean exists(V vertex, int state) {
-        return nodeIndex.containsKey(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
-    }
-
-    public TreeNode getNode(V vertex, int state) {
-        TreeNode node = nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state ));
-        return node;
-    }
-
-    public V getRootVertex() {
-        return this.rootNode.getVertex();
-    }
-
-    public TreeNode<V> getRootNode() {
-        return this.rootNode;
-    }
-
-    protected void updateTimestamp(long timestamp) {
-        if(timestamp < minTimestamp) {
-            this.minTimestamp = timestamp;
-        }
-    }
-
-    public long getMinTimestamp() {
-        return minTimestamp;
     }
 
     /**
@@ -231,15 +168,6 @@ public class SpanningTreeRAPQ<V> {
         LOG.debug("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
 
         return candidates;
-    }
-
-    /**
-     * Checks whether the entire three has expired, i.e. there is no active edge from the root node
-     * @return <code>true</> if there is no active edge from the root node
-     */
-    public boolean isExpired(long minTimestamp) {
-        boolean expired = rootNode.getChildren().stream().allMatch(c -> c.getTimestamp() <= minTimestamp);
-        return expired;
     }
 
     @Override
