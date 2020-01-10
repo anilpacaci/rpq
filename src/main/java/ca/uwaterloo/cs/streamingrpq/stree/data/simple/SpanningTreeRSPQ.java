@@ -91,7 +91,7 @@ public class SpanningTreeRSPQ<V> {
     /**
      * removes the node from current nodeIndex.
      * If there is no such node remaining, then remove it from delta tree index
-     * @param node
+     * @param node2
      */
     private void removeNode(TreeNodeRSPQ<V> node) {
         Hasher.MapKey<V> nodeKey = Hasher.getThreadLocalTreeNodePairKey(node.getVertex(), node.getState());
