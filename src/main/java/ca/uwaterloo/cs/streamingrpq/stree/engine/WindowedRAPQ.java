@@ -167,21 +167,21 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
         // metric recording
         Long edgeElapsedTime = System.nanoTime() - edgeStartTime;
-        //populate histograms
-        fullHistogram.update(edgeElapsedTime);
+
         timer.stop();
         // if the incoming edge is not discarded
         if(!transitions.isEmpty()) {
             // it implies that edge is processed
-            processedHistogram.update(edgeElapsedTime);
             containingTreeHistogram.update(treeCount);
-        }
 
-        if(inputTuple.isDeletion()) {
-            // log explicit deletion time separately
-            explicitDeletionHistogram.update(edgeElapsedTime);
+            if(inputTuple.isDeletion()) {
+                // log explicit deletion time separately
+                explicitDeletionHistogram.update(edgeElapsedTime);
+            } else {
+                // log insertion time separately
+                processedHistogram.update(edgeElapsedTime);
+            }
         }
-
     }
 
     private void processEdgeRAPQ() {
