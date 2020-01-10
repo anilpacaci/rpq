@@ -51,20 +51,32 @@ public abstract class RPQEngine<L> {
     }
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
         // register all the matrics
+        this.metricRegistry = metricRegistry;
+
+        // a counter that keeps track of total result count
         this.resultCounter = metricRegistry.counter("result-counter");
-        this.fullHistogram = metricRegistry.histogram("full-histogram");
+
+        // histogram that keeps track of processing append only  tuples in teh stream if there is a corresponding edge in the product graph
         this.processedHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("processed-histogram", this.processedHistogram);
+
+        // histogram that keeps track of processing of explicit negative tuples
         this.explicitDeletionHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("explicit-deletion-histogram", this.explicitDeletionHistogram);
-        this.fullProcessedHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("full-processed-histogram", this.fullProcessedHistogram);
+
+        // histogram responsible of tracking how many trees are affected by each input stream edge
         this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
-        this.fullTimer = metricRegistry.timer("full-timer");
+
+        // measures the time spent on processing each edge from the input stream
+        this.fullTimer = new Timer(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
+        this.fullTimer = metricRegistry.register("full-timer", this.fullTimer);
+
+        // histogram responsible to measure time spent in Window Expiry procedure at every slide interval
         this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("window-histogram", windowManagementHistogram);
+
+        // histogram responsible of keeping track number of edges in each side of a window
         edgeCountHistogram = metricRegistry.histogram("edgecount-histogram");
 
         this.productGraph.addMetricRegistry(metricRegistry);
