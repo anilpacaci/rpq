@@ -3,30 +3,22 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V> {
 
-    protected SpanningTreeRAPQ(DeltaRAPQ<V> deltaRAPQ, V rootVertex, long timestamp) {
-        super(timestamp);
+    protected SpanningTreeRAPQ(Delta<V> delta, V rootVertex, long timestamp) {
+        super(timestamp, delta);
 
         TreeNode<V> root = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
         this.rootNode = root;
-        this.deltaRAPQ = deltaRAPQ;
+        this.delta = delta;
         nodeIndex.put(Hasher.createTreeNodePairKey(rootVertex, 0), root);
 
         candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         candidateRemoval = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         visited = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
-    }
-
-    @Override
-    protected AbstractTreeNode<V> createNewTreeNode(V vertex, int state, AbstractTreeNode<V> parentNode, long timestamp) {
-        TreeNode<V> child = new TreeNode<V>(vertex, state, (TreeNode) parentNode, this, timestamp);
-        return child;
     }
 
     @Override

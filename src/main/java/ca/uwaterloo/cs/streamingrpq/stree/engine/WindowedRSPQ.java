@@ -2,14 +2,10 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.DeltaRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.DeltaRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
@@ -199,7 +195,7 @@ public class WindowedRSPQ<L> extends RPQEngine<L> {
     }
 
     /**
-     * updates DeltaRAPQ and Spanning Trees and removes any node that is lower than the window endpoint
+     * updates Delta and Spanning Trees and removes any node that is lower than the window endpoint
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {

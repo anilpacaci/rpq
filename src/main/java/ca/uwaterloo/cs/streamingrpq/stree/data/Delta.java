@@ -1,37 +1,39 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
+package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.*;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-public class DeltaRSPQ<V> {
+public class Delta<V>{
 
-    private Map<V, SpanningTreeRSPQ> treeIndex;
-    private Map<Hasher.MapKey<V>, Set<SpanningTreeRSPQ>> nodeToTreeIndex;
+    private Map<V, AbstractSpanningTree<V>> treeIndex;
+    private Map<Hasher.MapKey<V>, Set<AbstractSpanningTree<V>>> nodeToTreeIndex;
 
     protected Counter treeCounter;
     protected Histogram treeSizeHistogram;
 
-    private final Logger LOG = LoggerFactory.getLogger(DeltaRSPQ.class);
+    private ObjectFactory<V> objectFactory;
 
-    public DeltaRSPQ(int capacity) {
+    private final Logger LOG = LoggerFactory.getLogger(Delta.class);
+
+    public Delta(int capacity, ObjectFactory<V> objectFactory) {
         treeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
         nodeToTreeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
     }
 
-    public Collection<SpanningTreeRSPQ> getTrees(V vertex, int state) {
-        Set<SpanningTreeRSPQ> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.createTreeNodePairKey(vertex, state), key ->
-                Collections.newSetFromMap(new ConcurrentHashMap<SpanningTreeRSPQ, Boolean>()) );
+    public ObjectFactory<V> getObjectFactory() {
+        return objectFactory;
+    }
+
+    public Collection<AbstractSpanningTree<V>> getTrees(V vertex, int state) {
+        Set<AbstractSpanningTree<V>> containingTrees = nodeToTreeIndex.computeIfAbsent(Hasher.createTreeNodePairKey(vertex, state), key -> Collections.newSetFromMap(new ConcurrentHashMap<AbstractSpanningTree<V>, Boolean>()) );
         return containingTrees;
     }
 
@@ -39,11 +41,13 @@ public class DeltaRSPQ<V> {
         return treeIndex.containsKey(vertex);
     }
 
-    public SpanningTreeRSPQ<V> addTree(V vertex, long timestamp) {
+
+
+    public AbstractSpanningTree<V> addTree(V vertex, long timestamp) {
         if(exists(vertex)) {
             // TODO one spanner per root vertex
         }
-        SpanningTreeRSPQ<V> tree = new SpanningTreeRSPQ<>(this, vertex, timestamp);
+        AbstractSpanningTree<V> tree = objectFactory.createSpanningTree(this, vertex, timestamp);
         treeIndex.put(vertex, tree);
         addToTreeNodeIndex(tree, tree.getRootNode());
 
@@ -51,11 +55,11 @@ public class DeltaRSPQ<V> {
         return tree;
     }
 
-    public void removeTree(SpanningTreeRSPQ<V> tree) {
-        TreeNodeRSPQ<V> rootNode = tree.getRootNode();
+    public void removeTree(AbstractSpanningTree<V> tree) {
+        AbstractTreeNode<V> rootNode = tree.getRootNode();
         this.treeIndex.remove(rootNode.getVertex());
 
-        Collection<SpanningTreeRSPQ> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
+        Collection<AbstractSpanningTree<V>> containingTrees = getTrees(rootNode.getVertex(), rootNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
             nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(rootNode.getVertex(), rootNode.getState()));
@@ -64,13 +68,13 @@ public class DeltaRSPQ<V> {
         treeCounter.dec();
     }
 
-    public void addToTreeNodeIndex(SpanningTreeRSPQ<V> tree, TreeNodeRSPQ<V> treeNode) {
-        Collection<SpanningTreeRSPQ> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
+    public void addToTreeNodeIndex(AbstractSpanningTree<V> tree, AbstractTreeNode<V> treeNode) {
+        Collection<AbstractSpanningTree<V>> containingTrees = getTrees(treeNode.getVertex(), treeNode.getState());
         containingTrees.add(tree);
     }
 
-    public void removeFromTreeIndex(TreeNodeRSPQ<V> removedNode, SpanningTreeRSPQ<V> tree) {
-        Collection<SpanningTreeRSPQ> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
+    public void removeFromTreeIndex(AbstractTreeNode<V> removedNode, AbstractSpanningTree<V> tree) {
+        Collection<AbstractSpanningTree<V>> containingTrees = this.getTrees(removedNode.getVertex(), removedNode.getState());
         containingTrees.remove(tree);
         if(containingTrees.isEmpty()) {
             this.nodeToTreeIndex.remove(Hasher.getThreadLocalTreeNodePairKey(removedNode.getVertex(), removedNode.getState()));
@@ -86,20 +90,20 @@ public class DeltaRSPQ<V> {
      * @param <L>
      */
     public <L> void expiry(Long minTimestamp, ProductGraph<V,L> productGraph, ExecutorService executorService) {
-        Collection<SpanningTreeRSPQ> trees = treeIndex.values();
+        Collection<AbstractSpanningTree<V>> trees = treeIndex.values();
         List<Future<Void>> futures = new ArrayList<>(trees.size());
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
 
         LOG.info("{} of trees in Delta", trees.size());
-        for(SpanningTreeRSPQ<V> tree : trees) {
+        for(AbstractSpanningTree<V> tree : trees) {
             treeSizeHistogram.update(tree.getSize());
             if (tree.getMinTimestamp() > minTimestamp) {
                 // this tree does not have any node to be deleted, so just skip it
                 continue;
             }
 
-            RSPQSpanningTreeExpiryJob<V, L> RSPQSpanningTreeExpiryJob = new RSPQSpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
-            futures.add(completionService.submit(RSPQSpanningTreeExpiryJob));
+            RAPQSpanningTreeExpiryJob<V, L> RAPQSpanningTreeExpiryJob = new RAPQSpanningTreeExpiryJob<V, L>(minTimestamp, productGraph, tree);
+            futures.add(completionService.submit(RAPQSpanningTreeExpiryJob));
         }
 
         for(int i = 0; i < futures.size(); i++) {
@@ -118,15 +122,14 @@ public class DeltaRSPQ<V> {
         this.treeSizeHistogram = metricRegistry.histogram("tree-size-histogram");
     }
 
-    private static class RSPQSpanningTreeExpiryJob<V,L> implements Callable<Void> {
+    private static class RAPQSpanningTreeExpiryJob<V,L> implements Callable<Void> {
 
         private Long minTimestamp;
         private ProductGraph<V,L> productGraph;
 
-        private Table<V, Integer, Set<SpanningTreeRAPQ>> nodeToTreeIndex;
-        private SpanningTreeRSPQ<V> tree;
+        private AbstractSpanningTree<V> tree;
 
-        public RSPQSpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, SpanningTreeRSPQ<V> tree) {
+        public RAPQSpanningTreeExpiryJob(Long minTimestamp, ProductGraph<V,L> productGraph, AbstractSpanningTree<V> tree) {
             this.minTimestamp = minTimestamp;
             this.productGraph = productGraph;
             this.tree = tree;

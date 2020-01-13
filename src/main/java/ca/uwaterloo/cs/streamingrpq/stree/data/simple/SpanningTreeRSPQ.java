@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
@@ -16,11 +17,10 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
 
     private final Logger LOG = LoggerFactory.getLogger(SpanningTreeRSPQ.class);
 
-    protected SpanningTreeRSPQ(DeltaRSPQ<V> delta, V rootVertex, long timestamp) {
-        super(timestamp);
+    protected SpanningTreeRSPQ(Delta<V> delta, V rootVertex, long timestamp) {
+        super(timestamp, delta);
 
         this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
-        this.delta = delta;
         this.nodeIndex = HashMultimap.create(Constants.EXPECTED_TREE_SIZE, Constants.EXPECTED_LABELS);
         nodeIndex.put(Hasher.createTreeNodePairKey(rootVertex, 0), rootNode);
         this.markings = Sets.newHashSet();
@@ -28,12 +28,6 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
         candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         candidateRemoval = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         visited = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
-    }
-
-    @Override
-    protected AbstractTreeNode<V> createNewTreeNode(V vertex, int state, AbstractTreeNode<V> parentNode, long timestamp) {
-        TreeNodeRSPQ<V> child = new TreeNodeRSPQ<V>(vertex, state, (TreeNodeRSPQ) parentNode, this, timestamp);
-        return child;
     }
 
     public void addMarking(V vertex, int state) {

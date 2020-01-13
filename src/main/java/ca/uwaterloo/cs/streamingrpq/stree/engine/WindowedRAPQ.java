@@ -2,11 +2,11 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.DeltaRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.ObjectFactoryArbitrary;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
@@ -26,7 +26,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     private long slideSize;
     private long lastExpiry = 0;
 
-    protected DeltaRAPQ<Integer> deltaRAPQ;
+    protected Delta<Integer> delta;
 
 
     private ExecutorService executorService;
@@ -42,7 +42,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         super(query, capacity);
-        this.deltaRAPQ =  new DeltaRAPQ<>(capacity);
+        ObjectFactoryArbitrary<Integer> objectFactory = new ObjectFactoryArbitrary<>();
+        this.delta =  new Delta<Integer>(capacity, objectFactory);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
@@ -51,7 +52,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     @Override
     public void addMetricRegistry(MetricRegistry metricRegistry) {
-        this.deltaRAPQ.addMetricRegistry(metricRegistry);
+        this.delta.addMetricRegistry(metricRegistry);
         // call super function to include all other histograms
         super.addMetricRegistry(metricRegistry);
     }
@@ -98,9 +99,9 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
             // edge is an insertion
         //create a spanning tree for the source node in case it does not exists
-        if (transitions.keySet().contains(0) && !deltaRAPQ.exists(inputTuple.getSource())) {
+        if (transitions.keySet().contains(0) && !delta.exists(inputTuple.getSource())) {
             // if there exists a start transition with given label, there should be a spanning tree rooted at source vertex
-            deltaRAPQ.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
+            delta.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
         }
 
         List<Future<Integer>> futureList = Lists.newArrayList();
@@ -114,12 +115,12 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
             int sourceState = transition.getKey();
             int targetState = transition.getValue();
 
-            Collection<? extends SpanningTreeRAPQ> containingTrees = deltaRAPQ.getTrees(inputTuple.getSource(), sourceState);
+            Collection<AbstractSpanningTree<Integer>> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
             treeCount += containingTrees.size();
 
             boolean runParallel = containingTrees.size() > Constants.EXPECTED_BATCH_SIZE * this.numOfThreads;
             // iterate over spanning trees that include the source node
-            for (SpanningTreeRAPQ<Integer> spanningTree : containingTrees) {
+            for (AbstractSpanningTree<Integer> spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
                 TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
@@ -195,7 +196,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
     }
 
     /**
-     * updates DeltaRAPQ and Spanning Trees and removes any node that is lower than the window endpoint
+     * updates Delta and Spanning Trees and removes any node that is lower than the window endpoint
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {
@@ -203,7 +204,7 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         // first remove the expired edges from the productGraph
         productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted
-        deltaRAPQ.expiry(minTimestamp, productGraph, this.executorService);
+        delta.expiry(minTimestamp, productGraph, this.executorService);
         //delta.batchExpiry(minTimestamp, productGraph, this.executorService);
     }
 
