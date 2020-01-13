@@ -1,9 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.DeltaRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
-import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
@@ -20,7 +18,7 @@ public abstract class AbstractSpanningTree<V> {
     protected final Logger LOG = LoggerFactory.getLogger(SpanningTreeRAPQ.class);
 
     protected AbstractTreeNode<V> rootNode;
-    protected DeltaRAPQ<V> deltaRAPQ;
+    protected Delta<V> delta;
 
     protected Multimap<Hasher.MapKey<V>, AbstractTreeNode<V>> nodeIndex;
 
@@ -31,9 +29,10 @@ public abstract class AbstractSpanningTree<V> {
     protected HashSet<AbstractTreeNode<V>> candidateRemoval;
     protected HashSet<AbstractTreeNode<V>> visited;
 
-    protected AbstractSpanningTree(long timestamp) {
+    protected AbstractSpanningTree(long timestamp, Delta<V> delta) {
         this.minTimestamp = timestamp;
         this.nodeIndex = HashMultimap.create(Constants.EXPECTED_TREE_SIZE, Constants.EXPECTED_LABELS);
+        this.delta = delta;
 
         candidates = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
         candidateRemoval = new HashSet<>(Constants.EXPECTED_TREE_SIZE);
@@ -52,16 +51,6 @@ public abstract class AbstractSpanningTree<V> {
      */
     protected abstract long populateCandidateRemovals(long minTimestamp);
 
-    /**
-     * Abstract method to create a Spanning Tree node based on implementation
-     * @param vertex graph vertex
-     * @param state automata state
-     * @param parentNode parent node in the spanning tree
-     * @param timestamp
-     * @return
-     */
-    protected abstract AbstractTreeNode<V> createNewTreeNode(V vertex, int state, AbstractTreeNode<V> parentNode, long timestamp);
-
     public AbstractTreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {
             // TODO no object found
@@ -70,11 +59,12 @@ public abstract class AbstractSpanningTree<V> {
             // TODO wrong tree
         }
 
-        AbstractTreeNode<V> child = createNewTreeNode(childVertex, childState, parentNode, timestamp);
+
+        AbstractTreeNode child = delta.getObjectFactory().createTreeNode(this, childVertex, childState, parentNode, timestamp);
         nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
-        this.deltaRAPQ.addToTreeNodeIndex(this, child);
+        this.delta.addToTreeNodeIndex(this, child);
 
         this.updateTimestamp(timestamp);
 
@@ -103,7 +93,7 @@ public abstract class AbstractSpanningTree<V> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    protected <L> Collection<AbstractTreeNode<V>> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
+    public <L> Collection<AbstractTreeNode<V>> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
