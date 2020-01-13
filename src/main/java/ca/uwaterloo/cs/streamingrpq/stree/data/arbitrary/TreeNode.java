@@ -1,7 +1,10 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
+import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractSpanningTree;
 import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractTreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,22 +13,14 @@ public class TreeNode<V> extends AbstractTreeNode<V> {
 
     private int hash = 0;
 
+    private SpanningTreeRAPQ tree;
 
-    protected TreeNode() {
 
-    }
+    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTreeRAPQ<V> t, long timestamp) {
+        super(vertex, state, parent, timestamp);
 
-    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTreeRAPQ t, long timestamp) {
-        this.vertex = vertex;
-        this.state = state;
-        this.parent = parent;
-        this.children = Collections.newSetFromMap(new ConcurrentHashMap<AbstractTreeNode<V>, Boolean>());
+        // set the containing spanning tree
         this.tree = t;
-        this.timestamp = timestamp;
-        // set this as a child of the parent if it is not null
-        if(parent != null) {
-            this.parent.addChildren(this);
-        }
     }
 
     @Override

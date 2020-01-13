@@ -6,15 +6,29 @@ import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractTreeNode<V> {
 
-    protected SpanningTreeRAPQ<V> tree;
     protected V vertex;
     protected int state;
     protected long timestamp;
     protected AbstractTreeNode<V> parent;
     protected Collection<AbstractTreeNode<V>> children;
+
+    protected AbstractTreeNode(V vertex, int state, AbstractTreeNode<V> parent, long timestamp) {
+        this.vertex = vertex;
+        this.state = state;
+        this.parent = parent;
+        this.children = Collections.newSetFromMap(new ConcurrentHashMap<AbstractTreeNode<V>, Boolean>());;
+        this.timestamp = timestamp;
+
+
+        if(parent != null) {
+            this.parent.addChildren(this);
+        }
+    }
 
     public abstract AbstractSpanningTree<V> getTree();
 
@@ -32,7 +46,7 @@ public abstract class AbstractTreeNode<V> {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-        this.tree.updateTimestamp(timestamp);
+        this.getTree().updateTimestamp(timestamp);
     }
 
     /**
@@ -71,7 +85,7 @@ public abstract class AbstractTreeNode<V> {
         return children;
     }
 
-    protected void addChildren(AbstractTreeNode<V> child) {
+    public void addChildren(AbstractTreeNode<V> child) {
         this.children.add(child);
     }
 }

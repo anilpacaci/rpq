@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTreeRSPQ<V> {
+public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
 
     private TreeNodeRSPQ<V> rootNode;
     private DeltaRSPQ<V> delta;
