@@ -81,7 +81,7 @@ public abstract class AbstractTreeNode<V> {
         }
     }
 
-    public Collection<? extends AbstractTreeNode> getChildren() {
+    public Collection<? extends AbstractTreeNode<V>> getChildren() {
         return children;
     }
 
