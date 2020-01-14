@@ -2,11 +2,13 @@ package ca.uwaterloo.cs.streamingrpq.runtime;
 
 import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
-import ca.uwaterloo.cs.streamingrpq.transitiontable.util.PathSemantics;
 import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
@@ -88,9 +90,9 @@ public class STQueryRunner {
 
 
         if(pathSemantics.equals(Semantics.ARBITRARY)) {
-            rpq = new WindowedRAPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
+            rpq = new WindowedRAPQ<String, SpanningTreeRAPQ<Integer>, TreeNode<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
         } else {
-            rpq = new WindowedRSPQ<String>(query, maxSize, windowSize, slideSize, threadCount);
+            rpq = new WindowedRAPQ<String, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
         }
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
