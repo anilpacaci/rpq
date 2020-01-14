@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.ObjectFactoryArbitrary;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -20,13 +21,14 @@ import java.util.stream.Collectors;
 /**
  * Created by anilpacaci on 2019-10-02.
  */
-public class WindowedRAPQ<L> extends RPQEngine<L> {
+public class WindowedRAPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N extends AbstractTreeNode<Integer, T, N>> extends RPQEngine<L> {
 
     private long windowSize;
     private long slideSize;
     private long lastExpiry = 0;
 
-    protected Delta<Integer> delta;
+    protected Delta<Integer, T, N> delta;
+    ObjectFactory<Integer, T, N> objectFactory;
 
 
     private ExecutorService executorService;
@@ -42,8 +44,8 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
 
     public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         super(query, capacity);
-        ObjectFactoryArbitrary<Integer> objectFactory = new ObjectFactoryArbitrary<>();
-        this.delta =  new Delta<Integer>(capacity, objectFactory);
+        this.objectFactory = new ObjectFactoryArbitrary();
+        this.delta =  new Delta<Integer, T, N>(capacity, objectFactory);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
@@ -108,40 +110,43 @@ public class WindowedRAPQ<L> extends RPQEngine<L> {
         CompletionService<Integer> completionService = new ExecutorCompletionService<>(this.executorService);
 
         List<Map.Entry<Integer, Integer>> transitionList = transitions.entrySet().stream().collect(Collectors.toList());
-        TreeNodeRAPQTreeExpansionJob treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
+        AbstractTreeExpansionJob treeExpansionJob = objectFactory.createExpansionJob(productGraph, automata, results, inputTuple.isDeletion());
 
         // for each transition that given label satisy
         for (Map.Entry<Integer, Integer> transition : transitionList) {
             int sourceState = transition.getKey();
             int targetState = transition.getValue();
 
-            Collection<AbstractSpanningTree<Integer>> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
+            Collection<T> containingTrees = delta.getTrees(inputTuple.getSource(), sourceState);
             treeCount += containingTrees.size();
 
             boolean runParallel = containingTrees.size() > Constants.EXPECTED_BATCH_SIZE * this.numOfThreads;
             // iterate over spanning trees that include the source node
-            for (AbstractSpanningTree<Integer> spanningTree : containingTrees) {
+            for (T spanningTree : containingTrees) {
                 // source is guarenteed to exists due to above loop,
                 // we do not check target here as even if it exist, we might update its timetsap
-                TreeNode<Integer> parentNode = spanningTree.getNode(inputTuple.getSource(), sourceState);
-                //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
-                // check whether the job is full and ready to submit
-                if (treeExpansionJob.isFull()) {
-                    if (runParallel) {
-                        futureList.add(completionService.submit(treeExpansionJob));
-                        treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
-                    } else {
-                        try {
-                            Integer partialResultCount = treeExpansionJob.call();
-                            treeExpansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, inputTuple.isDeletion());
-                            resultCounter.inc(partialResultCount);
-                        } catch (Exception e) {
-                            LOG.error("SpanningTreeExpansion exception on main thread", e);
+                Collection<N> parentNodes = spanningTree.getNodes(inputTuple.getSource(), sourceState);
+                for(N parentNode : parentNodes) {
+                    //processTransition(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                    treeExpansionJob.addJob(spanningTree, parentNode, inputTuple.getTarget(), targetState, inputTuple.getTimestamp());
+                    // check whether the job is full and ready to submit
+                    if (treeExpansionJob.isFull()) {
+                        if (runParallel) {
+                            futureList.add(completionService.submit(treeExpansionJob));
+                            treeExpansionJob = objectFactory.createExpansionJob(productGraph, automata, results, inputTuple.isDeletion());
+                        } else {
+                            try {
+                                Integer partialResultCount = treeExpansionJob.call();
+                                treeExpansionJob = objectFactory.createExpansionJob(productGraph, automata, results, inputTuple.isDeletion());
+                                resultCounter.inc(partialResultCount);
+                            } catch (Exception e) {
+                                LOG.error("SpanningTreeExpansion exception on main thread", e);
+                            }
                         }
                     }
                 }
             }
+
 
             // wait for results of al jobs before moving to next transition to ensure that there is a single thread working on a tree
             for (int i = 0; i < futureList.size(); i++) {

@@ -26,6 +26,7 @@ public class Delta<V, T extends AbstractSpanningTree<V, T, N>, N extends Abstrac
     public Delta(int capacity, ObjectFactory<V, T, N> objectFactory) {
         treeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
         nodeToTreeIndex = new ConcurrentHashMap<>(Constants.EXPECTED_TREES);
+        this.objectFactory = objectFactory;
     }
 
     public ObjectFactory<V, T, N> getObjectFactory() {
