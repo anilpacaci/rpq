@@ -64,7 +64,7 @@ public abstract class AbstractSpanningTree<V, T extends AbstractSpanningTree<V, 
         nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
-        this.delta.addToTreeNodeIndex(this, child);
+        this.delta.addToTreeNodeIndex((T) this, child);
 
         this.updateTimestamp(timestamp);
 
@@ -82,7 +82,7 @@ public abstract class AbstractSpanningTree<V, T extends AbstractSpanningTree<V, 
         //remove this node from parent's chilren list
         node.setParent(null);
         if(this.nodeIndex.get(nodeKey).isEmpty()) {
-            this.delta.removeFromTreeIndex(node, this);
+            this.delta.removeFromTreeIndex(node, (T) this);
         }
     }
 
@@ -205,7 +205,7 @@ public abstract class AbstractSpanningTree<V, T extends AbstractSpanningTree<V, 
 
         if(this.isExpired(minTimestamp)) {
             N removedTuple = this.getRootNode();
-            delta.removeTree(this);
+            delta.removeTree((T) this);
         }
 
         LOG.debug("Spanning tree rooted at {}, remove {} nodes at timestamp {} ", getRootVertex(), candidates.size(), minTimestamp);
