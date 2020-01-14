@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TreeNode<V> extends AbstractTreeNode<V> {
+public class TreeNode<V> extends AbstractTreeNode<V, SpanningTreeRAPQ<V>, TreeNode<V>> {
 
     private int hash = 0;
 
@@ -21,6 +21,9 @@ public class TreeNode<V> extends AbstractTreeNode<V> {
 
         // set the containing spanning tree
         this.tree = t;
+        if(parent != null) {
+            this.parent.addChildren(this);
+        }
     }
 
     @Override

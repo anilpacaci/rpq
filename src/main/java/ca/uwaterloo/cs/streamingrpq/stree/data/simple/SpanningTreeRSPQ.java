@@ -2,6 +2,8 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.google.common.collect.HashMultimap;
@@ -11,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
+public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V, SpanningTreeRSPQ<V>, TreeNodeRSPQ<V>> {
 
     private HashSet<Hasher.MapKey<V>> markings;
 
     private final Logger LOG = LoggerFactory.getLogger(SpanningTreeRSPQ.class);
 
-    protected SpanningTreeRSPQ(Delta<V> delta, V rootVertex, long timestamp) {
+    protected SpanningTreeRSPQ(Delta<V, SpanningTreeRSPQ<V>, TreeNodeRSPQ<V>> delta, V rootVertex, long timestamp) {
         super(timestamp, delta);
 
         this.rootNode = new TreeNodeRSPQ<V>(rootVertex, 0, null, this, timestamp);
@@ -49,7 +51,7 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
      */
     protected <L> void unmark(ProductGraph<V, L> productGraph, TreeNodeRSPQ<V> parentNode) {
 
-        Stack<AbstractTreeNode<V>> unmarkedNodes = new Stack<>();
+        Stack<TreeNodeRSPQ<V>> unmarkedNodes = new Stack<>();
 
         TreeNodeRSPQ<V> currentNode = parentNode;
 
@@ -57,12 +59,12 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
         while (currentNode != null && this.isMarked(currentNode.getVertex(), currentNode.getState())) {
             this.removeMarking(currentNode.getVertex(), currentNode.getState());
             unmarkedNodes.push(currentNode);
-            currentNode = (TreeNodeRSPQ<V>) currentNode.getParent();
+            currentNode = currentNode.getParent();
         }
 
         // now simply traverse back edges of the candidates and invoke processTransition
         while (!unmarkedNodes.isEmpty()) {
-            currentNode = (TreeNodeRSPQ<V>) unmarkedNodes.pop();
+            currentNode =  unmarkedNodes.pop();
 
             // get backward edges of the unmarked node
             Collection<GraphEdge<ProductGraphNode<V>>> backwardEdges = productGraph.getBackwardEdges(currentNode.getVertex(), currentNode.getState());
@@ -70,13 +72,13 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
                 V sourceVertex = backwardEdge.getSource().getVertex();
                 int sourceState = backwardEdge.getSource().getState();
                 // find all the nodes that are pruned due to previously marking
-                Collection<AbstractTreeNode<V>> parentNodes = this.getNodes(sourceVertex, sourceState);
-                for (AbstractTreeNode<V> p : parentNodes) {
+                Collection<TreeNodeRSPQ<V>> parentNodes = this.getNodes(sourceVertex, sourceState);
+                for (TreeNodeRSPQ<V> p : parentNodes) {
                     // force casting
-                    TreeNodeRSPQ<V> parent = (TreeNodeRSPQ<V>) p;
+                    TreeNodeRSPQ<V> parent =  p;
                     // try to extend if it is not a cycle in the product graph
                     if (!parent.containsCM(currentNode.getVertex(), currentNode.getState())) {
-                        extendPrefixPath(productGraph, (TreeNodeRSPQ<V>) parent, currentNode.getVertex(), currentNode.getState(), backwardEdge.getTimestamp());
+                        extendPrefixPath(productGraph, parent, currentNode.getVertex(), currentNode.getState(), backwardEdge.getTimestamp());
                     }
                 }
             }
@@ -90,14 +92,14 @@ public class SpanningTreeRSPQ<V> extends AbstractSpanningTree<V> {
     @Override
     protected long populateCandidateRemovals(long minTimestamp) {
         // perform a bfs traversal on tree, no need for visited as it is a three
-        LinkedList<AbstractTreeNode<V>> queue = new LinkedList<>();
+        LinkedList<TreeNodeRSPQ<V>> queue = new LinkedList<>();
         // minTimestamp of the tree should be updated, find the lowest timestamp in the tree higher than the minTimestmap
         // because after this maintenance, there is not going to be a node in the tree lower than the minTimestamp
         long minimumValidTimetamp = Long.MAX_VALUE;
         queue.addAll(rootNode.getChildren());
         while(!queue.isEmpty()) {
             // populate the queue with children
-            AbstractTreeNode<V> currentVertex = queue.remove();
+            TreeNodeRSPQ<V> currentVertex = queue.remove();
             queue.addAll(currentVertex.getChildren());
 
             // check time timestamp to decide whether it is expired

@@ -9,28 +9,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractTreeNode<V> {
+public abstract class AbstractTreeNode<V, T extends AbstractSpanningTree<V, T, N>, N extends AbstractTreeNode<V, T, N>> {
 
     protected V vertex;
     protected int state;
     protected long timestamp;
-    protected AbstractTreeNode<V> parent;
-    protected Collection<AbstractTreeNode<V>> children;
+    protected N parent;
+    protected Collection<N> children;
 
-    protected AbstractTreeNode(V vertex, int state, AbstractTreeNode<V> parent, long timestamp) {
+    protected AbstractTreeNode(V vertex, int state, N parent, long timestamp) {
         this.vertex = vertex;
         this.state = state;
         this.parent = parent;
-        this.children = Collections.newSetFromMap(new ConcurrentHashMap<AbstractTreeNode<V>, Boolean>());;
+        this.children = Collections.newSetFromMap(new ConcurrentHashMap<N, Boolean>());;
         this.timestamp = timestamp;
 
 
-        if(parent != null) {
-            this.parent.addChildren(this);
-        }
+
     }
 
-    public abstract AbstractSpanningTree<V> getTree();
+    public abstract AbstractSpanningTree<V, T, N> getTree();
 
     public V getVertex() {
         return vertex;
@@ -57,7 +55,7 @@ public abstract class AbstractTreeNode<V> {
         this.timestamp = Long.MIN_VALUE;
     }
 
-    public AbstractTreeNode<V> getParent() {
+    public N getParent() {
         return parent;
     }
 
@@ -66,7 +64,7 @@ public abstract class AbstractTreeNode<V> {
      * adds it into new parent's children nodes.
      * @param parent new parent. <code>null</code> only if this node is deleted
      */
-    public void setParent(AbstractTreeNode<V> parent) {
+    public void setParent(N parent) {
         // remove this node from previous parent
         if(this.parent != null) {
             this.parent.children.remove(this);
@@ -77,15 +75,15 @@ public abstract class AbstractTreeNode<V> {
         if(this.parent != null) {
             // add this as a child to new parent
             if (parent != null) ;
-            this.parent.addChildren(this);
+            this.parent.addChildren((N) this);
         }
     }
 
-    public Collection<? extends AbstractTreeNode<V>> getChildren() {
+    public Collection<N> getChildren() {
         return children;
     }
 
-    public void addChildren(AbstractTreeNode<V> child) {
+    public void addChildren(N child) {
         this.children.add(child);
     }
 }

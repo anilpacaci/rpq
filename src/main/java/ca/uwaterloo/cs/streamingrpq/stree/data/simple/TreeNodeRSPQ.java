@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TreeNodeRSPQ<V> extends AbstractTreeNode<V> {
+public class TreeNodeRSPQ<V> extends AbstractTreeNode<V, SpanningTreeRSPQ<V>, TreeNodeRSPQ<V>> {
 
     private int hash = 0;
 
