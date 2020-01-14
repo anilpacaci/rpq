@@ -14,22 +14,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public abstract class AbstractSpanningTree<V> {
+public abstract class AbstractSpanningTree<V, T extends AbstractSpanningTree<V, T, N>, N extends AbstractTreeNode<V, T, N>> {
     protected final Logger LOG = LoggerFactory.getLogger(SpanningTreeRAPQ.class);
 
-    protected AbstractTreeNode<V> rootNode;
-    protected Delta<V> delta;
+    protected N rootNode;
+    protected Delta<V, T, N> delta;
 
-    protected Multimap<Hasher.MapKey<V>, AbstractTreeNode<V>> nodeIndex;
+    protected Multimap<Hasher.MapKey<V>, N> nodeIndex;
 
     protected long minTimestamp;
 
     //expiry related data structures
-    protected HashSet<AbstractTreeNode<V>> candidates;
-    protected HashSet<AbstractTreeNode<V>> candidateRemoval;
-    protected HashSet<AbstractTreeNode<V>> visited;
+    protected HashSet<N> candidates;
+    protected HashSet<N> candidateRemoval;
+    protected HashSet<N> visited;
 
-    protected AbstractSpanningTree(long timestamp, Delta<V> delta) {
+    protected AbstractSpanningTree(long timestamp, Delta<V, T, N> delta) {
         this.minTimestamp = timestamp;
         this.nodeIndex = HashMultimap.create(Constants.EXPECTED_TREE_SIZE, Constants.EXPECTED_LABELS);
         this.delta = delta;
@@ -51,7 +51,7 @@ public abstract class AbstractSpanningTree<V> {
      */
     protected abstract long populateCandidateRemovals(long minTimestamp);
 
-    public AbstractTreeNode<V> addNode(TreeNode parentNode, V childVertex, int childState, long timestamp) {
+    public N addNode(N parentNode, V childVertex, int childState, long timestamp) {
         if(parentNode == null) {
             // TODO no object found
         }
@@ -60,7 +60,7 @@ public abstract class AbstractSpanningTree<V> {
         }
 
 
-        AbstractTreeNode child = delta.getObjectFactory().createTreeNode(this, childVertex, childState, parentNode, timestamp);
+        N child = delta.getObjectFactory().createTreeNode((T) this, childVertex, childState, parentNode, timestamp);
         nodeIndex.put(Hasher.createTreeNodePairKey(childVertex, childState), child);
 
         // a new node is added to the spanning tree. update delta index
@@ -76,7 +76,7 @@ public abstract class AbstractSpanningTree<V> {
      * If there is no such node remaining, then remove it from delta tree index
      * @param node
      */
-    protected void removeNode(AbstractTreeNode<V> node) {
+    protected void removeNode(N node) {
         Hasher.MapKey<V> nodeKey = Hasher.getThreadLocalTreeNodePairKey(node.getVertex(), node.getState());
         this.nodeIndex.remove(nodeKey, node);
         //remove this node from parent's chilren list
@@ -93,7 +93,7 @@ public abstract class AbstractSpanningTree<V> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      * @return The set of nodes that have expired from the window as there is no other path
      */
-    public <L> Collection<AbstractTreeNode<V>> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
+    public <L> Collection<N> removeOldEdges(long minTimestamp, ProductGraph<V,L> productGraph) {
         // if root is expired (root node timestamp is its youngest edge), then the entire tree needs to be removed
 //        if(this.rootNode.getTimestamp() <= minTimestamp) {
 //            return this.nodeIndex.values();
@@ -107,7 +107,7 @@ public abstract class AbstractSpanningTree<V> {
         //update the lowest minimum timestamp for this tree
         this.minTimestamp = populateCandidateRemovals(minTimestamp);
 
-        Iterator<AbstractTreeNode<V>> candidateIterator = candidates.iterator();
+        Iterator<N> candidateIterator = candidates.iterator();
         visited.clear();
 
         LOG.debug("Expiry for spanning tree {}, # of candidates {} out of {} nodes", toString(), candidates.size(), nodeIndex.size());
@@ -116,19 +116,19 @@ public abstract class AbstractSpanningTree<V> {
         // For each potential, check they have a valid non-tree edge in the original productGraph
         // If there is traverse down from here (in the productGraph) and remove all children from potentials
         while(candidateIterator.hasNext()) {
-            AbstractTreeNode<V> candidate = candidateIterator.next();
+            N candidate = candidateIterator.next();
             // check if a previous traversal already found a path for the candidate
             if(candidate.getTimestamp() > minTimestamp) {
                 continue;
             }
             //check if there exists any incoming edge from a valid state
             Collection<GraphEdge<ProductGraphNode<V>>> backwardEdges = productGraph.getBackwardEdges(candidate.getVertex(), candidate.getState());
-            AbstractTreeNode<V> newParent = null;
+            N newParent = null;
             GraphEdge<ProductGraphNode<V>> newParentEdge = null;
             for(GraphEdge<ProductGraphNode<V>> backwardEdge : backwardEdges) {
-                Collection<AbstractTreeNode<V>> newParents = this.getNodes(backwardEdge.getSource().getVertex(), backwardEdge.getSource().getState());
+                Collection<N> newParents = this.getNodes(backwardEdge.getSource().getVertex(), backwardEdge.getSource().getState());
                 // candidate is a marked node, therefore these edges cannot form a cycle or register conflict
-                for(AbstractTreeNode<V> newParentCandidate : newParents) {
+                for(N newParentCandidate : newParents) {
                     if (!candidates.contains(newParentCandidate) || candidateRemoval.contains(newParentCandidate)) {
                         // there is an incoming edge with valid source
                         // source is valid (in the tree) and not in candidate
@@ -155,20 +155,20 @@ public abstract class AbstractSpanningTree<V> {
                 candidateRemoval.add(candidate);
 
                 //now traverse the productGraph down from this node, and remove any visited node from candidates
-                LinkedList<AbstractTreeNode<V>> traversalQueue = new LinkedList<>();
+                LinkedList<N> traversalQueue = new LinkedList<>();
 
                 // initial node is the current candidate, because now it is reachable
                 traversalQueue.add(candidate);
                 while(!traversalQueue.isEmpty()){
-                    AbstractTreeNode<V> currentVertex = traversalQueue.remove();
+                    N currentVertex = traversalQueue.remove();
                     visited.add(currentVertex);
 
                     Collection<GraphEdge<ProductGraphNode<V>>> forwardEdges = productGraph.getForwardEdges(currentVertex.getVertex(), currentVertex.getState());
                     // for each potential child
                     for(GraphEdge<ProductGraphNode<V>> forwardEdge : forwardEdges) {
                         // I can simply retrieve from the tree index because any node that is reachable are in tree index
-                        Collection<AbstractTreeNode<V>> outgoingTreeNodes = this.getNodes(forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState());
-                        for (AbstractTreeNode<V> outgoingTreeNode : outgoingTreeNodes) {
+                        Collection<N> outgoingTreeNodes = this.getNodes(forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState());
+                        for (N outgoingTreeNode : outgoingTreeNodes) {
                             // there exists such node in the tree & the edge we are traversing is valid & this node has not been visited before
                             if (forwardEdge.getTimestamp() > minTimestamp && !visited.contains(outgoingTreeNode)) {
                                 if (candidates.contains(outgoingTreeNode)) {
@@ -198,13 +198,13 @@ public abstract class AbstractSpanningTree<V> {
 
         // now if there is any potential remanining, it is guarenteed that they are not reachable
         // so simply clean the indexes and generate negative result if necessary
-        for(AbstractTreeNode<V> currentVertex : candidates) {
+        for(N currentVertex : candidates) {
             // remove this node from the node index
             this.removeNode(currentVertex);
         }
 
         if(this.isExpired(minTimestamp)) {
-            AbstractTreeNode<V> removedTuple = this.getRootNode();
+            N removedTuple = this.getRootNode();
             delta.removeTree(this);
         }
 
@@ -217,8 +217,8 @@ public abstract class AbstractSpanningTree<V> {
         return nodeIndex.containsKey(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
     }
 
-    public Collection<AbstractTreeNode<V>> getNodes(V vertex, int state) {
-        Collection<AbstractTreeNode<V>> nodes = nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
+    public Collection<N> getNodes(V vertex, int state) {
+        Collection<N> nodes = nodeIndex.get(Hasher.getThreadLocalTreeNodePairKey(vertex, state));
         return nodes;
     }
 
@@ -226,7 +226,7 @@ public abstract class AbstractSpanningTree<V> {
         return this.rootNode.getVertex();
     }
 
-    public AbstractTreeNode<V> getRootNode() {
+    public N getRootNode() {
         return this.rootNode;
     }
 

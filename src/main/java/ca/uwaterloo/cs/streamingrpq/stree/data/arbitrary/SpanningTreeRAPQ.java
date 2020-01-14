@@ -1,14 +1,15 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 
 import java.util.*;
 
-public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V> {
+public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V, SpanningTreeRAPQ<V>, TreeNode<V>> {
 
-    protected SpanningTreeRAPQ(Delta<V> delta, V rootVertex, long timestamp) {
+    protected SpanningTreeRAPQ(Delta<V, SpanningTreeRAPQ<V>, TreeNode<V>> delta, V rootVertex, long timestamp) {
         super(timestamp, delta);
 
         TreeNode<V> root = new TreeNode<V>(rootVertex, 0, null, this, timestamp);
@@ -24,7 +25,7 @@ public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V> {
     @Override
     protected long populateCandidateRemovals(long minTimestamp) {
         // perform a bfs traversal on tree, no need for visited as it is a three
-        LinkedList<AbstractTreeNode<V>> queue = new LinkedList<>();
+        LinkedList<TreeNode<V>> queue = new LinkedList<>();
 
         // minTimestamp of the tree should be updated, find the lowest timestamp in the tree higher than the minTimestmap
         // because after this maintenance, there is not going to be a node in the tree lower than the minTimestamp
@@ -33,7 +34,7 @@ public class SpanningTreeRAPQ<V> extends AbstractSpanningTree<V> {
 
         while(!queue.isEmpty()) {
             // populate the queue with children
-            AbstractTreeNode<V> currentVertex = queue.remove();
+            TreeNode<V> currentVertex = queue.remove();
             queue.addAll(currentVertex.getChildren());
 
             // check time timestamp to decide whether it is expired
