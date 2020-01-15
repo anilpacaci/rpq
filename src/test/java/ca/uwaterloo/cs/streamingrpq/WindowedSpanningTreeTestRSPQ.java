@@ -2,7 +2,7 @@ package ca.uwaterloo.cs.streamingrpq;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
+import ca.uwaterloo.cs.streamingrpq.input.TextFileStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
@@ -38,7 +38,7 @@ public class WindowedSpanningTreeTestRSPQ {
         reporter.start(1, TimeUnit.MINUTES);
 
 
-        TextStream stream = new SimpleTextStream();
+        TextFileStream stream = new SimpleTextStream();
         stream.open(filename);
         InputTuple<Integer, Integer, String> input = stream.next();
 
