@@ -4,14 +4,18 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.ObjectFactoryArbitrary;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.ObjectFactorySimple;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
     private long windowSize;
     private long slideSize;
     private long lastExpiry = 0;
+    private Semantics semantics;
 
     protected Delta<Integer, T, N> delta;
     ObjectFactory<Integer, T, N> objectFactory;
@@ -35,18 +40,52 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
 
     private final Logger LOG = LoggerFactory.getLogger(WindowedRPQ.class);
 
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
-        this(query, capacity, windowSize, slideSize, 1);
-    }
-
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+    /**
+     * Windowed RPQ engine ready to process edges
+     * @param query Automata representation of the persistent query
+     * @param capacity Initial size for internal data structures. Set to approximate number of edges in a window
+     * @param windowSize Size of the sliding window in milliseconds
+     * @param slideSize Slide interval in milliseconds
+     * @param numOfThreads Total number of executor threads
+     * @param semantics Resulting path semantics: @{@link Semantics}
+     */
+    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
         super(query, capacity);
-        this.objectFactory = new ObjectFactoryArbitrary();
+        if (semantics.equals(Semantics.ARBITRARY)) {
+            this.objectFactory = new ObjectFactoryArbitrary();
+        } else {
+            this.objectFactory = new ObjectFactorySimple();
+        }
         this.delta =  new Delta<Integer, T, N>(capacity, objectFactory);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
         this.numOfThreads = numOfThreads;
+        this.semantics = semantics;
+    }
+
+    /**
+     * Windowed RPQ engine with 1 thread & Arbitrary path semantics ready to process edges
+     * @param query Automata representation of the persistent query
+     * @param capacity Initial size for internal data structures. Set to approximate number of edges in a window
+     * @param windowSize Size of the sliding window in milliseconds
+     * @param slideSize Slide interval in milliseconds
+
+     */
+    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+        this(query, capacity, windowSize, slideSize, 1);
+    }
+
+    /**
+     * Windowed RPQ engine with arbitrary path semantics ready to process edges
+     * @param query Automata representation of the persistent query
+     * @param capacity Initial size for internal data structures. Set to approximate number of edges in a window
+     * @param windowSize Size of the sliding window in milliseconds
+     * @param slideSize Slide interval in milliseconds
+     * @param numOfThreads Total number of executor threads
+     */
+    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+        this(query, capacity, windowSize, slideSize, 1, Semantics.ARBITRARY);
     }
 
     @Override

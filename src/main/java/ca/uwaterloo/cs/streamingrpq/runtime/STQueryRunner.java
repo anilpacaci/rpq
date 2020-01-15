@@ -87,11 +87,7 @@ public class STQueryRunner {
         }
 
 
-        if(pathSemantics.equals(Semantics.ARBITRARY)) {
-            rpq = new WindowedRPQ<String, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
-        } else {
-            rpq = new WindowedRPQ<String, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
-        }
+        rpq = new WindowedRPQ<String, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount, pathSemantics);
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
 
