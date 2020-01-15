@@ -4,8 +4,6 @@ import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
@@ -55,7 +53,7 @@ public class STQueryRunner {
         String[] predicateString = line.getOptionValues("l");
         Integer[] predicates = Arrays.stream(predicateString).map(s -> s.hashCode()).toArray(Integer[]::new);
 
-        TextStream stream;
+        TextFileStream stream;
 
         switch (inputType) {
             case "tsv":

@@ -66,11 +66,12 @@ public abstract class RPQEngine<L> {
         metricRegistry.register("explicit-deletion-histogram", this.explicitDeletionHistogram);
 
         // histogram responsible of tracking how many trees are affected by each input stream edge
-        this.containingTreeHistogram = metricRegistry.histogram("containing-tree-counter");
+        this.containingTreeHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
+        metricRegistry.register("containing-tree-counter", this.containingTreeHistogram);
 
         // measures the time spent on processing each edge from the input stream
         this.fullTimer = new Timer(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        this.fullTimer = metricRegistry.register("full-timer", this.fullTimer);
+        metricRegistry.register("full-timer", this.fullTimer);
 
         // histogram responsible to measure time spent in Window Expiry procedure at every slide interval
         this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
