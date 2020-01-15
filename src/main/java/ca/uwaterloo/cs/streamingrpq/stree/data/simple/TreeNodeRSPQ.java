@@ -1,16 +1,11 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractTreeNode;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TreeNodeRSPQ<V> extends AbstractTreeNode<V, SpanningTreeRSPQ<V>, TreeNodeRSPQ<V>> {
 

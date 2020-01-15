@@ -1,16 +1,15 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
-import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Queue;
 
-public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRAPQ<Integer>, TreeNode<Integer>>{
+public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>{
 
 
     public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
@@ -18,7 +17,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
 
         // initialize node types
         this.spanningTree = new SpanningTreeRAPQ[Constants.EXPECTED_BATCH_SIZE];
-        this.parentNode = new TreeNode[Constants.EXPECTED_BATCH_SIZE];
+        this.parentNode = new TreeNodeRAPQ[Constants.EXPECTED_BATCH_SIZE];
     }
 
 
@@ -40,11 +39,11 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
     }
 
     @Override
-    public void processTransition(SpanningTreeRAPQ<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
+    public void processTransition(SpanningTreeRAPQ<Integer> tree, TreeNodeRAPQ<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
         // either update timestamp, or create the node
         if(tree.exists(childVertex, childState)) {
             // if the child node already exists, we might need to update timestamp
-            TreeNode<Integer> childNode = tree.getNodes(childVertex, childState).stream().findFirst().get();
+            TreeNodeRAPQ<Integer> childNode = tree.getNodes(childVertex, childState).stream().findFirst().get();
 
             // root's children have timestamp equal to the edge timestamp
             // root timestmap always higher than any node in the tree
@@ -67,7 +66,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
 
             // root's children have timestamp equal to the edge timestamp
             // root timestmap always higher than any node in the tree
-            TreeNode<Integer> childNode;
+            TreeNodeRAPQ<Integer> childNode;
             if(parentNode.equals(tree.getRootNode())) {
                 childNode = tree.addNode(parentNode, childVertex, childState, edgeTimestamp);
                 parentNode.setTimestamp(edgeTimestamp);
@@ -93,23 +92,23 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
                 for (GraphEdge<ProductGraphNode<Integer>> forwardEdge : forwardEdges) {
                     // recursive call as the target of the forwardEdge has not been visited in state targetState before
                     //processTransition(tree, childNode, forwardEdge.getTarget(), targetState, forwardEdge.getTimestamp());
-                    processTransition(tree, (TreeNode<Integer>) childNode, forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState(), forwardEdge.getTimestamp());
+                    processTransition(tree, (TreeNodeRAPQ<Integer>) childNode, forwardEdge.getTarget().getVertex(), forwardEdge.getTarget().getState(), forwardEdge.getTimestamp());
                 }
             }
         }
     }
 
     @Override
-    public void markExpired(SpanningTreeRAPQ<Integer> tree, TreeNode<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
+    public void markExpired(SpanningTreeRAPQ<Integer> tree, TreeNodeRAPQ<Integer> parentNode, int childVertex, int childState, long edgeTimestamp) {
         // update the timestamp of the entire subtree of such node exists
         if(tree.exists(childVertex, childState)) {
             // if the child node already exists, we might need to update timestamp
-            TreeNode<Integer> childNode = tree.getNodes(childVertex, childState).stream().findFirst().get();
+            TreeNodeRAPQ<Integer> childNode = tree.getNodes(childVertex, childState).stream().findFirst().get();
 
-            Queue<TreeNode<Integer>> queue = new ArrayDeque<>();
+            Queue<TreeNodeRAPQ<Integer>> queue = new ArrayDeque<>();
             queue.offer(childNode);
             while(!queue.isEmpty()) {
-                TreeNode<Integer> currentNode = queue.poll();
+                TreeNodeRAPQ<Integer> currentNode = queue.poll();
                 currentNode.setDeleted();
                 queue.addAll(currentNode.getChildren());
             }
@@ -118,9 +117,9 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
             // simply call expiry on the spanning tree
 
             // it is OK to remove the deletion with timestamp 0 because we only want to delete nodes that are set to Long.MIN
-            Collection<TreeNode<Integer>> removedNodes = tree.removeOldEdges(0, productGraph);
+            Collection<TreeNodeRAPQ<Integer>> removedNodes = tree.removeOldEdges(0, productGraph);
 
-            for(TreeNode<Integer> removedNode : removedNodes) {
+            for(TreeNodeRAPQ<Integer> removedNode : removedNodes) {
                 if(automata.isFinalState(removedNode.getState())) {
                     results.offer(new ResultPair<Integer>(tree.getRootVertex(), removedNode.getVertex(), true));
                     resultCount--;
