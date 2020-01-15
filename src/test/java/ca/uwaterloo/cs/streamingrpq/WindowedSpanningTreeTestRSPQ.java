@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.input.TextStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 
@@ -26,7 +27,7 @@ public class WindowedSpanningTreeTestRSPQ {
         query.addTransition(1, "m", 2);
         query.addTransition(2, "m", 2);
 
-        RPQEngine<String> rapqEngine = new WindowedRPQ<>(query, 100, 10, 1, 10);
+        RPQEngine<String> rapqEngine = new WindowedRPQ<>(query, 100, 10, 1, 10,  Semantics.SIMPLE);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 
