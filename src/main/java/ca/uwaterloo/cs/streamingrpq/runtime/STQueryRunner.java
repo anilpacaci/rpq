@@ -3,13 +3,12 @@ package ca.uwaterloo.cs.streamingrpq.runtime;
 import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
-import ca.uwaterloo.cs.streamingrpq.transitiontable.waveguide.SingleThreadedRun;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
 import org.apache.commons.cli.*;
@@ -80,7 +79,6 @@ public class STQueryRunner {
 
         RPQEngine rpq;
         QueryAutomata<String> query;
-        SingleThreadedRun task;
         try {
             query = MazeQueries.getMazeQuery(queryName, predicateString);
         } catch (IllegalArgumentException e) {
@@ -90,13 +88,12 @@ public class STQueryRunner {
 
 
         if(pathSemantics.equals(Semantics.ARBITRARY)) {
-            rpq = new WindowedRAPQ<String, SpanningTreeRAPQ<Integer>, TreeNode<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
+            rpq = new WindowedRPQ<String, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
         } else {
-            rpq = new WindowedRAPQ<String, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
+            rpq = new WindowedRPQ<String, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>(query, maxSize, windowSize, slideSize, threadCount);
         }
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
-        task = new SingleThreadedRun<String>(queryName, stream, rpq);
 
         MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -108,7 +105,21 @@ public class STQueryRunner {
         reporter.start(1, TimeUnit.SECONDS);
 
         try {
-            task.call();
+            InputTuple<Integer, Integer, String> input = stream.next();
+            logger.info("Query " + queryName + " is starting!");
+
+            while (input != null) {
+                //retrieve DFA nodes where transition is same as edge label
+                rpq.processEdge(input);
+                // incoming edge fully processed, move to next one
+                input = stream.next();
+
+                if(Thread.currentThread().isInterrupted()) {
+                    logger.info("Query " + queryName + " is interrupted");
+                    break;
+                }
+            }
+            logger.info("total number of results for query " + queryName + " : " + rpq.getResultCount());
         } catch (Exception e) {
             logger.error("Experiment on main-thread encountered an error: ", e);
         }

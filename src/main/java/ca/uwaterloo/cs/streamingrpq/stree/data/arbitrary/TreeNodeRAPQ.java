@@ -1,22 +1,16 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractSpanningTree;
 import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractTreeNode;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class TreeNode<V> extends AbstractTreeNode<V, SpanningTreeRAPQ<V>, TreeNode<V>> {
+public class TreeNodeRAPQ<V> extends AbstractTreeNode<V, SpanningTreeRAPQ<V>, TreeNodeRAPQ<V>> {
 
     private int hash = 0;
 
     private SpanningTreeRAPQ tree;
 
 
-    protected TreeNode(V vertex, int state, TreeNode parent, SpanningTreeRAPQ<V> t, long timestamp) {
+    protected TreeNodeRAPQ(V vertex, int state, TreeNodeRAPQ parent, SpanningTreeRAPQ<V> t, long timestamp) {
         super(vertex, state, parent, timestamp);
 
         // set the containing spanning tree
@@ -35,11 +29,11 @@ public class TreeNode<V> extends AbstractTreeNode<V, SpanningTreeRAPQ<V>, TreeNo
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof TreeNode)) {
+        if (!(o instanceof TreeNodeRAPQ)) {
             return false;
         }
 
-        TreeNode tuple = (TreeNode) o;
+        TreeNodeRAPQ tuple = (TreeNodeRAPQ) o;
 
         return tuple.vertex.equals(vertex) && tuple.state == state;
     }

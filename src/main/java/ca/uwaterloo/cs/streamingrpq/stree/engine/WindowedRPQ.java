@@ -4,9 +4,6 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.ObjectFactoryArbitrary;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
-import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Created by anilpacaci on 2019-10-02.
  */
-public class WindowedRAPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N extends AbstractTreeNode<Integer, T, N>> extends RPQEngine<L> {
+public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N extends AbstractTreeNode<Integer, T, N>> extends RPQEngine<L> {
 
     private long windowSize;
     private long slideSize;
@@ -36,13 +33,13 @@ public class WindowedRAPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ex
     private int numOfThreads;
 
 
-    private final Logger LOG = LoggerFactory.getLogger(WindowedRAPQ.class);
+    private final Logger LOG = LoggerFactory.getLogger(WindowedRPQ.class);
 
-    public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
     }
 
-    public WindowedRAPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         super(query, capacity);
         this.objectFactory = new ObjectFactoryArbitrary();
         this.delta =  new Delta<Integer, T, N>(capacity, objectFactory);

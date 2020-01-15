@@ -6,20 +6,20 @@ import java.util.Queue;
 /**
  * Created by anilpacaci on 2019-01-31.
  */
-public interface TextStream {
+public interface TextStream<S, T, L> {
 
-    public boolean isOpen();
+    boolean isOpen();
 
-    public void open(String filename);
+    void open(String filename);
 
-    public void open(String filename, int size);
+    void open(String filename, int size);
 
-    public void open(String filename, int size, long startTimestamp, int deletionPercentage);
+    void open(String filename, int size, long startTimestamp, int deletionPercentage);
 
-    public InputTuple next();
+    InputTuple<S, T, L> next();
 
-    public void close();
+    void close();
 
-    public void reset();
+    void reset();
 
 }
