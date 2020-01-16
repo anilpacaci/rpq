@@ -1,7 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
+import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStreamWithExplicitDeletions;
 import ca.uwaterloo.cs.streamingrpq.input.TextFileStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
@@ -34,7 +34,7 @@ public class WindowedSpanningTreeTest {
         reporter.start(1, TimeUnit.MINUTES);
 
 
-        TextFileStream stream = new SimpleTextStream();
+        TextFileStream stream = new SimpleTextStreamWithExplicitDeletions();
         stream.open(filename);
         InputTuple<Integer, Integer, String> input = stream.next();
 

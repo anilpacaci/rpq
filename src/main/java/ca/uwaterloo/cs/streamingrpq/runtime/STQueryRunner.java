@@ -63,7 +63,7 @@ public class STQueryRunner {
                 stream = new Yago2sHashStream();
                 break;
             case "text":
-                stream = new SimpleTextStream();
+                stream = new SimpleTextStreamWithExplicitDeletions();
                 break;
             case "snap-sx":
                 stream = new StackOverflowStream();
