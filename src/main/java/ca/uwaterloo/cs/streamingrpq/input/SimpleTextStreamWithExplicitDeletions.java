@@ -1,7 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,11 +13,43 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Yago2sHashStream extends TextFileStream {
+public class SimpleTextStreamWithExplicitDeletions extends TextFileStream<Integer, Integer, String> {
 
-    @Override
-    protected int getRequiredNumberOfFields() {
-        return 3;
+
+    public InputTuple<Integer, Integer, String> next() {
+        String line = null;
+        InputTuple tuple = null;
+        try {
+            while((line = bufferedReader.readLine()) != null) {
+                int i = parseLine(line);
+                // only if we fully
+                if(i == 4) {
+                    setSource();
+                    setLabel();
+                    setTarget();
+                    updateCurrentTimestamp();
+                    setTimestamp();
+
+                    if(splitResults[3].equals("+")) {
+                        tuple.setType(InputTuple.TupleType.INSERT);
+                    } else {
+                        tuple.setType(InputTuple.TupleType.DELETE);
+                    }
+
+                    localCounter++;
+                    globalCounter++;
+
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        if (line == null) {
+            return null;
+        }
+
+        return tuple;
     }
 
     @Override
@@ -30,6 +61,11 @@ public class Yago2sHashStream extends TextFileStream {
         }
 
         return i;
+    }
+
+    @Override
+    protected int getRequiredNumberOfFields() {
+        return 4;
     }
 
     @Override

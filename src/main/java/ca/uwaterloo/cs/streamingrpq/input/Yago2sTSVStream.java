@@ -1,7 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.input;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -15,73 +14,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class Yago2sTSVStream implements TextStream{
+public class Yago2sTSVStream extends TextFileStream {
 
-
-    FileReader fileStream;
-    BufferedReader bufferedReader;
-
-    String filename;
-
-    ScheduledExecutorService executor;
-
-    Integer localCounter = 0;
-    Integer globalCounter = 0;
-    Integer deleteCounter = 0;
-
-    private String splitResults[];
-
-    InputTuple tuple = null;
-
-
-    Queue<String> deletionBuffer = new ArrayDeque<>();
-    int deletionPercentage = 0;
-    long lastTimetamp = Long.MIN_VALUE;
-
-
-    public boolean isOpen() {
-        return false;
-    }
 
     public void open(String filename, int maxSize) {
         open(filename);
     }
 
-    @Override
-    public void open(String filename, int size, long startTimestamp, int deletionPercentage) {
-        this.deletionPercentage = deletionPercentage;
-        open(filename, size);
-    }
-
-    public void open(String filename) {
-        this.filename = filename;
-        try {
-            fileStream = new FileReader(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        bufferedReader = new BufferedReader(fileStream, 20*1024*1024);
-
-        Runnable counterRunnable = new Runnable() {
-            private int seconds = 0;
-
-            @Override
-            public void run() {
-                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter + " -- deletes: " + deleteCounter);
-                localCounter = 0;
-                deleteCounter++;
-            }
-        };
-
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
-
-        splitResults = new String[4];
-
-        tuple = new InputTuple(null, null, null, 0);
-    }
-
-    public void close() {
+       public void close() {
         try {
             bufferedReader.close();
             fileStream.close();
@@ -97,7 +37,7 @@ public class Yago2sTSVStream implements TextStream{
 
         //generate negative tuple if necessary
         if(!deletionBuffer.isEmpty() && ThreadLocalRandom.current().nextInt(100) < deletionPercentage) {
-            line = deletionBuffer.poll();
+            line = (String) deletionBuffer.poll();
             Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
             int i = 0;
             for(i = 0; iterator.hasNext() && i < 3; i++) {
@@ -125,7 +65,7 @@ public class Yago2sTSVStream implements TextStream{
                 // only if we fully
                 if(i == 3) {
 //                    tuple = new InputTuple(1,2,3);
-                    lastTimetamp = globalCounter;
+                    lastTimestamp = globalCounter;
 
                     tuple.setSource(splitResults[0].hashCode());
                     tuple.setTarget(splitResults[2].hashCode());
@@ -152,6 +92,47 @@ public class Yago2sTSVStream implements TextStream{
         }
 
         return tuple;
+    }
+
+    @Override
+    protected int parseLine(String line) {
+        int i = 0;
+        Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
+        for(i = 0; iterator.hasNext() && i < 4; i++) {
+            splitResults[i] = iterator.next();
+        }
+
+        return i;
+    }
+
+    @Override
+    protected int getRequiredNumberOfFields() {
+        return 3;
+    }
+
+    @Override
+    protected void setSource() {
+        tuple.setSource(splitResults[0]);
+    }
+
+    @Override
+    protected void setTarget() {
+        tuple.setTarget(splitResults[2]);
+    }
+
+    @Override
+    protected void setLabel() {
+        tuple.setLabel(splitResults[1]);
+    }
+
+    @Override
+    protected void updateCurrentTimestamp() {
+        lastTimestamp = globalCounter;
+    }
+
+    @Override
+    protected void setTimestamp() {
+        tuple.setTimestamp(lastTimestamp);
     }
 
     public void reset() {

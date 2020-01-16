@@ -1,11 +1,12 @@
 package ca.uwaterloo.cs.streamingrpq;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStream;
-import ca.uwaterloo.cs.streamingrpq.input.TextStream;
+import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStreamWithExplicitDeletions;
+import ca.uwaterloo.cs.streamingrpq.input.TextFileStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 
@@ -26,7 +27,7 @@ public class WindowedSpanningTreeTestRSPQ {
         query.addTransition(1, "m", 2);
         query.addTransition(2, "m", 2);
 
-        RPQEngine<String> rapqEngine = new WindowedRSPQ<>(query, 100, 10, 1, 10);
+        RPQEngine<String> rapqEngine = new WindowedRPQ<>(query, 100, 10, 1, 10,  Semantics.SIMPLE);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 
@@ -37,7 +38,7 @@ public class WindowedSpanningTreeTestRSPQ {
         reporter.start(1, TimeUnit.MINUTES);
 
 
-        TextStream stream = new SimpleTextStream();
+        TextFileStream stream = new SimpleTextStreamWithExplicitDeletions();
         stream.open(filename);
         InputTuple<Integer, Integer, String> input = stream.next();
 

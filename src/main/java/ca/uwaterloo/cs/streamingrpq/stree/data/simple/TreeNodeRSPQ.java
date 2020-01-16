@@ -1,40 +1,27 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNode;
+import ca.uwaterloo.cs.streamingrpq.stree.data.AbstractTreeNode;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class TreeNodeRSPQ<V> {
+public class TreeNodeRSPQ<V> extends AbstractTreeNode<V, SpanningTreeRSPQ<V>, TreeNodeRSPQ<V>> {
 
     private int hash = 0;
 
-    protected V vertex;
-    protected int state;
-    protected long timestamp;
-
-    private SpanningTreeRSPQ<V> tree;
-
-    private TreeNodeRSPQ parent;
-
-    private Collection<TreeNodeRSPQ<V>> children;
+    SpanningTreeRSPQ<V> tree;
 
     private Map<V, Integer> firstMarkings;
     private SetMultimap<V, Integer> currentMarkings;
 
-    protected TreeNodeRSPQ(V vertex, int state, TreeNodeRSPQ parent, SpanningTreeRSPQ t, long timestamp) {
-        this.vertex = vertex;
-        this.state = state;
-        this.parent = parent;
-        this.children = Collections.newSetFromMap(new ConcurrentHashMap<TreeNodeRSPQ<V>, Boolean>());;
+    protected TreeNodeRSPQ(V vertex, int state, TreeNodeRSPQ parent, SpanningTreeRSPQ<V> t, long timestamp) {
+        super(vertex, state, parent, timestamp);
+
+        // set the containing spanning tree
         this.tree = t;
-        this.timestamp = timestamp;
+
         // set this as a child of the parent if it is not null
         if(parent != null) {
             this.firstMarkings = Maps.newHashMap(parent.firstMarkings);
@@ -47,65 +34,13 @@ public class TreeNodeRSPQ<V> {
         // populate with root node
         this.firstMarkings.putIfAbsent(vertex, state);
         this.currentMarkings.put(vertex, state);
-
-        if(parent != null) {
-            this.parent.addChildren(this);
-        }
     }
 
+    @Override
     public SpanningTreeRSPQ<V> getTree() {
         return tree;
     }
 
-    public V getVertex() {
-        return vertex;
-    }
-
-
-    public int getState() {
-        return state;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-        this.tree.updateTimestamp(timestamp);
-    }
-
-    public TreeNodeRSPQ<V> getParent() {
-        return parent;
-    }
-
-    /**
-     * Changes the parent of the current node. Removes this node from previous parent's children nodes, and
-     * adds it into new parent's children nodes.
-     * @param parent new parent. <code>null</code> only if this node is deleted
-     */
-    public void setParent(TreeNodeRSPQ parent) {
-        // remove this node from previous parent
-        if(this.parent != null) {
-            this.parent.children.remove(this);
-        }
-        // set a new parent
-        this.parent = parent;
-        // if it is set null, then it is time to remove this node
-        if(this.parent != null) {
-            // add this as a child to new parent
-            if (parent != null) ;
-            this.parent.addChildren(this);
-        }
-    }
-
-    public Collection<TreeNodeRSPQ<V>> getChildren() {
-        return children;
-    }
-
-    private void addChildren(TreeNodeRSPQ child) {
-        this.children.add(child);
-    }
 
     /**
      * Check whether current markings contain this pair of vertex-state
