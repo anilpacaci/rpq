@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SimpleTextStream extends TextFileStream<Integer, Integer, String> {
+public class SimpleTextStreamWithExplicitDeletions extends TextFileStream<Integer, Integer, String> {
 
 
     public InputTuple<Integer, Integer, String> next() {
