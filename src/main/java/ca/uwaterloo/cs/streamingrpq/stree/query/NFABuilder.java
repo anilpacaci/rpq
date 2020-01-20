@@ -35,5 +35,20 @@ public class NFABuilder<T> {
         return first;
     }
 
-    
+    public NFA<T> alternation(NFA<T> first, NFA<T> second) {
+        first.getExit().setFinal(false);
+        second.getExit().setFinal(false);
+
+        NFA<T> newNFA = new NFA<>();
+
+        newNFA.getEntry().addEpsilonTransitions(first.getEntry());
+        newNFA.getEntry().addEpsilonTransitions(second.getEntry());
+
+        first.getExit().addEpsilonTransitions(newNFA.getExit());
+        second.getExit().addEpsilonTransitions(newNFA.getExit());
+
+        newNFA.getExit().setFinal(true);
+
+        return newNFA;
+    }
 }
