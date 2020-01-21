@@ -24,6 +24,12 @@ public class State<T> {
         emptyTransitions = Sets.newHashSet();
     }
 
+    public State(State<T> other, boolean isFinal) {
+        this.isFinal = isFinal;
+        transitions = HashMultimap.create(other.transitions);
+        emptyTransitions = Sets.newHashSet(other.emptyTransitions);
+    }
+
     public void addTransition(T label, State next) {
         transitions.put(label, next);
     }

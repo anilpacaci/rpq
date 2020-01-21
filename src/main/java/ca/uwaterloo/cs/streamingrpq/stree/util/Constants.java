@@ -21,4 +21,6 @@ public class Constants {
     public static final int EXPECTED_TREE_SIZE = 8192;
 
     public static final int HISTOGRAM_BUCKET_SIZE = 526336;
+
+    public static final char REVERSE_LABEL_SYMBOL = '^';
 }

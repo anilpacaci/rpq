@@ -10,6 +10,11 @@ public class NFA<T> {
         exit = new State<>();
     }
 
+    public NFA(State<T> entry, State<T>  exit) {
+        this.entry = entry;
+        this.exit = exit;
+    }
+
 
     public State<T> getEntry() {
         return entry;
