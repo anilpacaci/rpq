@@ -3,108 +3,50 @@ package ca.uwaterloo.cs.streamingrpq.input;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Iterator;
 
-public class StackOverflowStream implements TextStream{
+public class StackOverflowStream extends TextFileStream {
 
-
-    FileReader fileStream;
-    BufferedReader bufferedReader;
-
-    String filename;
-
-    ScheduledExecutorService executor;
-
-    Integer localCounter = 0;
-    Integer globalCounter = 0;
-
-    Long startTimestamp = -1L;
-
-
-    Queue<String> deletionBuffer = new ArrayDeque<>();
-    int deletionPercentage = 0;
-
-
-
-    public boolean isOpen() {
-        return false;
-    }
-
-    public void open(String filename, int maxSize) {
-        this.startTimestamp = 0L;
-        open(filename);
-    }
-
-    public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
-        this.startTimestamp = startTimestamp;
-        open(filename);
-    }
-
-    public void open(String filename) {
-        this.filename = filename;
-        try {
-            fileStream = new FileReader(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        bufferedReader = new BufferedReader(fileStream, 20*1024*1024);
-
-        Runnable counterRunnable = new Runnable() {
-            private int seconds = 0;
-
-            @Override
-            public void run() {
-                System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter);
-                localCounter = 0;
-            }
-        };
-
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(counterRunnable, 1, 1, TimeUnit.SECONDS);
-    }
-
-    public void close() {
-        try {
-            bufferedReader.close();
-            fileStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    protected int parseLine(String line) {
+        int i = 0;
+        Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
+        for(i = 0; iterator.hasNext() && i < 4; i++) {
+            splitResults[i] = iterator.next();
         }
 
-        executor.shutdown();
+        return i;
     }
 
-    public InputTuple<Integer, Integer, String> next() {
-        String line = null;
-        InputTuple tuple = null;
-        try {
-            while((line = bufferedReader.readLine()) != null) {
-                String[] splitResults = Iterables.toArray(Splitter.on('\t').trimResults().split(line), String.class);
-                if(splitResults.length == 4) {
-//                    tuple = new InputTuple(1,2,3);
-                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1], Long.parseLong(splitResults[3]) - startTimestamp);
-                    localCounter++;
-                    globalCounter++;
-//                    tuple = new InputTuple(Integer.parseInt(splitResults[0]), Integer.parseInt(splitResults[2]), splitResults[1]);
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        if (line == null) {
-            return null;
-        }
+    @Override
+    protected int getRequiredNumberOfFields() {
+        return 4;
+    }
 
-        return tuple;
+    @Override
+    protected void setSource() {
+        tuple.setSource(splitResults[0]);
+    }
+
+    @Override
+    protected void setTarget() {
+        tuple.setTarget(splitResults[2]);
+    }
+
+    @Override
+    protected void setLabel() {
+        tuple.setLabel(splitResults[1]);
+    }
+
+    @Override
+    protected void updateCurrentTimestamp() {
+        lastTimestamp = Long.parseLong(splitResults[3]) - startTimestamp;
+    }
+
+    @Override
+    protected void setTimestamp() {
+        tuple.setTimestamp(lastTimestamp);
     }
 
     public void reset() {
