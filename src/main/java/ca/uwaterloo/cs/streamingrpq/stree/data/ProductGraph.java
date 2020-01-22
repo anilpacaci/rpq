@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Hasher;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.*;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class ProductGraph<V,L> {
 
-    private QueryAutomata<L> automata;
+    private Automata<L> automata;
 
     private Map<Hasher.MapKey<V>, ProductGraphNode<V>> nodeIndex;
 
@@ -23,7 +24,7 @@ public class ProductGraph<V,L> {
 
     private final Logger LOG = LoggerFactory.getLogger(ProductGraph.class);
 
-    public ProductGraph(int capacity, QueryAutomata<L> automata) {
+    public ProductGraph(int capacity, Automata<L> automata) {
         timeOrderedEdges = new LinkedList<GraphEdge<ProductGraphNode<V>>>();
         nodeIndex = Maps.newHashMapWithExpectedSize(capacity);
         this.automata = automata;

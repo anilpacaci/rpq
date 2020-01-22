@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.Queue;
@@ -9,7 +10,7 @@ import java.util.concurrent.Callable;
 public abstract class AbstractTreeExpansionJob<L, T extends AbstractSpanningTree<Integer, T, N>, N extends AbstractTreeNode<Integer, T, N>> implements Callable<Integer> {
 
     protected ProductGraph<Integer,L> productGraph;
-    protected QueryAutomata<L> automata;
+    protected Automata<L> automata;
     protected T spanningTree[];
     protected N parentNode[];
     protected int targetVertex[];
@@ -23,7 +24,7 @@ public abstract class AbstractTreeExpansionJob<L, T extends AbstractSpanningTree
 
     protected Queue<ResultPair<Integer>> results;
 
-    protected AbstractTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    protected AbstractTreeExpansionJob(ProductGraph<Integer,L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         this.productGraph = productGraph;
         this.automata = automata;
         this.targetVertex = new int[Constants.EXPECTED_BATCH_SIZE];

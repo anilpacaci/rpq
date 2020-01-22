@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.Collection;
@@ -11,14 +12,14 @@ import java.util.Stack;
 
 public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>> {
 
-    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         super(productGraph, automata, results, isDeletion);
 
         this.spanningTree = new SpanningTreeRSPQ[Constants.EXPECTED_BATCH_SIZE];
         this.parentNode = new TreeNodeRSPQ[Constants.EXPECTED_BATCH_SIZE];
     }
 
-    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results) {
+    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results) {
         this(productGraph, automata, results, false);
     }
 

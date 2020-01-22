@@ -49,6 +49,17 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
+        <!-- SPARQL Query Parsing -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>3.13.1</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.brics</groupId>
+            <artifactId>automaton</artifactId>
+            <version>1.12-1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -58,7 +69,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>13</release>
+                    <release>8</release>
                 </configuration>
             </plugin>
 

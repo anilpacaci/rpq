@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.ArrayDeque;
@@ -12,7 +13,7 @@ import java.util.Queue;
 public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>{
 
 
-    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         super(productGraph, automata, results, isDeletion);
 
         // initialize node types

@@ -1,40 +1,58 @@
-package ca.uwaterloo.cs.streamingrpq.stree.data;
+package ca.uwaterloo.cs.streamingrpq.stree.query;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.*;
 
-public class QueryAutomata<L> {
-    public int numOfStates;
-    public Set<Integer> finalStates;
+/**
+ * Created by anilpacaci on 2020-01-21.
+ */
+public abstract class Automata<L> {
 
-    HashMap<Integer, HashMap<L, Integer>> transitions;
+    // suffix language containment matrix for conflict detection
+    protected boolean containmentMark[][];
 
-    HashMap<Integer, Multimap<L, Integer>> reverseTransitions;
+    // store source-target state pairs for each label
+    protected HashMap<L, HashMap<Integer, Integer>> labelTransitions;
 
-    HashMap<L, HashMap<Integer, Integer>> labelTransitions;
+    // for mapping states to contigious range from [0..n-1]
+    private int stateCounter;
+    private Map<Object, Integer> stateNumberMapping;
 
-    private boolean containmentMark[][];
+    // set of final states
+    private Set<Integer> finalStates;
 
-    public QueryAutomata(int numOfStates) {
-        this.containmentMark = new boolean[numOfStates][numOfStates];
-        finalStates = new HashSet<>();
-        transitions =  new HashMap<>();
-        reverseTransitions = new HashMap<>();
-        labelTransitions = new HashMap<>();
-    	this.numOfStates = numOfStates;
-    	// initialize transition maps for all
-    	for(int i = 0; i < numOfStates; i++) {
-    	    transitions.put(i, new HashMap<L, Integer>());
-    	    reverseTransitions.put(i, HashMultimap.create());
-        }
-	}
+    protected Automata() {
+        labelTransitions = Maps.newHashMap();
+        stateCounter = 0;
+        stateNumberMapping = Maps.newHashMap();
+        finalStates = Sets.newHashSet();
+    }
+
+    /**
+     * Finalize function must be called before query can be used for processing
+     * It performs optimizations that are provided by specific implementation such as determinization, minimization etc.
+     * This method also maps all states to a contigious range, and generates mappings for states and transitions
+     * Finally, it computes the containment relation to be used for conlfict detection
+     */
+    public abstract void finalize();
+
+    public int getNumOfStates() {
+        // after finalization, state counter will point the number of states
+        return stateCounter;
+    }
+
+    public Set<L> getAlphabet() {
+        return this.labelTransitions.keySet();
+    }
+
+
+    public Map<Integer, Integer> getTransition(L label) {
+        return labelTransitions.getOrDefault(label, Maps.newHashMap());
+    }
 
     public void addFinalState(int state) {
-        if(state >= numOfStates) {
-            // TODO invalid final state
-        }
         finalStates.add(state);
     }
 
@@ -42,37 +60,19 @@ public class QueryAutomata<L> {
         return finalStates.contains(state);
     }
 
-    public void addTransition(int source, L label, int target) {
-        HashMap<L, Integer> forwardMap = transitions.get(source);
-        forwardMap.put(label, target);
-        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
-        backwardMap.put(label, source);
-        if(!labelTransitions.containsKey(label)) {
-            labelTransitions.put(label, new HashMap<>());
-        }
-        HashMap<Integer, Integer> labelMap = labelTransitions.get(label);
-        labelMap.put(source, target);
-    }
-
-    public Integer getTransition(int source, L label) {
-        HashMap<L, Integer> forwardMap = transitions.get(source);
-        return forwardMap.get(label);
-    }
-
     /**
-     *
-     * @param target
-     * @param label
-     * @return an empty collection, not <code>null</null> in case target, label entry does not exists
+     * Assign each state to a consecutive range in [0..n-1]
+     * @param state
+     * @return
      */
-    public Collection<Integer> getReverseTransitions(int target, L label) {
-        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
-
-        return backwardMap.get(label);
-    }
-
-    public Map<Integer, Integer> getTransition(L label) {
-        return labelTransitions.getOrDefault(label, new HashMap<>());
+    protected int getStateNumber(Object state) {
+        if(stateNumberMapping.containsKey(state)) {
+            return stateNumberMapping.get(state);
+        } else {
+            int stateNumber = stateCounter++;
+            stateNumberMapping.put(state, stateNumber);
+            return  stateNumber;
+        }
     }
 
     public boolean hasContainment(Integer stateQ, Integer stateT) {
@@ -82,52 +82,52 @@ public class QueryAutomata<L> {
         return !this.containmentMark[stateQ][stateT];
     }
 
-    /**
-     * Optimization procedure for the autamaton, including minimization, containment relationship
-     * MUST be called after automaton is constructed
-     */
-    public void computeContainmentRelationship() {
-        int alphabetSize = labelTransitions.keySet().size();
+    protected void computeContainmentRelationship() {
+        int alphabetSize = getAlphabet().size();
+        int numOfStates = getNumOfStates();
+
+        // initialize the containmentMark matrix
+        this.containmentMark = new boolean[numOfStates][numOfStates];
 
         // once we construct the minimized DFA, we can easily compute the sufflix language containment relationship
         // Algorithm S of Wood'95
-        ArrayList[][] statePairMatrix = new ArrayList[this.numOfStates][this.numOfStates];
-        for(int s = 0; s < this.numOfStates; s++) {
-            for (int t = 0; t < this.numOfStates; t++) {
+        ArrayList[][] statePairMatrix = new ArrayList[numOfStates][numOfStates];
+        for(int s = 0; s < numOfStates; s++) {
+            for (int t = 0; t < numOfStates; t++) {
                 statePairMatrix[s][t] = new ArrayList<>();
             }
         }
         // first create a transition matrix for the DFA
-        int[][] transitionMatrix = new int[this.numOfStates][alphabetSize];
-        for(int i = 0; i < this.numOfStates; i++) {
+        int[][] transitionMatrix = new int[numOfStates][alphabetSize];
+        for(int i = 0; i < numOfStates; i++) {
             for(int j = 0; j < alphabetSize; j++) {
                 transitionMatrix[i][j] = -1;
             }
         }
 
-        Iterator<L> edgeIterator = labelTransitions.keySet().iterator();;
+        Iterator<L> edgeIterator = getAlphabet().iterator();;
         for(int j = 0 ; j < alphabetSize; j++) {
-            HashMap<Integer, Integer> edges = labelTransitions.get(edgeIterator.next());
+            Map<Integer, Integer> edges = getTransition(edgeIterator.next());
             for (Map.Entry<Integer, Integer> edge : edges.entrySet()) {
                 transitionMatrix[edge.getKey()][j] = edge.getValue();
             }
         }
 
         // initialize: line 1 of Algorithm S
-        for(int s = 0; s < this.numOfStates; s++) {
-            for (int t = 0; t < this.numOfStates; t++) {
+        for(int s = 0; s < numOfStates; s++) {
+            for (int t = 0; t < numOfStates; t++) {
                 // for s \in S-F and t \in F
-                if(!finalStates.contains(s) && finalStates.contains(t)) {
+                if(!isFinalState(s) && isFinalState(t)) {
                     containmentMark[s][t] = true;
                 }
             }
         }
 
         // line 2-7 of Algorithm S0
-        for(int s = 0; s < this.numOfStates; s++) {
-            for (int t = 0; t < this.numOfStates; t++) {
+        for(int s = 0; s < numOfStates; s++) {
+            for (int t = 0; t < numOfStates; t++) {
                 // for s,t \in ((SxS) - ((S-F)xF))
-                if(finalStates.contains(s) || !finalStates.contains(t)) {
+                if(isFinalState(s) || !isFinalState(t)) {
                     // implement line 3,
                     boolean isMarked = false;
                     Queue<StatePair> markQueue = new ArrayDeque<>();
@@ -167,7 +167,6 @@ public class QueryAutomata<L> {
                 }
             }
         }
-
     }
 
     private static class StatePair {
@@ -208,5 +207,4 @@ public class QueryAutomata<L> {
                     .append(">").toString();
         }
     }
-
 }
