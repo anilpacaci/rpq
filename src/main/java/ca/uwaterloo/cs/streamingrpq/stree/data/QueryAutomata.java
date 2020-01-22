@@ -1,19 +1,20 @@
 package ca.uwaterloo.cs.streamingrpq.stree.data;
 
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.*;
 
-public class QueryAutomata<L> {
-    public int numOfStates;
-    public Set<Integer> finalStates;
+public class QueryAutomata<L> extends Automata<L> {
 
-    HashMap<Integer, HashMap<L, Integer>> transitions;
+    private int numOfStates;
+    private Set<Integer> finalStates;
 
-    HashMap<Integer, Multimap<L, Integer>> reverseTransitions;
+    private HashMap<Integer, HashMap<L, Integer>> transitions;
 
-    HashMap<L, HashMap<Integer, Integer>> labelTransitions;
+
+    private HashMap<L, HashMap<Integer, Integer>> labelTransitions;
 
     private boolean containmentMark[][];
 
@@ -21,13 +22,11 @@ public class QueryAutomata<L> {
         this.containmentMark = new boolean[numOfStates][numOfStates];
         finalStates = new HashSet<>();
         transitions =  new HashMap<>();
-        reverseTransitions = new HashMap<>();
         labelTransitions = new HashMap<>();
     	this.numOfStates = numOfStates;
     	// initialize transition maps for all
     	for(int i = 0; i < numOfStates; i++) {
     	    transitions.put(i, new HashMap<L, Integer>());
-    	    reverseTransitions.put(i, HashMultimap.create());
         }
 	}
 
@@ -45,8 +44,6 @@ public class QueryAutomata<L> {
     public void addTransition(int source, L label, int target) {
         HashMap<L, Integer> forwardMap = transitions.get(source);
         forwardMap.put(label, target);
-        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
-        backwardMap.put(label, source);
         if(!labelTransitions.containsKey(label)) {
             labelTransitions.put(label, new HashMap<>());
         }
@@ -54,22 +51,6 @@ public class QueryAutomata<L> {
         labelMap.put(source, target);
     }
 
-    public Integer getTransition(int source, L label) {
-        HashMap<L, Integer> forwardMap = transitions.get(source);
-        return forwardMap.get(label);
-    }
-
-    /**
-     *
-     * @param target
-     * @param label
-     * @return an empty collection, not <code>null</null> in case target, label entry does not exists
-     */
-    public Collection<Integer> getReverseTransitions(int target, L label) {
-        Multimap<L, Integer> backwardMap = reverseTransitions.get(target);
-
-        return backwardMap.get(label);
-    }
 
     public Map<Integer, Integer> getTransition(L label) {
         return labelTransitions.getOrDefault(label, new HashMap<>());
@@ -168,6 +149,21 @@ public class QueryAutomata<L> {
             }
         }
 
+    }
+
+    @Override
+    public int getNumOfStates() {
+        return this.numOfStates;
+    }
+
+    @Override
+    public Set<Integer> getFinalStates() {
+        return this.finalStates;
+    }
+
+    @Override
+    public Set<L> getAlphabet() {
+        return this.labelTransitions.keySet();
     }
 
     private static class StatePair {

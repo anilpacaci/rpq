@@ -1,26 +1,23 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query.sparql;
 
 import ca.uwaterloo.cs.streamingrpq.stree.query.NFA;
-import ca.uwaterloo.cs.streamingrpq.stree.query.NFABuilder;
-import com.google.common.collect.Maps;
+import ca.uwaterloo.cs.streamingrpq.stree.query.NFAAutomataBuilder;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
 import org.apache.jena.sparql.algebra.op.OpGroup;
 import org.apache.jena.sparql.algebra.op.OpPath;
 import org.apache.jena.sparql.algebra.op.OpSequence;
 import org.apache.jena.sparql.path.Path;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 public class LinearARQOpVisitor extends OpVisitorBase {
 
     Stack<NFA<String>> nfaStack;
-    private NFABuilder<String> nfaBuilder;
+    private NFAAutomataBuilder<String> automataBuilder;
 
     public LinearARQOpVisitor() {
         nfaStack = new Stack<>();
-        nfaBuilder = new NFABuilder<>();
+        automataBuilder = new NFAAutomataBuilder<>();
     }
 
     public NFA<String> getAutomaton() {
@@ -53,7 +50,7 @@ public class LinearARQOpVisitor extends OpVisitorBase {
             NFA<String> rightNFA = nfaStack.pop();
             NFA<String> leftNFA = nfaStack.pop();
 
-            NFA<String> resultNFA = nfaBuilder.concenetation(leftNFA, rightNFA);
+            NFA<String> resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
             nfaStack.push(resultNFA);
         }
 

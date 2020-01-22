@@ -3,9 +3,9 @@ package ca.uwaterloo.cs.streamingrpq.stree.query;
 import com.google.common.collect.Multimap;
 import dk.brics.automaton.BasicAutomata;
 
-public class NFABuilder<T> {
+public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
 
-    public NFABuilder() {
+    public NFAAutomataBuilder() {
 
     }
 
@@ -14,21 +14,10 @@ public class NFABuilder<T> {
      * @param label
      * @return
      */
+    @Override
     public NFA<T> transition(T label) {
         NFA<T> nfa = new NFA<>();
         nfa.getEntry().addTransition(label, nfa.getExit());
-        nfa.getExit().setFinal(true);
-
-        return nfa;
-    }
-
-    /**
-     * Create an NFA with a single epsilon transition
-     * @return
-     */
-    public NFA<T> epsilonTransition() {
-        NFA<T> nfa = new NFA<>();
-        nfa.getEntry().addEpsilonTransitions(nfa.getExit());
         nfa.getExit().setFinal(true);
 
         return nfa;
@@ -39,6 +28,7 @@ public class NFABuilder<T> {
      * @param nfa
      * @return
      */
+    @Override
     public NFA<T> kleeneStar(NFA<T> nfa) {
         nfa.getEntry().addEpsilonTransitions(nfa.getExit());
         nfa.getExit().addEpsilonTransitions(nfa.getEntry());
@@ -52,6 +42,7 @@ public class NFABuilder<T> {
      * @param second
      * @return
      */
+    @Override
     public NFA<T> concenetation(NFA<T> first, NFA<T> second) {
         first.getExit().setFinal(false);
         first.getExit().addEpsilonTransitions(second.getEntry());
@@ -65,6 +56,7 @@ public class NFABuilder<T> {
      * @param second
      * @return
      */
+    @Override
     public NFA<T> alternation(NFA<T> first, NFA<T> second) {
         first.getExit().setFinal(false);
         second.getExit().setFinal(false);
@@ -82,6 +74,7 @@ public class NFABuilder<T> {
         return newNFA;
     }
 
+    @Override
     public NFA<T> inverse(NFA<T> nfa) {
         //TODO implement a reverse logic
         nfa.getExit().setFinal(false);

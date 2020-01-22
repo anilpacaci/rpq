@@ -1,28 +1,24 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query.sparql;
 
 import ca.uwaterloo.cs.streamingrpq.stree.query.NFA;
-import ca.uwaterloo.cs.streamingrpq.stree.query.NFABuilder;
+import ca.uwaterloo.cs.streamingrpq.stree.query.NFAAutomataBuilder;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.jena.sparql.path.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Stack;
 
-public class ARQPathVisitor implements PathVisitor {
+public class ARQPathVisitor<A> implements PathVisitor {
 
     private final Logger logger = LoggerFactory.getLogger(ARQPathVisitor.class);
 
 
-    private NFABuilder<String> nfaBuilder;
+    private NFAAutomataBuilder<String> automataBuilder;
     private Stack<NFA<String>> nfaStack;
 
     public ARQPathVisitor() {
-        this.nfaBuilder = new NFABuilder<>();
+        this.automataBuilder = new NFAAutomataBuilder<>();
         this.nfaStack = new Stack<>();
     }
 
@@ -33,7 +29,7 @@ public class ARQPathVisitor implements PathVisitor {
     @Override
     public void visit(P_Link pathNode){
         String localName = pathNode.getNode().getLocalName();
-        NFA<String> nfa = nfaBuilder.transition(localName);
+        NFA<String> nfa = automataBuilder.transition(localName);
         nfaStack.push(nfa);
         return;
     }
@@ -60,7 +56,7 @@ public class ARQPathVisitor implements PathVisitor {
         String localName = subPath.getNode().getLocalName();
 
 
-        NFA<String> nfa = nfaBuilder.transition(Constants.REVERSE_LABEL_SYMBOL + localName);
+        NFA<String> nfa = automataBuilder.transition(Constants.REVERSE_LABEL_SYMBOL + localName);
 
         nfaStack.push(nfa);
         return;
@@ -71,7 +67,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(pathMod);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -82,7 +78,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(pFixedLength);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -107,7 +103,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(path);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -118,7 +114,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(path);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -128,7 +124,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(path);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -139,7 +135,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(path);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -149,7 +145,7 @@ public class ARQPathVisitor implements PathVisitor {
         createIfNotExists(path);
 
         NFA<String> nfa = nfaStack.pop();
-        NFA<String> resultNFA = nfaBuilder.kleeneStar(nfa);
+        NFA<String> resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
         return;
@@ -163,7 +159,7 @@ public class ARQPathVisitor implements PathVisitor {
         NFA<String> rightNFA = nfaStack.pop();
         NFA<String> leftNFA = nfaStack.pop();
 
-        NFA<String> resultNFA = nfaBuilder.alternation(leftNFA, rightNFA);
+        NFA<String> resultNFA = automataBuilder.alternation(leftNFA, rightNFA);
         nfaStack.push(resultNFA);
 
         return;
@@ -176,7 +172,7 @@ public class ARQPathVisitor implements PathVisitor {
         NFA<String> rightNFA = nfaStack.pop();
         NFA<String> leftNFA = nfaStack.pop();
 
-        NFA<String> resultNFA = nfaBuilder.concenetation(leftNFA, rightNFA);
+        NFA<String> resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
         nfaStack.push(resultNFA);
 
         return;
