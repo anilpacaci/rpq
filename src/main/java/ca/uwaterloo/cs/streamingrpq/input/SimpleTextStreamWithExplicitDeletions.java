@@ -18,7 +18,6 @@ public class SimpleTextStreamWithExplicitDeletions extends TextFileStream<Intege
 
     public InputTuple<Integer, Integer, String> next() {
         String line = null;
-        InputTuple tuple = null;
         try {
             while((line = bufferedReader.readLine()) != null) {
                 int i = parseLine(line);
@@ -70,12 +69,12 @@ public class SimpleTextStreamWithExplicitDeletions extends TextFileStream<Intege
 
     @Override
     protected void setSource() {
-        tuple.setSource(splitResults[0]);
+        tuple.setSource(Integer.parseInt(splitResults[0]));
     }
 
     @Override
     protected void setTarget() {
-        tuple.setTarget(splitResults[2]);
+        tuple.setTarget(Integer.parseInt(splitResults[2]));
     }
 
     @Override

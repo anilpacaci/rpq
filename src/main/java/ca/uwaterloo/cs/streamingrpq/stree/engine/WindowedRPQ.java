@@ -5,6 +5,7 @@ import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.Delta;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.ObjectFactoryArbitrary;
 import ca.uwaterloo.cs.streamingrpq.stree.data.simple.ObjectFactorySimple;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.MetricRegistry;
@@ -48,7 +49,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param numOfThreads Total number of executor threads
      * @param semantics Resulting path semantics: @{@link Semantics}
      */
-    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
+    public WindowedRPQ(Automata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
         super(query, capacity);
         if (semantics.equals(Semantics.ARBITRARY)) {
             this.objectFactory = new ObjectFactoryArbitrary();
@@ -71,7 +72,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param slideSize Slide interval in milliseconds
 
      */
-    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+    public WindowedRPQ(Automata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
     }
 
@@ -83,7 +84,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param slideSize Slide interval in milliseconds
      * @param numOfThreads Total number of executor threads
      */
-    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+    public WindowedRPQ(Automata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         this(query, capacity, windowSize, slideSize, 1, Semantics.ARBITRARY);
     }
 

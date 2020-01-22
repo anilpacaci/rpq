@@ -44,7 +44,7 @@ public abstract class TextFileStream<S, T, L> {
 
     protected String splitResults[];
 
-    protected InputTuple tuple = null;
+    protected InputTuple<S, T, L> tuple = null;
 
     public void open(String filename) {
         this.filename = filename;

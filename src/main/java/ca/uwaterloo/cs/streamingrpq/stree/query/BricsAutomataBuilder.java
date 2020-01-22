@@ -1,8 +1,15 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query;
 
+import ca.uwaterloo.cs.streamingrpq.stree.query.sparql.LinearARQOpVisitor;
 import com.google.common.collect.Maps;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.BasicAutomata;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.Syntax;
+import org.apache.jena.sparql.algebra.Algebra;
+import org.apache.jena.sparql.algebra.Op;
+import org.apache.jena.sparql.algebra.OpWalker;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -21,6 +28,27 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
     public BricsAutomataBuilder() {
         this.labelMappings = Maps.newHashMap();
         this.nextChar = Character.MIN_VALUE;
+    }
+
+    /**
+     * Constructs an automaton from a given SPARQL query string with linear property paths
+     * @param queryString
+     * @return
+     */
+    public BricsAutomata fromSPARQL(String queryString) {
+        // parse the query and generate Algebra representation
+        Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
+        Op algebra = Algebra.compile(query);
+
+        // walk over query tree to construct an Automaton
+        LinearARQOpVisitor<Automaton> visitor = new LinearARQOpVisitor<>(this);
+        OpWalker.walk(algebra, visitor);
+
+        // generate Automaton that is recognized by the RPQEngine
+        Automaton nfa = visitor.getAutomaton();
+        BricsAutomata automata = new BricsAutomata(nfa, this.getLabelMappings());
+
+        return  automata;
     }
 
     @Override

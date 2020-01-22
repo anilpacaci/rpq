@@ -4,8 +4,12 @@ import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStreamWithExplicitDeletions;
 import ca.uwaterloo.cs.streamingrpq.input.TextFileStream;
 import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.query.BricsAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.query.BricsAutomataBuilder;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
@@ -16,6 +20,8 @@ public class WindowedSpanningTreeTest {
 
     static String filename = "src/main/resources/diamondgraph.txt";
 
+    static String queryString = "ASK { { ?x1 (<a>/<b>)/(<a>/<b>)* ?x2. } }";
+
     public static void main(String[] args) {
         ManualQueryAutomata<String> query = new ManualQueryAutomata<String>(3);
         query.addFinalState(2);
@@ -23,7 +29,11 @@ public class WindowedSpanningTreeTest {
         query.addTransition(1, "b", 2);
         query.addTransition(2, "a", 1);
 
-        RPQEngine<String> rapqEngine = new WindowedRPQ<>(query, 100, 5, 1, 10, Semantics.ARBITRARY);
+        BricsAutomataBuilder builder = new BricsAutomataBuilder();
+        BricsAutomata bricsQuery = builder.fromSPARQL(queryString);
+        bricsQuery.finalize();
+
+        RPQEngine<String> rapqEngine = new WindowedRPQ<String, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(bricsQuery, 100, 5, 1, 10, Semantics.ARBITRARY);
         MetricRegistry metricRegistry = new MetricRegistry();
         rapqEngine.addMetricRegistry(metricRegistry);
 

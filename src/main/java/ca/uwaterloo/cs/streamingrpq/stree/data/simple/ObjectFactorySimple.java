@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.data.simple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.AbstractTreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeNodeRSPQTreeExpansionJob;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 
 import java.util.Queue;
 
@@ -19,7 +20,7 @@ public class ObjectFactorySimple<V> implements ObjectFactory<V, SpanningTreeRSPQ
     }
 
     @Override
-    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, ManualQueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         TreeNodeRSPQTreeExpansionJob<L> expansionJob = new TreeNodeRSPQTreeExpansionJob<>(productGraph, automata, results, isDeletion);
         return expansionJob;
     }

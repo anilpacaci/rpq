@@ -2,6 +2,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import com.codahale.metrics.*;
 import com.google.common.collect.Queues;
 
@@ -25,14 +26,14 @@ public abstract class RPQEngine<L> {
     protected Timer fullTimer;
 
     protected ProductGraph<Integer, L> productGraph;
-    protected ManualQueryAutomata<L> automata;
+    protected Automata<L> automata;
 
     protected Queue<ResultPair<Integer>> results;
 
     protected int edgeCount = 0;
 
 
-    protected RPQEngine(ManualQueryAutomata<L> query, int capacity) {
+    protected RPQEngine(Automata<L> query, int capacity) {
         automata = query;
         results = Queues.newConcurrentLinkedQueue();
         productGraph = new ProductGraph<>(capacity, query);
