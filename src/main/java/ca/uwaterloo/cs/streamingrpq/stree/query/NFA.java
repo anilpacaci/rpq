@@ -1,6 +1,9 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query;
 
-public class NFA<T> {
+import java.util.Map;
+import java.util.Set;
+
+public class NFA<T> extends Automata<T> {
 
     private State<T> entry;
     private State<T> exit;
@@ -15,7 +18,6 @@ public class NFA<T> {
         this.exit = exit;
     }
 
-
     public State<T> getEntry() {
         return entry;
     }
@@ -24,4 +26,28 @@ public class NFA<T> {
         return exit;
     }
 
+    @Override
+    public boolean isFinalState(int state) {
+        return false;
+    }
+
+    @Override
+    public Map<Integer, Integer> getTransition(T label) {
+        return null;
+    }
+
+    @Override
+    public int getNumOfStates() {
+        return 0;
+    }
+
+    @Override
+    public Set<Integer> getFinalStates() {
+        return null;
+    }
+
+    @Override
+    public Set<T> getAlphabet() {
+        return null;
+    }
 }
