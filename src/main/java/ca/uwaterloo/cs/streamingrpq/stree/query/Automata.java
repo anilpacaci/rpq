@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query;
 
 import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import com.google.common.collect.Maps;
 
 import java.util.*;
 
@@ -10,6 +11,12 @@ import java.util.*;
 public abstract class Automata<L> {
 
     private boolean containmentMark[][];
+
+    protected HashMap<L, HashMap<Integer, Integer>> labelTransitions;
+
+    protected Automata() {
+        labelTransitions = Maps.newHashMap();
+    }
 
     public abstract boolean isFinalState(int state);
 

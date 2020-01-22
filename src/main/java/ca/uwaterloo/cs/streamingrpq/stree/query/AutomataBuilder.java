@@ -11,6 +11,4 @@ public interface AutomataBuilder<A, C> {
     A concenetation(A first, A second);
 
     A alternation(A first, A second);
-
-    A inverse(A nfa);
 }

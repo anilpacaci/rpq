@@ -3,7 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.stree.query;
 import com.google.common.collect.Multimap;
 import dk.brics.automaton.BasicAutomata;
 
-public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
+public class NFAAutomataBuilder implements AutomataBuilder<NFA, String> {
 
     public NFAAutomataBuilder() {
 
@@ -15,8 +15,8 @@ public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
      * @return
      */
     @Override
-    public NFA<T> transition(T label) {
-        NFA<T> nfa = new NFA<>();
+    public NFA transition(String label) {
+        NFA nfa = new NFA();
         nfa.getEntry().addTransition(label, nfa.getExit());
         nfa.getExit().setFinal(true);
 
@@ -29,7 +29,7 @@ public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
      * @return
      */
     @Override
-    public NFA<T> kleeneStar(NFA<T> nfa) {
+    public NFA kleeneStar(NFA nfa) {
         nfa.getEntry().addEpsilonTransitions(nfa.getExit());
         nfa.getExit().addEpsilonTransitions(nfa.getEntry());
 
@@ -43,11 +43,11 @@ public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
      * @return
      */
     @Override
-    public NFA<T> concenetation(NFA<T> first, NFA<T> second) {
+    public NFA concenetation(NFA first, NFA second) {
         first.getExit().setFinal(false);
         first.getExit().addEpsilonTransitions(second.getEntry());
 
-        return new NFA<>(first.getEntry(), second.getExit());
+        return new NFA(first.getEntry(), second.getExit());
     }
 
     /**
@@ -57,11 +57,11 @@ public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
      * @return
      */
     @Override
-    public NFA<T> alternation(NFA<T> first, NFA<T> second) {
+    public NFA alternation(NFA first, NFA second) {
         first.getExit().setFinal(false);
         second.getExit().setFinal(false);
 
-        NFA<T> newNFA = new NFA<>();
+        NFA newNFA = new NFA();
 
         newNFA.getEntry().addEpsilonTransitions(first.getEntry());
         newNFA.getEntry().addEpsilonTransitions(second.getEntry());
@@ -72,18 +72,5 @@ public class NFAAutomataBuilder<T> implements AutomataBuilder<NFA<T>, T> {
         newNFA.getExit().setFinal(true);
 
         return newNFA;
-    }
-
-    @Override
-    public NFA<T> inverse(NFA<T> nfa) {
-        //TODO implement a reverse logic
-        nfa.getExit().setFinal(false);
-        nfa.getEntry().setFinal(true);
-
-        Multimap<T, State> transitions = nfa.getEntry().getTransitions();
-
-        NFA<T> inverseNFA = new NFA<>();
-
-        return inverseNFA;
     }
 }

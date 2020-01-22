@@ -13,16 +13,13 @@ public class QueryAutomata<L> extends Automata<L> {
 
     private HashMap<Integer, HashMap<L, Integer>> transitions;
 
-
-    private HashMap<L, HashMap<Integer, Integer>> labelTransitions;
-
     private boolean containmentMark[][];
 
     public QueryAutomata(int numOfStates) {
+        super();
         this.containmentMark = new boolean[numOfStates][numOfStates];
         finalStates = new HashSet<>();
         transitions =  new HashMap<>();
-        labelTransitions = new HashMap<>();
     	this.numOfStates = numOfStates;
     	// initialize transition maps for all
     	for(int i = 0; i < numOfStates; i++) {

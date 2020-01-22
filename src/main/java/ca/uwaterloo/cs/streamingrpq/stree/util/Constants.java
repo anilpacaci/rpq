@@ -23,4 +23,6 @@ public class Constants {
     public static final int HISTOGRAM_BUCKET_SIZE = 526336;
 
     public static final char REVERSE_LABEL_SYMBOL = '^';
+
+    public static final String EPSILON_TRANSITION = "EPSILON";
 }
