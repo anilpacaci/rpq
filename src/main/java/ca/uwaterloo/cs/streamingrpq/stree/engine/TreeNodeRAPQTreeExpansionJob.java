@@ -12,7 +12,7 @@ import java.util.Queue;
 public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>{
 
 
-    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, ManualQueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         super(productGraph, automata, results, isDeletion);
 
         // initialize node types

@@ -1,7 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.*;
 
@@ -10,23 +10,70 @@ import java.util.*;
  */
 public abstract class Automata<L> {
 
-    private boolean containmentMark[][];
+    // suffix language containment matrix for conflict detection
+    protected boolean containmentMark[][];
 
+    // store source-target state pairs for each label
     protected HashMap<L, HashMap<Integer, Integer>> labelTransitions;
+
+    // for mapping states to contigious range from [0..n-1]
+    private int stateCounter;
+    private Map<Object, Integer> stateNumberMapping;
+
+    // set of final states
+    private Set<Integer> finalStates;
 
     protected Automata() {
         labelTransitions = Maps.newHashMap();
+        stateCounter = 0;
+        stateNumberMapping = Maps.newHashMap();
+        finalStates = Sets.newHashSet();
     }
 
-    public abstract boolean isFinalState(int state);
+    /**
+     * Finalize function must be called before query can be used for processing
+     * It performs optimizations that are provided by specific implementation such as determinization, minimization etc.
+     * This method also maps all states to a contigious range, and generates mappings for states and transitions
+     * Finally, it computes the containment relation to be used for conlfict detection
+     */
+    public abstract void finalize();
 
-    public abstract Map<Integer, Integer> getTransition(L label);
+    public int getNumOfStates() {
+        // after finalization, state counter will point the number of states
+        return stateCounter;
+    }
 
-    public abstract int getNumOfStates();
+    public Set<L> getAlphabet() {
+        return this.labelTransitions.keySet();
+    }
 
-    public abstract Set<Integer> getFinalStates();
 
-    public abstract Set<L> getAlphabet();
+    public Map<Integer, Integer> getTransition(L label) {
+        return labelTransitions.getOrDefault(label, Maps.newHashMap());
+    }
+
+    public void addFinalState(int state) {
+        finalStates.add(state);
+    }
+
+    public boolean isFinalState(int state) {
+        return finalStates.contains(state);
+    }
+
+    /**
+     * Assign each state to a consecutive range in [0..n-1]
+     * @param state
+     * @return
+     */
+    protected int getStateNumber(Object state) {
+        if(stateNumberMapping.containsKey(state)) {
+            return stateNumberMapping.get(state);
+        } else {
+            int stateNumber = stateCounter++;
+            stateNumberMapping.put(state, stateNumber);
+            return  stateNumber;
+        }
+    }
 
     public boolean hasContainment(Integer stateQ, Integer stateT) {
         if(stateQ == null) {
@@ -35,7 +82,7 @@ public abstract class Automata<L> {
         return !this.containmentMark[stateQ][stateT];
     }
 
-    public void computeContainmentRelationship() {
+    protected void computeContainmentRelationship() {
         int alphabetSize = getAlphabet().size();
         int numOfStates = getNumOfStates();
 

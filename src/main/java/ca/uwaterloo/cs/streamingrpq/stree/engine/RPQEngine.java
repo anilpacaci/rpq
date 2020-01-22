@@ -2,13 +2,9 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
-import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import com.codahale.metrics.*;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Queues;
 
-import java.sql.Time;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -29,14 +25,14 @@ public abstract class RPQEngine<L> {
     protected Timer fullTimer;
 
     protected ProductGraph<Integer, L> productGraph;
-    protected QueryAutomata<L> automata;
+    protected ManualQueryAutomata<L> automata;
 
     protected Queue<ResultPair<Integer>> results;
 
     protected int edgeCount = 0;
 
 
-    protected RPQEngine(QueryAutomata<L> query, int capacity) {
+    protected RPQEngine(ManualQueryAutomata<L> query, int capacity) {
         automata = query;
         results = Queues.newConcurrentLinkedQueue();
         productGraph = new ProductGraph<>(capacity, query);

@@ -1,7 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
 import ca.uwaterloo.cs.streamingrpq.input.*;
-import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
@@ -76,7 +76,7 @@ public class STQueryRunner {
         }
 
         RPQEngine rpq;
-        QueryAutomata<String> query;
+        ManualQueryAutomata<String> query;
         try {
             query = MazeQueries.getMazeQuery(queryName, predicateString);
         } catch (IllegalArgumentException e) {

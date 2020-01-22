@@ -6,19 +6,16 @@ import com.google.common.collect.Multimap;
 
 import java.util.*;
 
-public class QueryAutomata<L> extends Automata<L> {
-
-    private int numOfStates;
-    private Set<Integer> finalStates;
+public class ManualQueryAutomata<L> extends Automata<L> {
 
     private HashMap<Integer, HashMap<L, Integer>> transitions;
 
-    private boolean containmentMark[][];
+    // overwrite the private field in super class
+    private int numOfStates;
 
-    public QueryAutomata(int numOfStates) {
+    public ManualQueryAutomata(int numOfStates) {
         super();
         this.containmentMark = new boolean[numOfStates][numOfStates];
-        finalStates = new HashSet<>();
         transitions =  new HashMap<>();
     	this.numOfStates = numOfStates;
     	// initialize transition maps for all
@@ -26,17 +23,6 @@ public class QueryAutomata<L> extends Automata<L> {
     	    transitions.put(i, new HashMap<L, Integer>());
         }
 	}
-
-    public void addFinalState(int state) {
-        if(state >= numOfStates) {
-            // TODO invalid final state
-        }
-        finalStates.add(state);
-    }
-
-    public boolean isFinalState(int state) {
-        return finalStates.contains(state);
-    }
 
     public void addTransition(int source, L label, int target) {
         HashMap<L, Integer> forwardMap = transitions.get(source);
@@ -48,24 +34,9 @@ public class QueryAutomata<L> extends Automata<L> {
         labelMap.put(source, target);
     }
 
-
-    public Map<Integer, Integer> getTransition(L label) {
-        return labelTransitions.getOrDefault(label, new HashMap<>());
-    }
-
     @Override
-    public int getNumOfStates() {
-        return this.numOfStates;
+    public void finalize() {
+        // only thing to be performed is to compute the containment relationship
+        computeContainmentRelationship();
     }
-
-    @Override
-    public Set<Integer> getFinalStates() {
-        return this.finalStates;
-    }
-
-    @Override
-    public Set<L> getAlphabet() {
-        return this.labelTransitions.keySet();
-    }
-
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ProductGraph<V,L> {
 
-    private QueryAutomata<L> automata;
+    private ManualQueryAutomata<L> automata;
 
     private Map<Hasher.MapKey<V>, ProductGraphNode<V>> nodeIndex;
 
@@ -23,7 +23,7 @@ public class ProductGraph<V,L> {
 
     private final Logger LOG = LoggerFactory.getLogger(ProductGraph.class);
 
-    public ProductGraph(int capacity, QueryAutomata<L> automata) {
+    public ProductGraph(int capacity, ManualQueryAutomata<L> automata) {
         timeOrderedEdges = new LinkedList<GraphEdge<ProductGraphNode<V>>>();
         nodeIndex = Maps.newHashMapWithExpectedSize(capacity);
         this.automata = automata;

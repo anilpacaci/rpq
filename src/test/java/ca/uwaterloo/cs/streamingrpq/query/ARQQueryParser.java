@@ -1,7 +1,8 @@
 package ca.uwaterloo.cs.streamingrpq.query;
 
-import ca.uwaterloo.cs.streamingrpq.stree.query.NFA;
+import ca.uwaterloo.cs.streamingrpq.stree.query.*;
 import ca.uwaterloo.cs.streamingrpq.stree.query.sparql.LinearARQOpVisitor;
+import dk.brics.automaton.Automaton;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.Syntax;
@@ -29,16 +30,15 @@ public class ARQQueryParser {
         List<Var> projectVariables = query.getProjectVars();
 
         Op algebra = Algebra.compile(query);
-        LinearARQOpVisitor visitor = new LinearARQOpVisitor();
+        BricsAutomataBuilder automataBuilder = new BricsAutomataBuilder();
+        LinearARQOpVisitor<Automaton> visitor = new LinearARQOpVisitor<>(automataBuilder);
         OpWalker.walk(algebra, visitor);
 
-        NFA<String> nfa = visitor.getAutomaton();
-        
-        
+        Automaton nfa = visitor.getAutomaton();
+        BricsAutomata automata = new BricsAutomata(nfa, automataBuilder.getLabelMappings());
+        automata.finalize();
 
         return;
-
-
     }
 
 

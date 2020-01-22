@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query.sparql;
 
+import ca.uwaterloo.cs.streamingrpq.stree.query.AutomataBuilder;
 import ca.uwaterloo.cs.streamingrpq.stree.query.NFA;
 import ca.uwaterloo.cs.streamingrpq.stree.query.NFAAutomataBuilder;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
@@ -10,17 +11,17 @@ import org.apache.jena.sparql.path.Path;
 
 import java.util.Stack;
 
-public class LinearARQOpVisitor extends OpVisitorBase {
+public class LinearARQOpVisitor<A> extends OpVisitorBase {
 
-    Stack<NFA<String>> nfaStack;
-    private NFAAutomataBuilder<String> automataBuilder;
+    Stack<A> nfaStack;
+    private AutomataBuilder<A, String> automataBuilder;
 
-    public LinearARQOpVisitor() {
+    public LinearARQOpVisitor(AutomataBuilder<A, String> automataBuilder) {
         nfaStack = new Stack<>();
-        automataBuilder = new NFAAutomataBuilder<>();
+        this.automataBuilder = automataBuilder;
     }
 
-    public NFA<String> getAutomaton() {
+    public A getAutomaton() {
         return nfaStack.pop();
     }
 
@@ -31,11 +32,11 @@ public class LinearARQOpVisitor extends OpVisitorBase {
 
     @Override
     public void visit(OpPath opPath) {
-        ARQPathVisitor visitor = new ARQPathVisitor();
+        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder);
         Path path = opPath.getTriplePath().getPath();
         path.visit(visitor);
 
-        NFA<String> nfa = visitor.getAutomaton();
+        A nfa = visitor.getAutomaton();
 
         nfaStack.push(nfa);
 
@@ -47,10 +48,10 @@ public class LinearARQOpVisitor extends OpVisitorBase {
         // this is a linear chain processor so assumption is that all conjuncts form a linear chain.
         // thus we can simply concataneta all conjuncts
         while(nfaStack.size() > 1) {
-            NFA<String> rightNFA = nfaStack.pop();
-            NFA<String> leftNFA = nfaStack.pop();
+            A rightNFA = nfaStack.pop();
+            A leftNFA = nfaStack.pop();
 
-            NFA<String> resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
+            A resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
             nfaStack.push(resultNFA);
         }
 

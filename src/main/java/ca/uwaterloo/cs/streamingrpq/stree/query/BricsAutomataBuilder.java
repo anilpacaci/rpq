@@ -20,7 +20,7 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
 
     public BricsAutomataBuilder() {
         this.labelMappings = Maps.newHashMap();
-        this.nextChar = 0;
+        this.nextChar = Character.MIN_VALUE;
     }
 
     @Override
@@ -48,6 +48,14 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
     public Automaton alternation(Automaton first, Automaton second) {
         Automaton resultAutomaton = first.union(second);
         return resultAutomaton;
+    }
+
+    /**
+     * Immutable String to character mapping as Brics Automata only supports character transitions
+     * @return
+     */
+    public final Map<String, Character> getLabelMappings() {
+        return labelMappings;
     }
 
     private Character getLabelMapping(String label) {

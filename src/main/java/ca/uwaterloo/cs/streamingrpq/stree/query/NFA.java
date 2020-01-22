@@ -1,10 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query;
 
 import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,17 +14,12 @@ public class NFA extends Automata<String> {
     private State<String> exit;
 
     private boolean isFinalized;
-    private int stateCounter;
-    private Map<State, Integer> stateNumberMapping;
 
     public NFA() {
         super();
         entry = new State<>();
         exit = new State<>();
         isFinalized = false;
-
-        stateCounter = 0;
-        this.stateNumberMapping = Maps.newHashMap();
     }
 
     public NFA(State<String> entry, State<String>  exit) {
@@ -73,6 +65,10 @@ public class NFA extends Automata<String> {
         while(!queue.isEmpty()) {
             State<String> state = queue.poll();
             visited.add(state);
+            // mark if it is final state
+            if(state.isFinal()) {
+                addFinalState(getStateNumber(state));
+            }
 
             // go over all outgoing edges with a labels
             for(String label : state.getTransitions().keySet()) {
@@ -100,45 +96,59 @@ public class NFA extends Automata<String> {
 
         }
 
+        // finally perform containment relationship computations
+        computeContainmentRelationship();
     }
 
-    /**
-     * Assign each state to a consecutive range in [0..n-1]
-     * @param state
-     * @return
-     */
-    private int getStateNumber(State<String> state) {
-        if(stateNumberMapping.containsKey(state)) {
-            return stateNumberMapping.get(state);
-        } else {
-            int stateNumber = stateCounter++;
-            stateNumberMapping.put(state, stateNumber);
-            return  stateNumber;
+    public static class State<T> {
+
+        private boolean isFinal;
+
+        private Multimap<T, State> transitions;
+        private Set<State> emptyTransitions;
+
+        public State() {
+            this(false);
         }
-    }
 
-    @Override
-    public boolean isFinalState(int state) {
-        return false;
-    }
+        public State(boolean isFinal) {
+            this.isFinal = isFinal;
+            transitions = HashMultimap.create();
+            emptyTransitions = Sets.newHashSet();
+        }
 
-    @Override
-    public Map<Integer, Integer> getTransition(String label) {
-        return null;
-    }
+        public State(State<T> other, boolean isFinal) {
+            this.isFinal = isFinal;
+            transitions = HashMultimap.create(other.transitions);
+            emptyTransitions = Sets.newHashSet(other.emptyTransitions);
+        }
 
-    @Override
-    public int getNumOfStates() {
-        return 0;
-    }
+        public void addTransition(T label, State next) {
+            transitions.put(label, next);
+        }
 
-    @Override
-    public Set<Integer> getFinalStates() {
-        return null;
-    }
+        public void addEpsilonTransitions(State next) {
+            emptyTransitions.add(next);
+        }
 
-    @Override
-    public Set<String> getAlphabet() {
-        return null;
+        public boolean isFinal() {
+            return isFinal;
+        }
+
+        public void setFinal(boolean aFinal) {
+            isFinal = aFinal;
+        }
+
+        public Multimap<T, State> getTransitions() {
+            return transitions;
+        }
+
+        public Collection<State> getTransitions(T label) {
+            return transitions.get(label);
+        }
+
+        public Set<State> getEmptyTransitions() {
+            return emptyTransitions;
+        }
     }
 }

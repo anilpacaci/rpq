@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -49,7 +48,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param numOfThreads Total number of executor threads
      * @param semantics Resulting path semantics: @{@link Semantics}
      */
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
+    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
         super(query, capacity);
         if (semantics.equals(Semantics.ARBITRARY)) {
             this.objectFactory = new ObjectFactoryArbitrary();
@@ -72,7 +71,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param slideSize Slide interval in milliseconds
 
      */
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
+    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize) {
         this(query, capacity, windowSize, slideSize, 1);
     }
 
@@ -84,7 +83,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param slideSize Slide interval in milliseconds
      * @param numOfThreads Total number of executor threads
      */
-    public WindowedRPQ(QueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
+    public WindowedRPQ(ManualQueryAutomata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads) {
         this(query, capacity, windowSize, slideSize, 1, Semantics.ARBITRARY);
     }
 

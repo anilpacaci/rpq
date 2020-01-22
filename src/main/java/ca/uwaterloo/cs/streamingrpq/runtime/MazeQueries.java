@@ -1,19 +1,19 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
-import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
 
 /**
  * Created by anilpacaci on 2019-10-13.
  */
 public class MazeQueries {
 
-    public static  <L> QueryAutomata<L> getMazeQuery(String queryName, L... predicateString) {
-        QueryAutomata<L> query;
+    public static  <L> ManualQueryAutomata<L> getMazeQuery(String queryName, L... predicateString) {
+        ManualQueryAutomata<L> query;
 
         switch (queryName) {
             case "robotic1" :
                 checkArguments(queryName, 1, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[0], 1);
                 query.addFinalState(0);
@@ -21,14 +21,14 @@ public class MazeQueries {
                 break;
             case "robotic2":
                 checkArguments(queryName, 2, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 1);
                 query.addFinalState(1);
                 break;
             case "robotic3":
                 checkArguments(queryName, 4, predicateString);
-                query = new QueryAutomata<>(4);
+                query = new ManualQueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 1);
                 query.addTransition(1, predicateString[2], 2);
@@ -40,7 +40,7 @@ public class MazeQueries {
                 break;
             case "robotic4":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(0, predicateString[1], 1);
                 query.addTransition(0, predicateString[2], 1);
@@ -52,7 +52,7 @@ public class MazeQueries {
                 break;
             case "robotic5":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(3);
+                query = new ManualQueryAutomata<>(3);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 1);
                 query.addTransition(1, predicateString[2], 2);
@@ -60,7 +60,7 @@ public class MazeQueries {
                 break;
             case "robotic6":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(4);
+                query = new ManualQueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 2);
@@ -71,7 +71,7 @@ public class MazeQueries {
                 break;
             case "robotic7":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(3);
+                query = new ManualQueryAutomata<>(3);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 2);
                 query.addTransition(2, predicateString[2], 2);
@@ -79,7 +79,7 @@ public class MazeQueries {
                 break;
             case "robotic8":
                 checkArguments(queryName, 2, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(0, predicateString[1], 1);
                 query.addTransition(1, predicateString[1], 1);
@@ -87,7 +87,7 @@ public class MazeQueries {
                 break;
             case "robotic9":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(0, predicateString[1], 1);
                 query.addTransition(0, predicateString[2], 1);
@@ -98,7 +98,7 @@ public class MazeQueries {
                 break;
             case "robotic10":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(0, predicateString[1], 1);
                 query.addTransition(1, predicateString[2], 1);
@@ -106,7 +106,7 @@ public class MazeQueries {
                 break;
             case "robotic11":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(4);
+                query = new ManualQueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 2);
                 query.addTransition(2, predicateString[2], 3);
@@ -114,7 +114,7 @@ public class MazeQueries {
                 break;
             case "robotic12":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(2);
+                query = new ManualQueryAutomata<>(2);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(0, predicateString[1], 1);
                 query.addTransition(0, predicateString[2], 1);
@@ -122,7 +122,7 @@ public class MazeQueries {
                 break;
             case "robotic13":
                 checkArguments(queryName, 3, predicateString);
-                query = new QueryAutomata<>(4);
+                query = new ManualQueryAutomata<>(4);
                 query.addTransition(0, predicateString[0], 1);
                 query.addTransition(1, predicateString[1], 2);
                 query.addTransition(1, predicateString[2], 3);

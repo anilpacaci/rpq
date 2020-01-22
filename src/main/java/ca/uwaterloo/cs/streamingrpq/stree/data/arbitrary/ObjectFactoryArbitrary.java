@@ -19,7 +19,7 @@ public class ObjectFactoryArbitrary<V> implements ObjectFactory<V, SpanningTreeR
     }
 
     @Override
-    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, QueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, ManualQueryAutomata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
         TreeNodeRAPQTreeExpansionJob<L> expansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, isDeletion);
         return expansionJob;
     }

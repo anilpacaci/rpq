@@ -3,7 +3,7 @@ package ca.uwaterloo.cs.streamingrpq;
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.input.SimpleTextStreamWithExplicitDeletions;
 import ca.uwaterloo.cs.streamingrpq.input.TextFileStream;
-import ca.uwaterloo.cs.streamingrpq.stree.data.QueryAutomata;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
@@ -17,7 +17,7 @@ public class WindowedSpanningTreeTest {
     static String filename = "src/main/resources/diamondgraph.txt";
 
     public static void main(String[] args) {
-        QueryAutomata<String> query = new QueryAutomata<String>(3);
+        ManualQueryAutomata<String> query = new ManualQueryAutomata<String>(3);
         query.addFinalState(2);
         query.addTransition(0, "a", 1);
         query.addTransition(1, "b", 2);
