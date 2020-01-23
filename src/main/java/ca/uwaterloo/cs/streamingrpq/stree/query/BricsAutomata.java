@@ -27,6 +27,14 @@ public class BricsAutomata extends Automata<String> {
         this.automaton = automaton;
     }
 
+    public int getBricsStates() {
+        return this.automaton.getNumberOfStates();
+    }
+
+    public int getBricsTransitions() {
+        return this.automaton.getNumberOfTransitions();
+    }
+
     public void finalize() {
         // determinize and minimizes the given automaton
         automaton.minimize();

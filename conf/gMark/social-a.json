@@ -6,21 +6,147 @@
   "report-folder" : "/home/apacaci/sgraffito/results/social-a/",
   "buffer-size" : 50000000,
   "heap-size" : 192,
-  "timeout" : 300,
+  "timeout" : 600,
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
     {
       "query-name" : "query-0",
       "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
+      "window-size" : 400000,
+      "slide-size" : 40000,
       "thread-count" : 32
     },
     {
       "query-name" : "query-1",
       "semantics" : "arbitrary",
-      "window-size" : 864000,
-      "slide-size" : 86400,
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
       "thread-count" : 32
     }
   ]
