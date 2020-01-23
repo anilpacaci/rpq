@@ -22,18 +22,6 @@ public class LDBCStream extends TextFileStream<Integer, Integer, String> {
 
     private static int FIELD_COUNT = 4;
 
-
-    @Override
-    protected int parseLine(String line) {
-        int i = 0;
-        Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
-        for(i = 0; iterator.hasNext() && i < 4; i++) {
-            splitResults[i] = iterator.next();
-        }
-
-        return i;
-    }
-
     @Override
     protected int getRequiredNumberOfFields() {
         return FIELD_COUNT;
