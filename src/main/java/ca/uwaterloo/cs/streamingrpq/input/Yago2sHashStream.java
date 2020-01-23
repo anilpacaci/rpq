@@ -22,17 +22,6 @@ public class Yago2sHashStream extends TextFileStream {
     }
 
     @Override
-    protected int parseLine(String line) {
-        int i = 0;
-        Iterator<String> iterator = Splitter.on('\t').trimResults().split(line).iterator();
-        for(i = 0; iterator.hasNext() && i < 4; i++) {
-            splitResults[i] = iterator.next();
-        }
-
-        return i;
-    }
-
-    @Override
     protected void setSource() {
         tuple.setSource(splitResults[0]);
     }

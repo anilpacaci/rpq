@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class TextFileStream<S, T, L> {
 
+    private final char FIELD_SEPERATOR = '\t';
+
     private final Logger logger = LoggerFactory.getLogger(TextFileStream.class);
 
     protected FileReader fileStream;
@@ -82,6 +84,30 @@ public abstract class TextFileStream<S, T, L> {
     public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
         this.startTimestamp = startTimestamp;
         open(filename);
+    }
+
+    /**
+     * Parse a single line from the source and populate splitResults for the creation of the next tuple
+     * @param line
+     * @return total number of fields parsed from the line
+     */
+    protected int parseLine(String line) {
+        int i = 0;
+        Iterator<String> iterator = Splitter.on(getFieldSeperator()).trimResults().split(line).iterator();
+        for(i = 0; iterator.hasNext() && i < 4; i++) {
+            splitResults[i] = iterator.next();
+        }
+
+        return i;
+    }
+
+    /**
+     * Seperator character that used to parse fields from a given line.
+     * Default seperator is <code>tab</code> character. Must be overriden by implementations if a different seperator is used
+     * @return the field separator, TAB by default
+     */
+    protected char getFieldSeperator() {
+        return FIELD_SEPERATOR;
     }
 
     /**
@@ -150,13 +176,6 @@ public abstract class TextFileStream<S, T, L> {
      * @return
      */
     protected abstract int getRequiredNumberOfFields();
-
-    /**
-     * Parse a single line from the source and populate splitResults for the creation of the next tuple
-     * @param line
-     * @return total number of fields parsed from the line
-     */
-    protected abstract int parseLine(String line);
 
     protected abstract void setSource();
 
