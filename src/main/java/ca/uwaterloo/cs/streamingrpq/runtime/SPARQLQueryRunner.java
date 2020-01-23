@@ -1,11 +1,9 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
 import ca.uwaterloo.cs.streamingrpq.input.*;
-import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
-import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
@@ -14,18 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by anilpacaci on 2019-01-31.
- */
-public class STQueryRunner {
+public class SPARQLQueryRunner {
 
-    private static Logger logger = LoggerFactory.getLogger(STQueryRunner.class);
+    private static Logger logger = LoggerFactory.getLogger(SPARQLQueryRunner.class);
 
     public static void main(String[] args) {
-
         CommandLineParser parser = new DefaultParser();
         CommandLine line = null;
         try {
@@ -34,7 +27,10 @@ public class STQueryRunner {
             logger.error("Command line argument can NOT be parsed", e);
             return;
         }
+
+        // parse all necessary command line options
         String filename = line.getOptionValue("f");
+        String queryFolder = line.getOptionValue("q");
         String inputType = line.getOptionValue("t");
         Integer inputSize = Integer.parseInt(line.getOptionValue("s"));
         Integer maxSize = Integer.parseInt(line.getOptionValue("s"));
@@ -50,10 +46,7 @@ public class STQueryRunner {
 
         String recordCSVFilePath = line.getOptionValue("r");
 
-        String[] predicateString = line.getOptionValues("l");
-        Integer[] predicates = Arrays.stream(predicateString).map(s -> s.hashCode()).toArray(Integer[]::new);
-
-        TextFileStream stream;
+        TextFileStream<Integer, Integer, String> stream;
 
         switch (inputType) {
             case "tsv":
@@ -71,31 +64,37 @@ public class STQueryRunner {
             case "ldbc":
                 stream = new LDBCStream();
                 break;
+            case "gmark":
+                stream = new gMarkInputStream();
+                break;
             default:
                 stream = new Yago2sTSVStream();
         }
 
-        RPQEngine rpq;
-        ManualQueryAutomata<String> query;
+        RPQEngine<String> rpq;
+        Automata<String> query;
+
         try {
-            query = MazeQueries.getMazeQuery(queryName, predicateString);
-        } catch (IllegalArgumentException e) {
-            logger.error("Error creating the query", e);
+            query = gMarkQueries.getQuery(queryFolder, queryName);
+        } catch (Exception e) {
+            logger.error("Error duing creation of query {}", queryName, e);
             return;
         }
 
         rpq = RPQEngine.<String>createWindowedRPQEngine(query, maxSize, windowSize, slideSize, threadCount, pathSemantics);
 
+        // initialize and prepare the input stream for consumption
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
 
+        // metric collection initialization
         MetricRegistry metricRegistry = new MetricRegistry();
-
         rpq.addMetricRegistry(metricRegistry);
-        // create the metrics directory
         File resultDirectory = new File(recordCSVFilePath);
         resultDirectory.mkdirs();
         CsvReporter reporter = CsvReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(resultDirectory);
         reporter.start(1, TimeUnit.SECONDS);
+
+        // ## Preparation complete - start processing the stream
 
         try {
             InputTuple<Integer, Integer, String> input = stream.next();
@@ -104,6 +103,11 @@ public class STQueryRunner {
             while (input != null) {
                 //retrieve DFA nodes where transition is same as edge label
                 rpq.processEdge(input);
+
+                // now process the reverse tuple
+                reverseInputTuple(input);
+                rpq.processEdge(input);
+
                 // incoming edge fully processed, move to next one
                 input = stream.next();
 
@@ -117,6 +121,8 @@ public class STQueryRunner {
             logger.error("Experiment on main-thread encountered an error: ", e);
         }
 
+        // ### Query execution complete, clean-up
+
         // shutdown the reporter
         reporter.stop();
         reporter.close();
@@ -129,13 +135,13 @@ public class STQueryRunner {
         stream.reset();
         // stream is over so we can close it and close the program
         stream.close();
-
     }
 
     private static Options getCLIOptions() {
         Options options = new Options();
 
         options.addRequiredOption("f", "file", true, "text file to read");
+        options.addRequiredOption("q", "query-directory", true, "Directory containing SPARQL queries ");
         options.addRequiredOption("t", "type", true, "input type");
         options.addRequiredOption("s", "size", true, "maximum DFST size to be allowed");
         options.addRequiredOption("n", "name", true, "name of the query to be run");
@@ -147,12 +153,18 @@ public class STQueryRunner {
         options.addOption("tc", "threadCount", true, "# of Threads for inter-query parallelism");
         options.addOption("dr", "deleteRatio", true, "percentage of deletions in the stream");
 
-        Option labelOption = new Option("l", "labels", true, "list of labels in order");
-        labelOption.setArgs(Option.UNLIMITED_VALUES);
-        labelOption.setValueSeparator(',');
-        labelOption.setRequired(true);
-        options.addOption(labelOption);
-
         return options;
+    }
+
+    /**
+     * Generates a reverse tuple from the input tuple by swapping source and target vertices and prepending
+     * reverse symbol to the tuple label
+     * @param tuple
+     */
+    private static void reverseInputTuple(InputTuple<Integer, Integer, String> tuple) {
+        Integer source = tuple.getSource();
+        tuple.setSource(tuple.getTarget());
+        tuple.setTarget(source);
+        tuple.setLabel(Constants.REVERSE_LABEL_SYMBOL + tuple.getLabel());
     }
 }
