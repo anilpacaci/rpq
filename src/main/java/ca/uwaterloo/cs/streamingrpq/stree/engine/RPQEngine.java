@@ -2,7 +2,12 @@ package ca.uwaterloo.cs.streamingrpq.stree.engine;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
 import ca.uwaterloo.cs.streamingrpq.stree.data.*;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.TreeNodeRAPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.SpanningTreeRSPQ;
+import ca.uwaterloo.cs.streamingrpq.stree.data.simple.TreeNodeRSPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
+import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.*;
 import com.google.common.collect.Queues;
 
@@ -83,4 +88,27 @@ public abstract class RPQEngine<L> {
     public abstract void processEdge(InputTuple<Integer, Integer, L> inputTuple);
 
     public abstract void shutDown();
+
+    /**
+     * Create a windowed RPQ engine ready to execute queries based on given parameters
+     * @param query Automata representation of the standing RPQ
+     * @param capacity Number of spanning trees and index size
+     * @param windowSize Window size in terms of milliseconds
+     * @param slideSize Slide size in terms of milliseconds
+     * @param numOfThreads Total number of threads for ExpansionExecutor Pool
+     * @param semantics arbitrary or simple
+     * @param <L> Type of tuple labels and automata transitions
+     * @return
+     */
+    public static <L> RPQEngine<L> createWindowedRPQEngine(Automata<L> query, int capacity, long windowSize, long slideSize, int numOfThreads, Semantics semantics) {
+        RPQEngine<L> windowedEngine;
+
+        if(semantics.equals(Semantics.ARBITRARY)) {
+            windowedEngine = new WindowedRPQ<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(query, capacity, windowSize, slideSize, numOfThreads, semantics);
+        } else {
+            windowedEngine = new WindowedRPQ<L, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>>(query, capacity, windowSize, slideSize, numOfThreads, semantics);
+        }
+
+        return windowedEngine;
+    }
 }
