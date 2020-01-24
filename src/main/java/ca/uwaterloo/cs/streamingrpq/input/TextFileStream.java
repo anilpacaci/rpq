@@ -138,7 +138,7 @@ public abstract class TextFileStream<S, T, L> {
             while((line = bufferedReader.readLine()) != null) {
                 int i = parseLine(line);
                 // only if we fully
-                if(i == 4) {
+                if(i == getRequiredNumberOfFields()) {
                     setSource();
                     setLabel();
                     setTarget();
