@@ -148,6 +148,146 @@
       "window-size" : 400000,
       "slide-size" : 40000,
       "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
     }
   ]
 }
