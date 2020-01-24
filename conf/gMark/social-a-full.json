@@ -1,0 +1,1413 @@
+{
+  "name" : "social-a",
+  "dataset" : "/hdd1/apacaci/datasets/gmark/social-a/shuffled.txt",
+  "query-directory" : "/hdd1/apacaci/datasets/gmark/social-a/social-a-translated",
+  "input-type" : "gmark",
+  "report-folder" : "/home/apacaci/sgraffito/results/social-a/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 600,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "query-0",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-0",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-1",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-2",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-3",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-4",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-5",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-6",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-7",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-8",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-9",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-10",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-11",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-12",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-13",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-14",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-15",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-16",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-17",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-18",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-19",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-10",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-11",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-12",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-13",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-14",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-15",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-16",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-17",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-18",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-19",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-10",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-11",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-12",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-13",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-14",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-15",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-16",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-17",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-18",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-19",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-10",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-11",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-12",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-13",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-14",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-15",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-16",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-17",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-18",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-19",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-20",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-21",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-22",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-23",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-24",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-25",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-26",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-27",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-28",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-29",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-20",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-21",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-22",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-23",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-24",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-25",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-26",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-27",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-28",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-29",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-20",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-21",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-22",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-23",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-24",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-25",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-26",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-27",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-28",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-29",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-20",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-21",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-22",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-23",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-24",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-25",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-26",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-27",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-28",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-29",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-30",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-31",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-32",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-33",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-34",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-35",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-36",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-37",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-38",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-39",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-30",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-31",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-32",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-33",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-34",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-35",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-36",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-37",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-38",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-39",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-30",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-31",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-32",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-33",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-34",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-35",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-36",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-37",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-38",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-39",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-30",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-31",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-32",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-33",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-34",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-35",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-36",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-37",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-38",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-39",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-40",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-41",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-42",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-43",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-44",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-45",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-46",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-47",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-48",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-49",
+      "semantics" : "arbitrary",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-40",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-41",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-42",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-43",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-44",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-45",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-46",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-47",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-48",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-49",
+      "semantics" : "simple",
+      "window-size" : 400000,
+      "slide-size" : 40000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-40",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-41",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-42",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-43",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-44",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-45",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-46",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-47",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-48",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-49",
+      "semantics" : "arbitrary",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-40",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-41",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-42",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-43",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-44",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-45",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-46",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-47",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-48",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    },
+    {
+      "query-name" : "query-49",
+      "semantics" : "simple",
+      "window-size" : 4000000,
+      "slide-size" : 400000,
+      "thread-count" : 32
+    }
+  ]
+}
