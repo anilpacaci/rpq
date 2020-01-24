@@ -1,7 +1,7 @@
 {
   "name" : "social-a",
-  "dataset" : "/hdd1/apacaci/datasets/ldbc/sf1/update-sorted-unixts.csv",
-  "query-directory" : "/hdd1/apacaci/datasets/ldbc",
+  "dataset" : "/hdd1/apacaci/datasets/gmark/social-a/shuffled.txt",
+  "query-directory" : "/hdd1/apacaci/datasets/gmark/social-a/social-a-translated",
   "input-type" : "gmark",
   "report-folder" : "/home/apacaci/sgraffito/results/social-a/",
   "buffer-size" : 50000000,
