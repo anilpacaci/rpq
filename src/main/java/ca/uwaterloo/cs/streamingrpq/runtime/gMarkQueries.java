@@ -18,7 +18,7 @@ public class gMarkQueries {
 
     public static BricsAutomata getQuery(String datasetLocation, String queryName) {
         // make sure that query name have the correct extension
-        if(queryName.endsWith("sparql")) {
+        if(!queryName.endsWith("sparql")) {
             queryName = queryName + ".sparql";
         }
 

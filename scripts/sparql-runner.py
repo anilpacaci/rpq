@@ -80,11 +80,10 @@ with open(parameters, 'rb') as parameters_handle:
     for run_config in run_configs:
         query_name = run_config["query-name"]
         semantics = run_config["semantics"]
-        labels = run_config["labels"]
         window_size = run_config["window-size"]
         slide_size = run_config["slide-size"]
         thread_count = run_config["thread-count"]
-        delete_ratio = run_config["delete-ratio"]
+        delete_ratio = run_config.get("delete-ratio", 0)
         # reporting folder
         report_csv_path = os.path.join(report_folder, query_name + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
 
