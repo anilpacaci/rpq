@@ -10,8 +10,10 @@ import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.*;
 import com.google.common.collect.Queues;
+import com.google.common.collect.Sets;
 
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,18 +35,18 @@ public abstract class RPQEngine<L> {
     protected ProductGraph<Integer, L> productGraph;
     protected Automata<L> automata;
 
-    protected Queue<ResultPair<Integer>> results;
+    protected Set<ResultPair<Integer>> results;
 
     protected int edgeCount = 0;
 
 
     protected RPQEngine(Automata<L> query, int capacity) {
         automata = query;
-        results = Queues.newConcurrentLinkedQueue();
+        results = Sets.newHashSet();
         productGraph = new ProductGraph<>(capacity, query);
     }
 
-    public Queue<ResultPair<Integer>> getResults() {
+    public Set<ResultPair<Integer>> getResults() {
         return  results;
     }
 

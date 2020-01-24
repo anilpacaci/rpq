@@ -6,6 +6,7 @@ import ca.uwaterloo.cs.streamingrpq.stree.engine.TreeNodeRAPQTreeExpansionJob;
 import ca.uwaterloo.cs.streamingrpq.stree.query.Automata;
 
 import java.util.Queue;
+import java.util.Set;
 
 public class ObjectFactoryArbitrary<V> implements ObjectFactory<V, SpanningTreeRAPQ<V>, TreeNodeRAPQ<V>> {
     @Override
@@ -20,7 +21,7 @@ public class ObjectFactoryArbitrary<V> implements ObjectFactory<V, SpanningTreeR
     }
 
     @Override
-    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public <L> AbstractTreeExpansionJob createExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Set<ResultPair<Integer>> results, boolean isDeletion) {
         TreeNodeRAPQTreeExpansionJob<L> expansionJob = new TreeNodeRAPQTreeExpansionJob<>(productGraph, automata, results, isDeletion);
         return expansionJob;
     }

@@ -19,8 +19,7 @@ public class ARQQueryParser {
     private final Logger logger = LoggerFactory.getLogger(ARQQueryParser.class);
 
 
-    private static final String QUERY_STRING =  "PREFIX : <http://example.org/gmark/>\n" +
-            "ASK { { ?x0 (((:pname/^:pname)|(:pname/^:pname/:pname/^:pname)|(:pname/^:pname/:pname/^:pname))){,3} ?x1 . ?x1 ((^:pstudyAt/^:phasCreator/:pcreationDate)|(^:pstudyAt/:pbirthday)|(^:pstudyAt/:pemail/^:pgender/:pbirthday)) ?x2 . } }";
+    private static final String QUERY_STRING =  "PREFIX : <http://example.org/gmark/> ASK {  {  ?x0 (((:pname/^:pname)|(:pname/^:pname))){,3} ?x1 . } }";
     public static void main(String[] args) {
 
         Query query = QueryFactory.create(QUERY_STRING, Syntax.syntaxARQ);

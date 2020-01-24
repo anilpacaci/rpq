@@ -9,11 +9,12 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Queue;
+import java.util.Set;
 
 public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>{
 
 
-    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public TreeNodeRAPQTreeExpansionJob(ProductGraph<Integer,L> productGraph, Automata<L> automata, Set<ResultPair<Integer>> results, boolean isDeletion) {
         super(productGraph, automata, results, isDeletion);
 
         // initialize node types
@@ -36,7 +37,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
                 processTransition(spanningTree[i], parentNode[i], targetVertex[i], targetState[i], edgeTimestamp[i]);
             }
         }
-        return this.resultCount;
+        return this.results.size();
     }
 
     @Override
@@ -77,7 +78,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
             }
             // add this pair to results if it is a final state
             if (automata.isFinalState(childState)) {
-                results.offer(new ResultPair<>(tree.getRootVertex(), childVertex));
+                results.add(new ResultPair<>(tree.getRootVertex(), childVertex));
                 resultCount++;
             }
 
@@ -122,7 +123,7 @@ public class TreeNodeRAPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
 
             for(TreeNodeRAPQ<Integer> removedNode : removedNodes) {
                 if(automata.isFinalState(removedNode.getState())) {
-                    results.offer(new ResultPair<Integer>(tree.getRootVertex(), removedNode.getVertex(), true));
+                    results.add(new ResultPair<Integer>(tree.getRootVertex(), removedNode.getVertex(), true));
                     resultCount--;
                 }
             }

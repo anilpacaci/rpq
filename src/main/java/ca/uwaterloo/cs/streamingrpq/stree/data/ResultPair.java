@@ -2,6 +2,8 @@ package ca.uwaterloo.cs.streamingrpq.stree.data;
 
 public class ResultPair<V> {
 
+    private int hash = 0;
+
     private final V source;
     private final V target;
 
@@ -29,5 +31,18 @@ public class ResultPair<V> {
 
     public boolean isDeletion() {
         return isDeletion;
+    }
+
+    // implementation from effective Java : Item 9
+    @Override
+    public int hashCode() {
+        int h = hash;
+        if (h == 0) {
+            h = 17;
+            h = 31 * h + source.hashCode();
+            h = 31 * h + target.hashCode();
+            hash = h;
+        }
+        return h;
     }
 }
