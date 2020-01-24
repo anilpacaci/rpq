@@ -8,18 +8,19 @@ import ca.uwaterloo.cs.streamingrpq.stree.util.Constants;
 
 import java.util.Collection;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 
 public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L, SpanningTreeRSPQ<Integer>, TreeNodeRSPQ<Integer>> {
 
-    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results, boolean isDeletion) {
+    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Set<ResultPair<Integer>> results, boolean isDeletion) {
         super(productGraph, automata, results, isDeletion);
 
         this.spanningTree = new SpanningTreeRSPQ[Constants.EXPECTED_BATCH_SIZE];
         this.parentNode = new TreeNodeRSPQ[Constants.EXPECTED_BATCH_SIZE];
     }
 
-    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Queue<ResultPair<Integer>> results) {
+    public TreeNodeRSPQTreeExpansionJob(ProductGraph<Integer, L> productGraph, Automata<L> automata, Set<ResultPair<Integer>> results) {
         this(productGraph, automata, results, false);
     }
 
@@ -34,7 +35,7 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
             }
         }
 
-        return this.resultCount;
+        return this.results.size();
     }
 
     @Override
@@ -58,7 +59,7 @@ public class TreeNodeRSPQTreeExpansionJob<L> extends AbstractTreeExpansionJob<L,
             }
 
             if (automata.isFinalState(childState)) {
-                results.offer(new ResultPair<>(tree.getRootVertex(), childVertex));
+                results.add(new ResultPair<>(tree.getRootVertex(), childVertex));
                 resultCount++;
             }
 
