@@ -26,6 +26,7 @@ public class gMarkQueries {
         String queryString;
         try {
             queryString = FileUtils.readWholeFileAsUTF8(Paths.get(datasetLocation, queryName).toString());
+            logger.info(String.format("Creating automata for query %s", queryString));
         } catch (IOException e) {
             logger.error("Query cannot be parsed from input file {}", queryName );
             throw new IllegalArgumentException("Query does not exists",e);
@@ -43,7 +44,7 @@ public class gMarkQueries {
         int dfaStates = queryAutomata.getBricsStates();
         int dfaTransitions = queryAutomata.getBricsTransitions();
 
-        logger.info(String.format("NFA determinization and minimization results: states {} -> {}, transitions {} -> {}", nfaStates, dfaStates, nfaTransitions, dfaTransitions));
+        logger.info(String.format("NFA determinization and minimization results: states %d -> %d, transitions %d -> %d", nfaStates, dfaStates, nfaTransitions, dfaTransitions));
 
         return queryAutomata;
     }
