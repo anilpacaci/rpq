@@ -4,12 +4,20 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import dk.brics.automaton.*;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.Link;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.model.MutableNode;
+import guru.nidi.graphviz.parse.Parser;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
 public class BricsAutomata extends Automata<String> {
+
+    private static final String GRAPHVIZ_TRANSITION_LABEL = "label";
 
     private Map<Character, String> reverseLabelMappings;
     private Map<String, Character> labelMappings;
@@ -73,6 +81,26 @@ public class BricsAutomata extends Automata<String> {
         // now automaton states are assigned to a contigious range, and transitions are grouped by label
         // finally compute the containment relationship
         computeContainmentRelationship();
+    }
+
+    public void generateTransitiongraph(String filename) {
+        try {
+            MutableGraph g = new Parser().read(this.automaton.toDot());
+            g.nodeAttrs();
+            for(MutableNode node : g.nodes()) {
+                for(Link link : node.links()) {
+                    link.attrs().forEach(attribute -> {
+                        if(attribute.getKey().equals(GRAPHVIZ_TRANSITION_LABEL)) {
+                            attribute.setValue(reverseLabelMappings.get(attribute.getValue()));
+                        }
+                    } );
+                }
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
