@@ -1,0 +1,20 @@
+{
+  "name" : "social-a",
+  "dataset" : "/hdd1/apacaci/datasets/gmark/social-a-100M/shuffled.txt",
+  "query-directory" : "/hdd1/apacaci/datasets/gmark/social-a-100M/social-a-translated",
+  "input-type" : "gmark",
+  "report-folder" : "/home/apacaci/sgraffito/results/social-a-100M/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 600,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-count" : 100,
+      "semantics" : "arbitrary",
+      "window-size" : 2000000,
+      "slide-size" : 200000,
+      "thread-count" : 32
+    }
+  ]
+}

@@ -78,17 +78,20 @@ with open(parameters, 'rb') as parameters_handle:
 
 # iterate overs run specific parameters
     for run_config in run_configs:
-        query_name = run_config["query-name"]
+        query_count = run_config["query-count"]
         semantics = run_config["semantics"]
         window_size = run_config["window-size"]
         slide_size = run_config["slide-size"]
         thread_count = run_config["thread-count"]
         delete_ratio = run_config.get("delete-ratio", 0)
-        # reporting folder
-        report_csv_path = os.path.join(report_folder, query_name + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
 
-        # create the run object
-        run_list.append(RPQRun(query_name, dataset_location, query_directory, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics))
+        for query_num in range(query_count):
+            query_name = "query-" + str(query_num)
+            # reporting folder
+            report_csv_path = os.path.join(report_folder, query_name + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
+
+            # create the run object
+            run_list.append(RPQRun(query_name, dataset_location, query_directory, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics))
 
 
 # iterate over runs and run the experiments
@@ -100,7 +103,8 @@ for run in run_list:
     sys.stdout.flush()
 
     elapsedTime = 0
-    interval = 5
+    interval = 10
+    # wait before firing up the job
     # proc = subprocess.Popen(javaCommand, shell=True)
     proc = subprocess.Popen(javaCommand.split())
 
