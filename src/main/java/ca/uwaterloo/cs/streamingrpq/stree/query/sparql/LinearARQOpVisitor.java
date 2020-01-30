@@ -1,8 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query.sparql;
 
 import ca.uwaterloo.cs.streamingrpq.stree.query.AutomataBuilder;
-import ca.uwaterloo.cs.streamingrpq.stree.query.NFA;
-import ca.uwaterloo.cs.streamingrpq.stree.query.NFAAutomataBuilder;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
 import org.apache.jena.sparql.algebra.op.OpGroup;
 import org.apache.jena.sparql.algebra.op.OpPath;
@@ -16,9 +14,52 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
     Stack<A> nfaStack;
     private AutomataBuilder<A, String> automataBuilder;
 
+    private int conjunctCount;
+    private int alternationCount;
+    private int kleeneStarCount;
+    private int predicateCount;
+
     public LinearARQOpVisitor(AutomataBuilder<A, String> automataBuilder) {
         nfaStack = new Stack<>();
         this.automataBuilder = automataBuilder;
+
+        //initialize counter on query features
+        conjunctCount = 0;
+        alternationCount = 0;
+        kleeneStarCount = 0;
+        predicateCount = 0;
+    }
+
+    /**
+     * The total number of conjuncts in this query
+     * @return
+     */
+    public int getConjunctCount() {
+        return conjunctCount;
+    }
+
+    /**
+     * The total number of alternation symbols in the path expression
+     * @return
+     */
+    public int getAlternationCount() {
+        return alternationCount;
+    }
+
+    /**
+     * The total number of Kleene star symbols in the path expression
+     * @return
+     */
+    public int getKleeneStarCount() {
+        return kleeneStarCount;
+    }
+
+    /**
+     * The total number of predicates in the path expression
+     * @return
+     */
+    public int getPredicateCount() {
+        return predicateCount;
     }
 
     public A getAutomaton() {
@@ -40,7 +81,10 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
 
         nfaStack.push(nfa);
 
-        return;
+        conjunctCount++;
+        alternationCount += visitor.getAlternationCount();
+        kleeneStarCount += visitor.getKleeneStarCount();
+        predicateCount += visitor.getPredicateCount();
     }
 
     @Override
@@ -54,7 +98,5 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
             A resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
             nfaStack.push(resultNFA);
         }
-
-        return;
     }
 }

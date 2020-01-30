@@ -31,7 +31,7 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
     }
 
     /**
-     * Constructs an automaton from a given SPARQL query string with linear property paths
+     * Constructs a minimal automaton from a given SPARQL query string with linear property paths
      * @param queryString
      * @return
      */
@@ -48,6 +48,12 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
         Automaton nfa = visitor.getAutomaton();
         BricsAutomata automata = new BricsAutomata(nfa, this.getLabelMappings());
 
+        // set query statistics
+        automata.setAlternationCount(visitor.getAlternationCount());
+        automata.setKleeneStarCount(visitor.getKleeneStarCount());
+        automata.setPredicateCount(visitor.getPredicateCount());
+
+        automata.finalize();
         return  automata;
     }
 

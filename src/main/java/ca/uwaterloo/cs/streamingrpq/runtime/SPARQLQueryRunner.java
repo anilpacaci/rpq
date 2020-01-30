@@ -146,7 +146,7 @@ public class SPARQLQueryRunner {
         options.addRequiredOption("s", "size", true, "maximum DFST size to be allowed");
         options.addRequiredOption("n", "name", true, "name of the query to be run");
         options.addRequiredOption("ps", "semantics", true, "path semantics");
-        options.addRequiredOption("r", "report-path", true, "CSV file to record execution metrics");
+        options.addRequiredOption("r", "report-directory", true, "Directory to store CSV files that record execution metrics");
         options.addRequiredOption("ws", "window-size", true, "Size of the window in milliseconds");
         options.addRequiredOption("ss", "slide-size", true, "Slide of the window in milliseconds");
         options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");

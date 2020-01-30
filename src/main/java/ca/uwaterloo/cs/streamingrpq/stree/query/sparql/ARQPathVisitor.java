@@ -18,13 +18,46 @@ public class ARQPathVisitor<A> implements PathVisitor {
     private AutomataBuilder<A, String> automataBuilder;
     private Stack<A> nfaStack;
 
+    private int kleeneStarCount;
+    private int alternationCount;
+    private int predicateCount;
+
     public ARQPathVisitor(AutomataBuilder<A, String> automataBuilder) {
         this.automataBuilder = automataBuilder;
         this.nfaStack = new Stack<>();
+
+        // query statistics
+        this.kleeneStarCount = 0;
+        this.alternationCount = 0;
+        this.predicateCount = 0;
     }
 
     public A getAutomaton() {
         return nfaStack.pop();
+    }
+
+    /**
+     *
+     * @return the total number of Kleene stars in the path syntax tree traversed by this Visitor
+     */
+    public int getKleeneStarCount() {
+        return kleeneStarCount;
+    }
+
+    /**
+     *
+     * @return the total number of alternation symbols in the path syntax tree traversed by this Visitor
+     */
+    public int getAlternationCount() {
+        return alternationCount;
+    }
+
+    /**
+     * It uses bag semantics and therefore duplicates are counted
+     * @return the total number of predicates in the path syntax tree traversed by this Visitor.
+     */
+    public int getPredicateCount() {
+        return predicateCount;
     }
 
     @Override
@@ -32,7 +65,9 @@ public class ARQPathVisitor<A> implements PathVisitor {
         String localName = pathNode.getNode().getLocalName();
         A nfa = automataBuilder.transition(localName);
         nfaStack.push(nfa);
-        return;
+
+        //increase the predicate count
+        predicateCount++;
     }
     @Override
     public void visit(P_ReverseLink pathNode){
@@ -58,9 +93,10 @@ public class ARQPathVisitor<A> implements PathVisitor {
 
 
         A nfa = automataBuilder.transition(Constants.REVERSE_LABEL_SYMBOL + localName);
-
         nfaStack.push(nfa);
-        return;
+
+        // increase the predicate count
+        predicateCount++;
     }
 
     @Override
@@ -71,7 +107,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
 
     @Override
@@ -82,7 +119,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
     @Override
     public void visit(P_Distinct pathDistinct){
@@ -107,7 +145,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
 
     @Override
@@ -118,7 +157,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
     @Override
     public void visit(P_ZeroOrMoreN path){
@@ -128,7 +168,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
 
     @Override
@@ -139,7 +180,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
     @Override
     public void visit(P_OneOrMoreN path){
@@ -149,7 +191,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.kleeneStar(nfa);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the Kleene Star count
+        kleeneStarCount++;
     }
 
     @Override
@@ -163,7 +206,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         A resultNFA = automataBuilder.alternation(leftNFA, rightNFA);
         nfaStack.push(resultNFA);
 
-        return;
+        // increase the alternation count
+        alternationCount++;
     }
     @Override
     public void visit(P_Seq pathSeq){
