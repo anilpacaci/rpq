@@ -35,17 +35,6 @@ public class gMarkQueries {
         BricsAutomataBuilder builder = new BricsAutomataBuilder();
         BricsAutomata queryAutomata = builder.fromSPARQL(queryString);
 
-        int nfaStates = queryAutomata.getBricsStates();
-        int nfaTransitions = queryAutomata.getBricsTransitions();
-
-        // finalize the query automata
-        queryAutomata.finalize();
-
-        int dfaStates = queryAutomata.getBricsStates();
-        int dfaTransitions = queryAutomata.getBricsTransitions();
-
-        logger.info(String.format("NFA determinization and minimization results: states %d -> %d, transitions %d -> %d", nfaStates, dfaStates, nfaTransitions, dfaTransitions));
-
         return queryAutomata;
     }
 }
