@@ -6,6 +6,20 @@ import sys
 import subprocess
 import time
 
+
+# parse a range of integer from a given string
+def range_parser(x):
+    result = []
+    for part in x.split(','):
+        if '-' in part:
+            a, b = part.split('-')
+            a, b = int(a), int(b)
+            result.extend(range(a, b + 1))
+        else:
+            a = int(part)
+            result.append(a)
+    return result
+
 class RPQRun:
     name        =   ""
     input       =   ""
@@ -78,14 +92,14 @@ with open(parameters, 'rb') as parameters_handle:
 
 # iterate overs run specific parameters
     for run_config in run_configs:
-        query_count = run_config["query-count"]
+        query_range = run_config["query-range"]
         semantics = run_config["semantics"]
         window_size = run_config["window-size"]
         slide_size = run_config["slide-size"]
         thread_count = run_config["thread-count"]
         delete_ratio = run_config.get("delete-ratio", 0)
 
-        for query_num in range(query_count):
+        for query_num in range_parser(query_range):
             query_name = "query-" + str(query_num)
             # reporting folder
             report_csv_path = os.path.join(report_folder, query_name + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
