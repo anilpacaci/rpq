@@ -10,7 +10,7 @@
   "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
   "runs" : [
     {
-      "query-count" : 100,
+      "query-range" : "7, 33, 63, 86, 96",
       "semantics" : "arbitrary",
       "window-size" : 2000000,
       "slide-size" : 200000,
