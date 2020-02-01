@@ -1,15 +1,25 @@
 package ca.uwaterloo.cs.streamingrpq.stree.query.sparql;
 
 import ca.uwaterloo.cs.streamingrpq.stree.query.AutomataBuilder;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
+import org.apache.jena.sparql.algebra.op.OpBGP;
 import org.apache.jena.sparql.algebra.op.OpGroup;
 import org.apache.jena.sparql.algebra.op.OpPath;
 import org.apache.jena.sparql.algebra.op.OpSequence;
+import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.path.Path;
+import org.apache.jena.sparql.path.PathFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.Line;
 import java.util.Stack;
 
 public class LinearARQOpVisitor<A> extends OpVisitorBase {
+
+    private final Logger logger = LoggerFactory.getLogger(LinearARQOpVisitor.class);
+
 
     Stack<A> nfaStack;
     private AutomataBuilder<A, String> automataBuilder;
@@ -98,5 +108,27 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
             A resultNFA = automataBuilder.concenetation(leftNFA, rightNFA);
             nfaStack.push(resultNFA);
         }
+    }
+
+    @Override
+    public void visit(OpBGP opBGP) {
+        if(opBGP.getPattern().size() > 1) {
+            logger.error("This visitor can only parse single triple patterns as fixed size path");
+        }
+
+        Triple triple = opBGP.getPattern().get(0);
+        Path triplePath = PathFactory.pathLink(triple.getPredicate());
+
+        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder);
+        triplePath.visit(visitor);
+
+        A nfa = visitor.getAutomaton();
+
+        nfaStack.push(nfa);
+
+        conjunctCount++;
+        alternationCount += visitor.getAlternationCount();
+        kleeneStarCount += visitor.getKleeneStarCount();
+        predicateCount += visitor.getPredicateCount();;
     }
 }
