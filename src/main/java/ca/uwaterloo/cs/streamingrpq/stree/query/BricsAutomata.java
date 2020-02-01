@@ -120,7 +120,7 @@ public class BricsAutomata extends Automata<String> {
                 }
             }
 
-            Graphviz.fromGraph(g).width(800).render(Format.PNG).toFile(new File(filename));
+            Graphviz.fromGraph(g).totalMemory(240000000).width(800).render(Format.PNG).toFile(new File(filename));
         } catch (IOException e) {
             logger.error("Graphviz file could not be constructed: " + filename, e);
         }
