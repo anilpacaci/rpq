@@ -75,11 +75,6 @@ public abstract class TextFileStream<S, T, L> {
         this.tuple = new InputTuple(null, null, null, 0);
     }
 
-    public void open(String filename, int maxSize) {
-        this.startTimestamp = 0L;
-        open(filename);
-    }
-
     public void open(String filename, int maxSize, long startTimestamp, int deletionPercentage) {
         this.startTimestamp = startTimestamp;
         open(filename);
