@@ -21,7 +21,7 @@ public class VirtuosoTriple {
 
         triple = new Triple(NodeFactory.createURI(subject.toString()), NodeFactory.createURI(predicate), NodeFactory.createURI(object.toString()));
 
-        Statement statement = model.asStatement(triple);
+        statement = model.asStatement(triple);
     }
 
     public Triple getTriple() {
