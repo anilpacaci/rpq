@@ -1,0 +1,5 @@
+SELECT ?y
+FROM <window>
+WHERE {
+  SELECT ?y FROM <window> WHERE {   <-231163918>  <http://yago-knowledge.org/resource/isLocatedIn> / <http://yago-knowledge.org/resource/dealsWith>* / <http://yago-knowledge.org/resource/hasCapital>? / <http://yago-knowledge.org/resource/wasBornIn>* ?y . } (<http://yago-knowledge.org/resource/isLocatedIn> / <http://yago-knowledge.org/resource/dealsWith>  / <http://yago-knowledge.org/resource/hasCapital>)* ?y .
+}
