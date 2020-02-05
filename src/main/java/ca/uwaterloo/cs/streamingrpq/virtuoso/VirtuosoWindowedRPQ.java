@@ -88,7 +88,7 @@ public class VirtuosoWindowedRPQ {
         insertBuffer.offer(vt);
 
         // check whether it is the slide time
-        if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize) {
+        if(currentTimestamp - slideSize >= lastExpiry ) {
             // perform window update
             updateWindow(currentTimestamp - windowSize);
 
