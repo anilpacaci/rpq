@@ -26,7 +26,7 @@ public class VirtuosoQueryRunner {
             return;
         }
 
-        String url = line.getOptionValue("url", "localhost:1111");
+        String url = line.getOptionValue("url", "jdbc:virtuoso://localhost:1111");
         String user = line.getOptionValue("u", "dba");
         String password = line.getOptionValue("pw", "dba");
 
