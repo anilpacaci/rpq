@@ -63,9 +63,12 @@ public class VirtuosoWindowedRPQ {
         this.lastExpiry = 0;
 
         logger.info("Opening virtuoso connection " + url );
-        VirtGraph virtGraph = new VirtGraph(DEFAULT_GRAPH_NAME, url, username, password);
+        VirtDataset virtGraph = new VirtDataset(url, username, password);
+        if(!virtGraph.containsNamedModel(DEFAULT_GRAPH_NAME)) {
+            logger.info("Named mode does not exist:" + DEFAULT_GRAPH_NAME);
+        }
         // create Virtuoso graph connection
-        virtuosoModel = new VirtModel(virtGraph);
+        virtuosoModel = virtGraph.getNamedModel(DEFAULT_GRAPH_NAME);
 
         //initialize buffer
         windowContent = new ArrayDeque<>(((int) windowSize) * 10);
