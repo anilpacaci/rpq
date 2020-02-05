@@ -72,6 +72,7 @@ public class VirtuosoWindowedRPQ {
         }
         // create Virtuoso graph connection
         virtuosoModel = virtGraph.getNamedModel(DEFAULT_GRAPH_NAME);
+        virtuosoModel.removeAll();
 
         //initialize buffer
         windowContent = new ArrayDeque<>(((int) windowSize) * 10);
