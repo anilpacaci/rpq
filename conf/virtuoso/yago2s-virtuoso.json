@@ -13,56 +13,56 @@
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 100000,
+      "slide-size" : 1000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 200000,
+      "slide-size" : 2000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 300000,
+      "slide-size" : 3000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 400000,
+      "slide-size" : 4000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 500000,
+      "slide-size" : 5000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 1000000,
+      "slide-size" : 10000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 2000000,
+      "slide-size" : 20000,
       "thread-count" : 32
     },
     {
       "query-range" : "1-11",
       "semantics" : "arbitrary",
       "window-size" : 10000000,
-      "slide-size" : 4000000,
+      "slide-size" : 40000,
       "thread-count" : 32
     }
   ]
