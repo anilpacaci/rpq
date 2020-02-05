@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import virtuoso.jena.driver.VirtDataset;
+import virtuoso.jena.driver.VirtGraph;
 import virtuoso.jena.driver.VirtModel;
 import virtuoso.jena.driver.VirtuosoQueryExecutionFactory;
 
@@ -61,8 +62,10 @@ public class VirtuosoWindowedRPQ {
         this.queryString = query;
         this.lastExpiry = 0;
 
+        logger.info("Opening virtuoso connection " + url );
+        VirtGraph virtGraph = new VirtGraph(DEFAULT_GRAPH_NAME, url, username, password);
         // create Virtuoso graph connection
-        virtuosoModel = VirtModel.openDatabaseModel(DEFAULT_GRAPH_NAME, url, username, password);
+        virtuosoModel = new VirtModel(virtGraph);
 
         //initialize buffer
         windowContent = new ArrayDeque<>(((int) windowSize) * 10);
