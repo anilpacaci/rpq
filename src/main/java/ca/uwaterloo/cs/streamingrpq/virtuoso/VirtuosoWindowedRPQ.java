@@ -69,7 +69,7 @@ public class VirtuosoWindowedRPQ {
             logger.info("Named mode does not exist:" + DEFAULT_GRAPH_NAME);
             virtGraph.addNamedModel(DEFAULT_GRAPH_NAME, ModelFactory.createDefaultModel());
             virtGraph.commit();
-        } 
+        }
         // create Virtuoso graph connection
         virtuosoModel = virtGraph.getNamedModel(DEFAULT_GRAPH_NAME);
 
