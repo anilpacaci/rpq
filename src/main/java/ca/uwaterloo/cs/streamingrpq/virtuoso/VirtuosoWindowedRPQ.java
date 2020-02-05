@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 /**
  * Simulation of persistent query evaluation on sliding windows over streaming graphs
- * At any given time, it stores the entire window content in a sorted array by the timestamp and in Virtuisi
+ * At any given time, it stores the entire window content in a sorted array by the timestamp and in Virtuoso
  * With each slide, it issues a SPARUL query to update the Virtuoso content, then re-executes the query to update result set
  * This persistent query evaluation simulation is used in the SIGMOD'20 Streaming RPQ submission revision
  */
