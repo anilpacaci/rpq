@@ -17,7 +17,7 @@ public class VirtuosoTriple {
         Integer subject = inputTuple.getSource();
         Integer object = inputTuple.getTarget();
         String predicate = inputTuple.getLabel();
-        long timestamp = inputTuple.getTimestamp();
+        timestamp = inputTuple.getTimestamp();
 
         triple = new Triple(NodeFactory.createURI(subject.toString()), NodeFactory.createURI(predicate), NodeFactory.createURI(object.toString()));
 
