@@ -3,6 +3,7 @@ package ca.uwaterloo.cs.streamingrpq.query;
 import ca.uwaterloo.cs.streamingrpq.stree.query.*;
 import ca.uwaterloo.cs.streamingrpq.stree.query.sparql.LinearARQOpVisitor;
 import dk.brics.automaton.Automaton;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.Syntax;
@@ -18,7 +19,11 @@ public class ARQQueryParser {
 
     private final Logger logger = LoggerFactory.getLogger(ARQQueryParser.class);
 
-    private static final String QUERY_STRING =  "PREFIX : <http://example.org/gmark/> ASK {  {  ?x0 (((:pname/^:pname)|(:pname/^:pname))){,3} ?x1 . } }";
+    private static final String QUERY_STRING =  "SELECT ?y\n" +
+            "FROM <window>\n" +
+            "WHERE {\n" +
+            "   <-1169556728> (<http://yago-knowledge.org/resource/isLocatedIn> / <http://yago-knowledge.org/resource/dealsWith>  / <http://yago-knowledge.org/resource/hasCapital>)+ ?y .\n" +
+            "}";
 
     public static void main(String[] args) {
 
@@ -30,12 +35,11 @@ public class ARQQueryParser {
 
         Op algebra = Algebra.compile(query);
         BricsAutomataBuilder automataBuilder = new BricsAutomataBuilder();
-        LinearARQOpVisitor<Automaton> visitor = new LinearARQOpVisitor<>(automataBuilder);
-        OpWalker.walk(algebra, visitor);
+        BricsAutomata automata = automataBuilder.fromSPARQL(QUERY_STRING);
 
-        Automaton nfa = visitor.getAutomaton();
-        BricsAutomata automata = new BricsAutomata(nfa, automataBuilder.getLabelMappings());
-        automata.finalize();
+        String[] alphabet = StringUtils.substringsBetween(QUERY_STRING, "<", ">");
+
+
 
         automata.generateTransitiongraph("asd");
 

@@ -1,5 +1,5 @@
-SELECT ?y
+SELECT ?x ?y
 FROM <window>
 WHERE {
-   <-1169556728> (<http://yago-knowledge.org/resource/isLocatedIn> | <http://yago-knowledge.org/resource/dealsWith> )  / <http://yago-knowledge.org/resource/hasCapital>* ?y .
+   ?x (<http://yago-knowledge.org/resource/isLocatedIn> | <http://yago-knowledge.org/resource/dealsWith> )  / <http://yago-knowledge.org/resource/hasCapital>* ?y .
 }

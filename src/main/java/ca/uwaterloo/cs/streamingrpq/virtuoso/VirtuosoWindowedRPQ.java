@@ -101,8 +101,10 @@ public class VirtuosoWindowedRPQ {
         VirtuosoTriple vt = new VirtuosoTriple(inputTuple, virtuosoModel);
         insertTriple(vt);
 
-        // finally execute the query
+        // finally execute the query after the first window is full
+        if(currentTimestamp >= windowSize) {
             executeQuery();
+        }
     }
 
     private void insertTriple(VirtuosoTriple vt) {
@@ -148,8 +150,6 @@ public class VirtuosoWindowedRPQ {
             resultCounter.inc();
         }
         long queryParseTime = System.nanoTime() - parseStartTime;
-
-        logger.info("Window: " + this.lastExpiry+ "\tQuery execution time " + queryExecutionTime );
 
         //update histograms
         this.queryExecutionHistogram.update(queryExecutionTime);
