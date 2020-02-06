@@ -1,18 +1,16 @@
 package ca.uwaterloo.cs.streamingrpq.virtuoso;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
-import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SlidingTimeWindowArrayReservoir;
-import org.apache.jena.base.Sys;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +19,7 @@ import virtuoso.jena.driver.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -39,16 +38,17 @@ public class VirtuosoWindowedRPQ {
     private MetricRegistry metricRegistry;
     private Counter resultCounter;
     private Histogram windowManagementHistogram;
+    private Histogram insertTripleHistogram;
     private Histogram queryExecutionHistogram;
     private Histogram resultParsingHistogram;
 
     private Deque<VirtuosoTriple> windowContent;
-    private Deque<VirtuosoTriple> insertBuffer;
 
     private long windowSize;
     private long slideSize;
     private long lastExpiry;
 
+    private Set<String> queryPredicates;
 
     private Model virtuosoModel;
 
@@ -59,20 +59,20 @@ public class VirtuosoWindowedRPQ {
         this.slideSize = slideSize;
         this.lastExpiry = 0;
 
+        // extract query predicates from the query string
+        queryPredicates = extractQueryPredicates(query);
+
         logger.info("Opening virtuoso connection " + url );
         VirtDataset virtGraph = new VirtDataset(url, username, password);
-        if(!virtGraph.containsNamedModel(DEFAULT_GRAPH_NAME)) {
-            logger.info("Named mode does not exist:" + DEFAULT_GRAPH_NAME);
-            virtGraph.addNamedModel(DEFAULT_GRAPH_NAME, ModelFactory.createDefaultModel());
-            virtGraph.commit();
+        if(virtGraph.containsNamedModel(DEFAULT_GRAPH_NAME)) {
+            logger.info("Named model is removed:" + DEFAULT_GRAPH_NAME);
+            virtGraph.removeNamedModel(DEFAULT_GRAPH_NAME);
         }
         // create Virtuoso graph connection
         virtuosoModel = virtGraph.getNamedModel(DEFAULT_GRAPH_NAME);
-        virtuosoModel.removeAll();
 
         //initialize buffer
         windowContent = new ArrayDeque<>(((int) windowSize) * 10);
-        insertBuffer = new ArrayDeque<>(((int) slideSize) * 10);
 
         //VQE cache object ot be used for the query
         vqe = VirtuosoQueryExecutionFactory.create(query, virtuosoModel);
@@ -80,46 +80,58 @@ public class VirtuosoWindowedRPQ {
 
     public void processEdge(InputTuple<Integer, Integer, String> inputTuple) {
         long currentTimestamp = inputTuple.getTimestamp();
+        String edgePredicate = inputTuple.getLabel();
 
-        // generate the triple and update the buffer content
-        VirtuosoTriple vt = new VirtuosoTriple(inputTuple, virtuosoModel);
-        insertBuffer.offer(vt);
+        if(!this.queryPredicates.contains(edgePredicate)) {
+            // do not process the edge if it is not contained in the query
+            return;
+        }
 
         // check whether it is the slide time
-        if(currentTimestamp - slideSize >= lastExpiry ) {
+        if(currentTimestamp - slideSize >= lastExpiry && currentTimestamp >= windowSize) {
             // perform window update
-            updateWindow(currentTimestamp - windowSize);
-
-            // perform the query
-            executeQuery();
+            expiry(currentTimestamp - windowSize);
 
             // update the last expiry time
             lastExpiry = currentTimestamp;
         }
 
+        // first insert the new triple
+        // generate the triple and update the buffer content
+        VirtuosoTriple vt = new VirtuosoTriple(inputTuple, virtuosoModel);
+        insertTriple(vt);
+
+        // finally execute the query
+            executeQuery();
     }
 
-    private void updateWindow(long minTimestamp) {
-        // first create the insert list
-        List<Statement> insertList = insertBuffer.stream().map(vt -> vt.getStatement()).collect(Collectors.toList());
+    private void insertTriple(VirtuosoTriple vt) {
+        // insert the triple into in memory window content
+        windowContent.offer(vt);
+
+        // then add it to Virtuoso graph
+        Statement st = vt.getStatement();
+
+        long insertStartTime = System.nanoTime();
+        virtuosoModel.add(st);
+        long insertTime = System.nanoTime() - insertStartTime;
+
+        insertTripleHistogram.update(insertTime);
+    }
+
+    private void expiry(long minTimestamp) {
+        // first create the delete list
         List<Statement> deleteList = windowContent.stream().filter(vt -> vt.getTimestamp() < minTimestamp).map(vt -> vt.getStatement()).collect(Collectors.toList());
 
         // execute the update query on Virtuoso
-        long insertStartTime = System.nanoTime();
-        virtuosoModel.add(insertList);
-
+        long updateStartTime = System.nanoTime();
         virtuosoModel.remove(deleteList);
-        long updateTime = System.nanoTime() - insertStartTime;
+        long updateTime = System.nanoTime() - updateStartTime;
 
         // finally insert new tuples to the graph, remove from the window array
-        windowContent.addAll(insertBuffer);
         windowContent.removeIf(vt -> vt.getTimestamp() < minTimestamp);
 
-        //clear buffer
-        insertBuffer.clear();
-
         logger.info("Window: " + this.lastExpiry+ "\tUpdate time " + updateTime );
-
 
         //update histogram
         windowManagementHistogram.update(updateTime);
@@ -166,6 +178,10 @@ public class VirtuosoWindowedRPQ {
         this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("window-histogram", windowManagementHistogram);
 
+        // histogram responsible to measure time spent adding new triples
+        this.insertTripleHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
+        metricRegistry.register("insert-histogram", insertTripleHistogram);
+
         //histogram responsible to measure the time spent in query execution
         this.queryExecutionHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("query-execution", queryExecutionHistogram);
@@ -173,6 +189,19 @@ public class VirtuosoWindowedRPQ {
         //histogram responsible to measure the time spent in query parsing
         this.resultParsingHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("result-parsing", resultParsingHistogram);
+    }
+
+    /**
+     * Extract all query predicates from a given query String
+     * @param queryString
+     * @return
+     */
+    private static Set<String> extractQueryPredicates(String queryString) {
+        String[] extracts = StringUtils.substringsBetween(queryString, "<", ">");
+
+        Set<String> predicates = Sets.newHashSet(extracts);
+
+        return predicates;
     }
 
 }
