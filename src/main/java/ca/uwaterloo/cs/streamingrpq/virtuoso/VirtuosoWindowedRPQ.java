@@ -16,10 +16,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import virtuoso.jena.driver.VirtDataset;
-import virtuoso.jena.driver.VirtGraph;
-import virtuoso.jena.driver.VirtModel;
-import virtuoso.jena.driver.VirtuosoQueryExecutionFactory;
+import virtuoso.jena.driver.*;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -55,12 +52,11 @@ public class VirtuosoWindowedRPQ {
 
     private Model virtuosoModel;
 
-    private String queryString;
+    private QueryExecution vqe;
 
     public VirtuosoWindowedRPQ(String url, String username, String password, String query, long windowSize, long slideSize) {
         this.windowSize = windowSize;
         this.slideSize = slideSize;
-        this.queryString = query;
         this.lastExpiry = 0;
 
         logger.info("Opening virtuoso connection " + url );
@@ -78,6 +74,8 @@ public class VirtuosoWindowedRPQ {
         windowContent = new ArrayDeque<>(((int) windowSize) * 10);
         insertBuffer = new ArrayDeque<>(((int) slideSize) * 10);
 
+        //VQE cache object ot be used for the query
+        vqe = VirtuosoQueryExecutionFactory.create(query, virtuosoModel);
     }
 
     public void processEdge(InputTuple<Integer, Integer, String> inputTuple) {
@@ -113,8 +111,9 @@ public class VirtuosoWindowedRPQ {
         virtuosoModel.remove(deleteList);
         long updateTime = System.nanoTime() - insertStartTime;
 
-        // finally insert new tuples to the graph
+        // finally insert new tuples to the graph, remove from the window array
         windowContent.addAll(insertBuffer);
+        windowContent.removeIf(vt -> vt.getTimestamp() < minTimestamp);
 
         //clear buffer
         insertBuffer.clear();
@@ -127,9 +126,6 @@ public class VirtuosoWindowedRPQ {
     }
 
     private void executeQuery() {
-        QueryExecution vqe = VirtuosoQueryExecutionFactory.create(queryString, virtuosoModel);
-
-
         long queryStartTime = System.nanoTime();
         ResultSet resultSet = vqe.execSelect();
         long queryExecutionTime = System.nanoTime() - queryStartTime;
