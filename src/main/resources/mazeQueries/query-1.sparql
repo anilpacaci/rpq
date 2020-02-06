@@ -1,5 +1,5 @@
 SELECT ?y
  FROM <window>
  WHERE {
-   <-1169556728> (<http://yago-knowledge.org/resource/isLocatedIn>)+ ?y .
+   <2022720477> (<http://yago-knowledge.org/resource/isLocatedIn>)+ ?y .
  }
