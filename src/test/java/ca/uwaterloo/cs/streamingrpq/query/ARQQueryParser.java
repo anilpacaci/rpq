@@ -19,10 +19,10 @@ public class ARQQueryParser {
 
     private final Logger logger = LoggerFactory.getLogger(ARQQueryParser.class);
 
-    private static final String QUERY_STRING =  "SELECT ?y\n" +
+    private static final String QUERY_STRING =  "SELECT ?x ?y\n" +
             "FROM <window>\n" +
             "WHERE {\n" +
-            "   <-1169556728> (<http://yago-knowledge.org/resource/isLocatedIn> / <http://yago-knowledge.org/resource/dealsWith>  / <http://yago-knowledge.org/resource/hasCapital>)+ ?y .\n" +
+            "   ?x (<http://yago-knowledge.org/resource/isLocatedIn> / <http://yago-knowledge.org/resource/dealsWith>  / <http://yago-knowledge.org/resource/hasCapital>)+ ?y .\n" +
             "}";
 
     public static void main(String[] args) {
@@ -35,7 +35,7 @@ public class ARQQueryParser {
 
         Op algebra = Algebra.compile(query);
         BricsAutomataBuilder automataBuilder = new BricsAutomataBuilder();
-        BricsAutomata automata = automataBuilder.fromSPARQL(QUERY_STRING);
+        BricsAutomata automata = automataBuilder.fromSPARQL(QUERY_STRING, true);
 
         String[] alphabet = StringUtils.substringsBetween(QUERY_STRING, "<", ">");
 

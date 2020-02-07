@@ -30,7 +30,7 @@ public class WindowedSpanningTreeTest {
         query.addTransition(2, "a", 1);
 
         BricsAutomataBuilder builder = new BricsAutomataBuilder();
-        BricsAutomata bricsQuery = builder.fromSPARQL(queryString);
+        BricsAutomata bricsQuery = builder.fromSPARQL(queryString, true);
         bricsQuery.finalize();
 
         RPQEngine<String> rapqEngine = new WindowedRPQ<String, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(bricsQuery, 100, 5, 1, 10, Semantics.ARBITRARY);

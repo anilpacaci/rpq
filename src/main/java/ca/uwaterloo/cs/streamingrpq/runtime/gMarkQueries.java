@@ -15,8 +15,11 @@ public class gMarkQueries {
 
     private static Logger logger = LoggerFactory.getLogger(gMarkQueries.class);
 
-
     public static BricsAutomata getQuery(String datasetLocation, String queryName) {
+        return getQuery(datasetLocation, queryName, false);
+    }
+
+    public static BricsAutomata getQuery(String datasetLocation, String queryName, boolean useFullURI) {
         // make sure that query name have the correct extension
         if(!queryName.endsWith("sparql")) {
             queryName = queryName + ".sparql";
@@ -33,7 +36,7 @@ public class gMarkQueries {
         }
 
         BricsAutomataBuilder builder = new BricsAutomataBuilder();
-        BricsAutomata queryAutomata = builder.fromSPARQL(queryString);
+        BricsAutomata queryAutomata = builder.fromSPARQL(queryString, useFullURI);
 
         return queryAutomata;
     }

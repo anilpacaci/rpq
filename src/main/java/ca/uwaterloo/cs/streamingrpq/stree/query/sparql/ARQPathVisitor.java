@@ -22,7 +22,9 @@ public class ARQPathVisitor<A> implements PathVisitor {
     private int alternationCount;
     private int predicateCount;
 
-    public ARQPathVisitor(AutomataBuilder<A, String> automataBuilder) {
+    private boolean useFullURI;
+
+    public ARQPathVisitor(AutomataBuilder<A, String> automataBuilder, boolean useFullURI) {
         this.automataBuilder = automataBuilder;
         this.nfaStack = new Stack<>();
 
@@ -30,6 +32,8 @@ public class ARQPathVisitor<A> implements PathVisitor {
         this.kleeneStarCount = 0;
         this.alternationCount = 0;
         this.predicateCount = 0;
+
+        this.useFullURI = useFullURI;
     }
 
     public A getAutomaton() {
@@ -62,7 +66,12 @@ public class ARQPathVisitor<A> implements PathVisitor {
 
     @Override
     public void visit(P_Link pathNode){
-        String localName = pathNode.getNode().getLocalName();
+        String localName;
+        if(this.useFullURI) {
+            localName = pathNode.getNode().getURI();
+        } else {
+            localName = pathNode.getNode().getLocalName();
+        }
         A nfa = automataBuilder.transition(localName);
         nfaStack.push(nfa);
 
@@ -89,7 +98,13 @@ public class ARQPathVisitor<A> implements PathVisitor {
             return;
         }
         P_Link subPath = (P_Link) inversePath.getSubPath();
-        String localName = subPath.getNode().getLocalName();
+
+        String localName;
+        if(this.useFullURI) {
+            localName = subPath.getNode().getURI();
+        } else {
+            localName = subPath.getNode().getLocalName();
+        }
 
 
         A nfa = automataBuilder.transition(Constants.REVERSE_LABEL_SYMBOL + localName);
