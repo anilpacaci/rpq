@@ -35,13 +35,13 @@ public class BricsAutomataBuilder implements AutomataBuilder<Automaton, String> 
      * @param queryString
      * @return
      */
-    public BricsAutomata fromSPARQL(String queryString) {
+    public BricsAutomata fromSPARQL(String queryString, boolean useFullURI) {
         // parse the query and generate Algebra representation
         Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
         Op algebra = Algebra.compile(query);
 
         // walk over query tree to construct an Automaton
-        LinearARQOpVisitor<Automaton> visitor = new LinearARQOpVisitor<>(this);
+        LinearARQOpVisitor<Automaton> visitor = new LinearARQOpVisitor<>(this, useFullURI);
         OpWalker.walk(algebra, visitor);
 
         // generate Automaton that is recognized by the RPQEngine

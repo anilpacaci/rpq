@@ -48,6 +48,8 @@ public class SPARQLQueryRunner {
 
         TextFileStream<Integer, Integer, String> stream;
 
+        boolean useFullURI = true;
+
         switch (inputType) {
             case "tsv":
                 stream = new Yago2sTSVStream();
@@ -65,6 +67,7 @@ public class SPARQLQueryRunner {
                 stream = new LDBCStream();
                 break;
             case "gmark":
+                useFullURI = false;
                 stream = new gMarkInputStream();
                 break;
             default:
@@ -75,7 +78,7 @@ public class SPARQLQueryRunner {
         Automata<String> query;
 
         try {
-            query = gMarkQueries.getQuery(queryFolder, queryName);
+            query = gMarkQueries.getQuery(queryFolder, queryName, useFullURI);
         } catch (Exception e) {
             logger.error("Error duing creation of query {}", queryName, e);
             return;

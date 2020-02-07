@@ -29,7 +29,9 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
     private int kleeneStarCount;
     private int predicateCount;
 
-    public LinearARQOpVisitor(AutomataBuilder<A, String> automataBuilder) {
+    private boolean useFullURI;
+
+    public LinearARQOpVisitor(AutomataBuilder<A, String> automataBuilder, boolean useFullURI) {
         nfaStack = new Stack<>();
         this.automataBuilder = automataBuilder;
 
@@ -38,6 +40,8 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
         alternationCount = 0;
         kleeneStarCount = 0;
         predicateCount = 0;
+
+        this.useFullURI = useFullURI;
     }
 
     /**
@@ -83,7 +87,7 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
 
     @Override
     public void visit(OpPath opPath) {
-        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder);
+        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder, this.useFullURI);
         Path path = opPath.getTriplePath().getPath();
         path.visit(visitor);
 
@@ -119,7 +123,7 @@ public class LinearARQOpVisitor<A> extends OpVisitorBase {
         Triple triple = opBGP.getPattern().get(0);
         Path triplePath = PathFactory.pathLink(triple.getPredicate());
 
-        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder);
+        ARQPathVisitor<A> visitor = new ARQPathVisitor(this.automataBuilder, this.useFullURI);
         triplePath.visit(visitor);
 
         A nfa = visitor.getAutomaton();
