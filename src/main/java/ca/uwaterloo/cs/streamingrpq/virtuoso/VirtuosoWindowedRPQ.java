@@ -7,6 +7,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SlidingTimeWindowArrayReservoir;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.base.Sys;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -41,6 +42,7 @@ public class VirtuosoWindowedRPQ {
     private Histogram insertTripleHistogram;
     private Histogram queryExecutionHistogram;
     private Histogram resultParsingHistogram;
+    private Histogram fullEdgeProcessHistogram;
 
     private Deque<VirtuosoTriple> windowContent;
 
@@ -99,15 +101,25 @@ public class VirtuosoWindowedRPQ {
         // first insert the new triple
         // generate the triple and update the buffer content
         VirtuosoTriple vt = new VirtuosoTriple(inputTuple, virtuosoModel);
-        insertTriple(vt);
+        long insertTime = insertTriple(vt);
 
         // finally execute the query after the first window is full
         if(currentTimestamp >= windowSize) {
+            long startTime = System.nanoTime();
             executeQuery();
+            long executeTime = System.nanoTime() - startTime;
+
+            // update the full edge process histogram
+            fullEdgeProcessHistogram.update(insertTime + executeTime);
         }
     }
 
-    private void insertTriple(VirtuosoTriple vt) {
+    /**
+     *
+     * @param vt
+     * @return Total time in ns to complete the operation
+     */
+    private long insertTriple(VirtuosoTriple vt) {
         // insert the triple into in memory window content
         windowContent.offer(vt);
 
@@ -119,6 +131,8 @@ public class VirtuosoWindowedRPQ {
         long insertTime = System.nanoTime() - insertStartTime;
 
         insertTripleHistogram.update(insertTime);
+
+        return insertTime;
     }
 
     private void expiry(long minTimestamp) {
@@ -189,6 +203,10 @@ public class VirtuosoWindowedRPQ {
         //histogram responsible to measure the time spent in query parsing
         this.resultParsingHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("result-parsing", resultParsingHistogram);
+
+        //histogram responsible to measure total time spent on eac hedge
+        this.fullEdgeProcessHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
+        metricRegistry.register("result-parsing", fullEdgeProcessHistogram);
     }
 
     /**
