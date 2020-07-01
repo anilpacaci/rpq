@@ -9,6 +9,7 @@ import ca.uwaterloo.cs.streamingrpq.stree.engine.WindowedRPQ;
 import ca.uwaterloo.cs.streamingrpq.stree.util.Semantics;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,10 @@ public class STQueryRunner {
         Long startTimestamp = Long.parseLong(line.getOptionValue("st", "0"));
         Integer threadCount = Integer.parseInt(line.getOptionValue("tc", "1"));
         Integer deletionPercentage = Integer.parseInt(line.getOptionValue("dr", "0"));
+
+        // optional parameters for single source RPQ evaluation
+        Boolean allPairs = Boolean.parseBoolean(line.getOptionValue("ap", "true"));
+        Integer sourceVertex = Integer.parseInt(line.getOptionValue("sv", "0"));
 
         String semantics = line.getOptionValue("ps");
         Semantics pathSemantics = Semantics.fromValue(semantics);
@@ -84,7 +89,12 @@ public class STQueryRunner {
             return;
         }
 
-        rpq = RPQEngine.<String>createWindowedRPQEngine(query, maxSize, windowSize, slideSize, threadCount, pathSemantics);
+        // set single source arbitrary path semantics if source vertex is provided
+        if (!allPairs) {
+            rpq = RPQEngine.createWindowedRPQEngine(query, maxSize, windowSize, slideSize, allPairs, sourceVertex);
+        } else {
+            rpq = RPQEngine.<String>createWindowedRPQEngine(query, maxSize, windowSize, slideSize, threadCount, pathSemantics);
+        }
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
 

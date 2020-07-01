@@ -29,6 +29,10 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
     private long lastExpiry = 0;
     private Semantics semantics;
 
+    // runs all pairs reachability be default
+    private boolean allPairs;
+    private int sourceVertex;
+
     protected Delta<Integer, T, N> delta;
     ObjectFactory<Integer, T, N> objectFactory;
 
@@ -62,6 +66,9 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
         this.executorService = Executors.newFixedThreadPool(numOfThreads);
         this.numOfThreads = numOfThreads;
         this.semantics = semantics;
+
+        // all pair RPQ processing by default
+        this.allPairs = true;
     }
 
     /**
@@ -70,10 +77,15 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * @param capacity Initial size for internal data structures. Set to approximate number of edges in a window
      * @param windowSize Size of the sliding window in milliseconds
      * @param slideSize Slide interval in milliseconds
-
+     * @param allPairs controls whether a single source for quey can be specified
+     * @param sourceVertex the root node for evaluation, only used if <code>allPairs</code> is set to <code>true</code>
      */
-    public WindowedRPQ(Automata<L> query, int capacity, long windowSize, long slideSize) {
+    public WindowedRPQ(Automata<L> query, int capacity, long windowSize, long slideSize, boolean allPairs, int sourceVertex) {
         this(query, capacity, windowSize, slideSize, 1);
+
+        // explicit set to single source with a specific source vertex
+        this.allPairs = allPairs;
+        this.sourceVertex = sourceVertex;
     }
 
     /**
@@ -137,7 +149,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
 
             // edge is an insertion
         //create a spanning tree for the source node in case it does not exists
-        if (transitions.keySet().contains(0) && !delta.exists(inputTuple.getSource())) {
+        if (!delta.exists(inputTuple.getSource()) && transitions.keySet().contains(0) && (allPairs || inputTuple.getSource() == sourceVertex) ) {
             // if there exists a start transition with given label, there should be a spanning tree rooted at source vertex
             delta.addTree(inputTuple.getSource(), inputTuple.getTimestamp());
         }

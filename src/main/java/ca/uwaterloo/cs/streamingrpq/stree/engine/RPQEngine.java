@@ -113,4 +113,20 @@ public abstract class RPQEngine<L> {
 
         return windowedEngine;
     }
+
+    /**
+     * Create a windowed RPQ engine for single source RPQ evaluation under arbitrary path semantics
+     * @param query Automata representation of the standing RPQ
+     * @param capacity Number of spanning trees and index size
+     * @param windowSize Window size in terms of milliseconds
+     * @param slideSize Slide size in terms of milliseconds
+     * @param allPairs controls whether a single source for quey can be specified
+     * @param sourceVertex the root node for evaluation, only used if <code>allPairs</code> is set to <code>true</code>
+     * @param <L> Type of tuple labels and automata transitions
+     * @return
+     */
+    public static <L> RPQEngine<L> createWindowedRPQEngine(Automata<L> query, int capacity, long windowSize, long slideSize, boolean allPairs, int sourceVertex) {
+        RPQEngine<L>  windowedEngine = new WindowedRPQ<L, SpanningTreeRAPQ<Integer>, TreeNodeRAPQ<Integer>>(query, capacity, windowSize, slideSize, allPairs, sourceVertex);
+        return windowedEngine;
+    }
 }

@@ -99,7 +99,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>ca.uwaterloo.cs.streamingrpq.runtime.SPARQLQueryRunner</mainClass>
+                            <mainClass>ca.uwaterloo.cs.streamingrpq.runtime.STQueryRunner</mainClass>
                         </manifest>
                     </archive>
 
