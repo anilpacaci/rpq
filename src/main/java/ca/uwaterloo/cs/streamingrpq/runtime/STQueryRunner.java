@@ -156,6 +156,8 @@ public class STQueryRunner {
         options.addOption("st", "start-timestamp", true, "Starting timestamp, 0 by default");
         options.addOption("tc", "threadCount", true, "# of Threads for inter-query parallelism");
         options.addOption("dr", "deleteRatio", true, "percentage of deletions in the stream");
+        options.addOption("ap", "allPairs", true, "runs RPQ starting from all vertices if true");
+        options.addOption("sv", "sourceVertex", true, "set source vertex if allPairs is false");
 
         Option labelOption = new Option("l", "labels", true, "list of labels in order");
         labelOption.setArgs(Option.UNLIMITED_VALUES);
