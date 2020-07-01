@@ -1,0 +1,20 @@
+{
+  "name" : "shop-a",
+  "dataset" : "/hdd1/apacaci/datasets/gmark/shop-a-100M/shuffled.txt",
+  "query-directory" : "/hdd1/apacaci/datasets/gmark/shop-a-100M/shop-a-translated",
+  "input-type" : "gmark",
+  "report-folder" : "/home/apacaci/sgraffito/results/shop-a-100M/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 600,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-range" : "0-99",
+      "semantics" : "arbitrary",
+      "window-size" : 2000000,
+      "slide-size" : 200000,
+      "thread-count" : 32
+    }
+  ]
+}
