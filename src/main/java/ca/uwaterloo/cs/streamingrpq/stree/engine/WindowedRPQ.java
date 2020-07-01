@@ -252,7 +252,7 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
      * might need to traverse the entire spanning tree to make sure that there does not exists an alternative path
      */
     private void expiry(long minTimestamp) {
-        LOG.info("Expiry procedure at timestamp: {}", minTimestamp);
+        LOG.debug("Expiry procedure at timestamp: {}", minTimestamp);
         // first remove the expired edges from the productGraph
         productGraph.removeOldEdges(minTimestamp);
         // then maintain the spanning trees, not that spanning trees are maintained without knowing which edge is deleted

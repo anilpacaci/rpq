@@ -95,7 +95,7 @@ public class Delta<V, T extends AbstractSpanningTree<V, T, N>, N extends Abstrac
         List<Future<Void>> futures = new ArrayList<>(trees.size());
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
 
-        LOG.info("{} of trees in Delta", trees.size());
+        LOG.debug("{} of trees in Delta", trees.size());
         for(T tree : trees) {
             treeSizeHistogram.update(tree.getSize());
             if (tree.getMinTimestamp() > minTimestamp) {
@@ -115,7 +115,7 @@ public class Delta<V, T extends AbstractSpanningTree<V, T, N>, N extends Abstrac
             }
         }
 
-        LOG.info("Expiry at {}: # of trees {}, # of edges in the productGraph {}", minTimestamp, treeIndex.size(), productGraph.getEdgeCount());
+        LOG.debug("Expiry at {}: # of trees {}, # of edges in the productGraph {}", minTimestamp, treeIndex.size(), productGraph.getEdgeCount());
     }
 
     public void addMetricRegistry(MetricRegistry metricRegistry) {

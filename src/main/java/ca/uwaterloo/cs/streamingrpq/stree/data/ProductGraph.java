@@ -101,7 +101,7 @@ public class ProductGraph<V,L> {
      * @param minTimestamp lower bound of the window interval. Any edge whose timestamp is smaller will be removed
      */
     public void removeOldEdges(long minTimestamp) {
-        LOG.info("Graph expiry at {}", minTimestamp);
+        LOG.debug("Graph expiry at {}", minTimestamp);
         // it suffices to linearly scan from the oldest edge as we assume ordered arrival
         Iterator<GraphEdge<ProductGraphNode<V>>> edgeIterator = timeOrderedEdges.iterator();
         while(edgeIterator.hasNext()) {
