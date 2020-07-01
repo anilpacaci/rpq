@@ -122,7 +122,7 @@ public class STQueryRunner {
                     break;
                 }
             }
-            logger.info("total number of results for query " + queryName + " : " + rpq.getResultCount());
+            logger.info("total number of results for query " + queryName + " : " + rpq.getResults().size());
         } catch (Exception e) {
             logger.error("Experiment on main-thread encountered an error: ", e);
         }

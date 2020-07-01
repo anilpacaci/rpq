@@ -121,6 +121,8 @@ public class WindowedRPQ<L, T extends AbstractSpanningTree<Integer, T, N>, N ext
             Long windowElapsedTime = System.nanoTime() - windowStartTime;
             windowManagementHistogram.update(windowElapsedTime);
 
+            LOG.info("Edge count after expiry at {}: {}", currentTimestamp, edgeCount);
+
             //reset the edge counter
             edgeCountHistogram.update(edgeCount);
             edgeCount = 0;
