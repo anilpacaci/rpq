@@ -88,7 +88,7 @@ with open(parameters, 'rb') as parameters_handle:
         semantics = run_config["semantics"]
         labels = run_config["labels"]
         window_size = run_config["window-size"]
-        slide_size = run_config["slide-size"]
+        slide_size = run_config.get("slide-size", 86400)
         thread_count = run_config.get("thread-count", 1)
         delete_ratio = run_config.get("delete-ratio", 0)
 
