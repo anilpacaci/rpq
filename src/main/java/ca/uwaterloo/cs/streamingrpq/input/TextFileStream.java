@@ -55,6 +55,7 @@ public abstract class TextFileStream<S, T, L> {
             e.printStackTrace();
         }
         bufferedReader = new BufferedReader(fileStream, 20*1024*1024);
+        bufferedReader = new BufferedReader(fileStream, 20*1024*1024);
 
         Runnable counterRunnable = new Runnable() {
             private int seconds = 0;
@@ -63,7 +64,7 @@ public abstract class TextFileStream<S, T, L> {
             public void run() {
                 System.out.println("Second " + ++seconds + " : " + localCounter + " / " + globalCounter + " -- deletes: " + deleteCounter);
                 localCounter = 0;
-                deleteCounter++;
+                //deleteCounter++;
             }
         };
 
