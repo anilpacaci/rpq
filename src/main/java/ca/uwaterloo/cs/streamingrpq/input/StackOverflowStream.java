@@ -15,12 +15,12 @@ public class StackOverflowStream extends TextFileStream {
 
     @Override
     protected void setSource() {
-        tuple.setSource(splitResults[0]);
+        tuple.setSource(splitResults[0].hashCode());
     }
 
     @Override
     protected void setTarget() {
-        tuple.setTarget(splitResults[2]);
+        tuple.setTarget(splitResults[2].hashCode());
     }
 
     @Override
