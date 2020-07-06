@@ -83,6 +83,12 @@
             <artifactId>virtjdbc4</artifactId>
             <version>1.0</version>
         </dependency>
+        <!-- Local DDlog dependencies-->
+        <dependency>
+            <groupId>com.wmware.ddlog</groupId>
+            <artifactId>ddlogapi</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

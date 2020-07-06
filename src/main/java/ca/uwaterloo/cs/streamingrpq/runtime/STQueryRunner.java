@@ -1,5 +1,6 @@
 package ca.uwaterloo.cs.streamingrpq.runtime;
 
+import ca.uwaterloo.cs.streamingrpq.ddlog.virtuoso.DDlogWindowedRPQ;
 import ca.uwaterloo.cs.streamingrpq.input.*;
 import ca.uwaterloo.cs.streamingrpq.stree.data.ManualQueryAutomata;
 import ca.uwaterloo.cs.streamingrpq.stree.data.arbitrary.SpanningTreeRAPQ;
@@ -80,21 +81,8 @@ public class STQueryRunner {
                 stream = new Yago2sTSVStream();
         }
 
-        RPQEngine rpq;
-        ManualQueryAutomata<String> query;
-        try {
-            query = MazeQueries.getMazeQuery(queryName, predicateString);
-        } catch (IllegalArgumentException e) {
-            logger.error("Error creating the query", e);
-            return;
-        }
-
         // set single source arbitrary path semantics if source vertex is provided
-        if (!allPairs) {
-            rpq = RPQEngine.createWindowedRPQEngine(query, maxSize, windowSize, slideSize, allPairs, sourceVertex);
-        } else {
-            rpq = RPQEngine.<String>createWindowedRPQEngine(query, maxSize, windowSize, slideSize, threadCount, pathSemantics);
-        }
+        DDlogWindowedRPQ rpq = new DDlogWindowedRPQ(predicateString[0], threadCount, windowSize, slideSize);
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
 
