@@ -1,0 +1,23 @@
+{
+  "name" : "ldbc-sf10",
+  "dataset" : "/hdd1/apacaci/datasets/ldbc/sf10/update-sorted-unixts.csv",
+  "input-type" : "ldbc",
+  "report-folder" : "/home/apacaci/sgraffito/results/ldbc-sf10/",
+  "buffer-size" : 50000000,
+  "heap-size" : 192,
+  "timeout" : 300,
+  "executable" : "/home/apacaci/sgraffito/rpq/target/streamingrpq-1.0-SNAPSHOT-jar-with-dependencies.jar",
+  "runs" : [
+    {
+      "query-name" : "robotic1",
+      "index" : 1,
+      "semantics" : "arbitrary",
+      "window-size" : 864000,
+      "slide-size" : 86400,
+      "thread-count" : 32,
+      "labels" : [
+        "replyOf"
+      ]
+    }
+  ]
+}

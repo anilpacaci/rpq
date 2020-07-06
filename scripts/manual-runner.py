@@ -16,10 +16,8 @@ class RPQRun:
     slide_size  =   10000000
     semantics   =   ""
     labels      =   []
-    all_pairs   =   True
-    source_v    =   0
 
-    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels, all_pairs=True, source_v=0):
+    def __init__(self, name, input, input_type, report, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels):
         self.name = name
         self.input = input
         self.input_type = input_type
@@ -31,11 +29,9 @@ class RPQRun:
         self.labels = labels
         self.thread_count = thread_count
         self.delete_ratio = delete_ratio
-        self.all_pairs = all_pairs
-        self.source_v = source_v
 
     def produceCommandString(self):
-        command = "-f {} -t {} -tc {}  -dr {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -ap {} -sv {} -l {} ".format(
+        command = "-f {} -t {} -tc {}  -dr {} -s {} -ws {} -ss {} -n {} -ps {} -r {} -l {} ".format(
             self.input,
             self.input_type,
             str(self.thread_count),
@@ -46,8 +42,6 @@ class RPQRun:
             self.name,
             self.semantics,
             self.report_file,
-            self.all_pairs,
-            self.source_v,
             " ".join(self.labels)
         )
 
@@ -92,23 +86,16 @@ with open(parameters, 'rb') as parameters_handle:
         thread_count = run_config.get("thread-count", 1)
         delete_ratio = run_config.get("delete-ratio", 0)
 
-        if "source-vertex" in run_config:
-            source_v = run_config["source-vertex"]
-            # reporting folder
-            report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio) + "-sv:" + str(source_v))
-            # create the run object
-            run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels, False, source_v))
-        else:
-            # reporting folder
-            report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
-            # create the run object
-            run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels))
+        # reporting folder
+        report_csv_path = os.path.join(report_folder, query_name + "-" + str(index) + "-" +  semantics + "-ws:" + str(window_size) + "-ss:" + str(slide_size) + "-tc:" + str(thread_count) + "-dr:" + str(delete_ratio))
+        # create the run object
+        run_list.append(RPQRun(query_name, dataset_location, input_type, report_csv_path, buffer_size, window_size, slide_size, thread_count, delete_ratio, semantics, labels))
 
 
 # iterate over runs and run the experiments
 for run in run_list:
     commandString = run.produceCommandString()
-    javaCommand = "java -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xms{}g -Xmx{}g -jar {} {}".format(heap_size, heap_size, executable, commandString)
+    javaCommand = "java -XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC -Xms{}g -Xmx{}g -Djava.library.path=lib -jar {} {}".format(heap_size, heap_size, executable, commandString)
 
     print "Executing command {} ".format(javaCommand)
     sys.stdout.flush()
