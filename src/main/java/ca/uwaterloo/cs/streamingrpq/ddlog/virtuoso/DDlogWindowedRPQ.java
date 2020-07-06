@@ -124,7 +124,8 @@ public class DDlogWindowedRPQ {
         tcUpdateBuilder updateBuilder = new tcUpdateBuilder();
         deleteList.stream().forEach(tuple -> updateBuilder.delete_Edge(tuple.getSource(), tuple.getTarget()));
 
-        // execute the update query on Virtuoso
+        // execute the update query on DDlog
+        this.api.transactionStart();
         long updateStartTime = System.nanoTime();
         updateBuilder.applyUpdates(this.api);
         tcUpdateParser.transactionCommitDumpChanges(this.api, r->ddlogCommitCallback(r));
@@ -181,10 +182,6 @@ public class DDlogWindowedRPQ {
         //histogram responsible to measure the time spent in query parsing
         this.resultParsingHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
         metricRegistry.register("result-parsing", resultParsingHistogram);
-
-        //histogram responsible to measure total time spent on eac hedge
-        this.fullEdgeProcessHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("result-parsing", fullEdgeProcessHistogram);
     }
 
     /**
