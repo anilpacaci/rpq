@@ -24,10 +24,8 @@ public abstract class RPQEngine<L> {
     protected MetricRegistry metricRegistry;
     protected Counter resultCounter;
     protected Histogram containingTreeHistogram;
-    protected Histogram fullHistogram;
     protected Histogram processedHistogram;
     protected Histogram explicitDeletionHistogram;
-    protected Histogram fullProcessedHistogram;
     protected Histogram windowManagementHistogram;
     protected Histogram edgeCountHistogram;
     protected Timer fullTimer;

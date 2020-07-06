@@ -82,7 +82,7 @@ public class STQueryRunner {
         }
 
         // set single source arbitrary path semantics if source vertex is provided
-        DDlogWindowedRPQ rpq = new DDlogWindowedRPQ(predicateString[0], threadCount, windowSize, slideSize);
+        DDlogWindowedRPQ rpq = new DDlogWindowedRPQ(predicateString[0], maxSize, threadCount, windowSize, slideSize);
 
         stream.open(filename, inputSize, startTimestamp, deletionPercentage);
 

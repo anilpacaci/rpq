@@ -36,19 +36,11 @@ import java.util.stream.Collectors;
  * With each slide, it issues a SPARUL query to update the Virtuoso content, then re-executes the query to update result set
  * This persistent query evaluation simulation is used in the SIGMOD'20 Streaming RPQ submission revision
  */
-public class DDlogWindowedRPQ {
+public class DDlogWindowedRPQ extends RPQEngine<String> {
 
     private static String DEFAULT_GRAPH_NAME = "window";
 
     private final Logger logger = LoggerFactory.getLogger(DDlogWindowedRPQ.class);
-
-    private MetricRegistry metricRegistry;
-    private Counter resultCounter;
-    private Histogram windowManagementHistogram;
-    private Histogram insertTripleHistogram;
-    private Histogram queryExecutionHistogram;
-    private Histogram resultParsingHistogram;
-    private Histogram fullEdgeProcessHistogram;
 
     private Deque<InputTuple<Integer, Integer, String>> windowContent;
 
@@ -60,7 +52,8 @@ public class DDlogWindowedRPQ {
 
     private DDlogAPI api;
 
-    public DDlogWindowedRPQ(String label, int numberOfThreads, long windowSize, long slideSize)  {
+    public DDlogWindowedRPQ(String label, int capacity, int numberOfThreads, long windowSize, long slideSize)  {
+        super(null, capacity);
         this.windowSize = windowSize;
         this.slideSize = slideSize;
         this.lastExpiry = 0;
@@ -82,7 +75,7 @@ public class DDlogWindowedRPQ {
         }
     }
 
-    public void processEdge(InputTuple<Integer, Integer, String> inputTuple) throws DDlogException {
+    public void processEdge(InputTuple<Integer, Integer, String> inputTuple) {
         long currentTimestamp = inputTuple.getTimestamp();
         String edgePredicate = inputTuple.getLabel();
 
@@ -104,20 +97,24 @@ public class DDlogWindowedRPQ {
         tcUpdateBuilder updatebuilder = new tcUpdateBuilder();
         updatebuilder.insert_Edge(inputTuple.getSource(), inputTuple.getTarget());
 
-        this.api.transactionStart();
-        long startTime = System.nanoTime();
-        updatebuilder.applyUpdates(this.api);
-        tcUpdateParser.transactionCommitDumpChanges(this.api, r-> ddlogCommitCallback(r));
-        long executeTime = System.nanoTime() - startTime;
+        try {
+            this.api.transactionStart();
+            long startTime = System.nanoTime();
+            updatebuilder.applyUpdates(this.api);
+            tcUpdateParser.transactionCommitDumpChanges(this.api, r -> ddlogCommitCallback(r));
+            long executeTime = System.nanoTime() - startTime;
 
-        // update the full edge process histogram
-        fullEdgeProcessHistogram.update(executeTime);
+            // update the full edge process histogram
+            processedHistogram.update(executeTime);
 
-        // generate the triple and update the buffer content
-        windowContent.offer(inputTuple);
+            // generate the triple and update the buffer content
+            windowContent.offer(inputTuple);
+        } catch (DDlogException e) {
+            logger.error("Error inserting tuple {}", inputTuple, e);
+        }
     }
 
-    private void expiry(long minTimestamp) throws DDlogException {
+    private void expiry(long minTimestamp) {
         // first create the delete list
         List<InputTuple<Integer, Integer, String>> deleteList = windowContent.stream().filter(vt -> vt.getTimestamp() < minTimestamp).collect(Collectors.toList());
 
@@ -125,19 +122,22 @@ public class DDlogWindowedRPQ {
         deleteList.stream().forEach(tuple -> updateBuilder.delete_Edge(tuple.getSource(), tuple.getTarget()));
 
         // execute the update query on DDlog
-        this.api.transactionStart();
-        long updateStartTime = System.nanoTime();
-        updateBuilder.applyUpdates(this.api);
-        tcUpdateParser.transactionCommitDumpChanges(this.api, r->ddlogCommitCallback(r));
-        long updateTime = System.nanoTime() - updateStartTime;
+        try {
+            this.api.transactionStart();
+            long updateStartTime = System.nanoTime();
+            updateBuilder.applyUpdates(this.api);
+            tcUpdateParser.transactionCommitDumpChanges(this.api, r -> ddlogCommitCallback(r));
+            long updateTime = System.nanoTime() - updateStartTime;
+            logger.info("Window: " + this.lastExpiry+ "\tUpdate time " + updateTime );
+
+            //update histogram
+            windowManagementHistogram.update(updateTime);
+        } catch (DDlogException e) {
+            logger.error("Error during expiry at {}", this.lastExpiry);
+        }
 
         // finally insert new tuples to the graph, remove from the window array
         windowContent.removeIf(vt -> vt.getTimestamp() < minTimestamp);
-
-        logger.info("Window: " + this.lastExpiry+ "\tUpdate time " + updateTime );
-
-        //update histogram
-        windowManagementHistogram.update(updateTime);
     }
 
     private void ddlogCommitCallback(DDlogCommand<Object> r) {
@@ -158,43 +158,6 @@ public class DDlogWindowedRPQ {
 
     public void shutDown() {
         //remove the graph instance for the next execution
-    }
-
-    public void addMetricRegistry(MetricRegistry metricRegistry) {
-        // register all the matrics
-        this.metricRegistry = metricRegistry;
-
-        // a counter that keeps track of total result count
-        this.resultCounter = metricRegistry.counter("result-counter");
-
-        // histogram responsible to measure time spent in Window Expiry procedure at every slide interval
-        this.windowManagementHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("window-histogram", windowManagementHistogram);
-
-        // histogram responsible to measure time spent adding new triples
-        this.insertTripleHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("insert-histogram", insertTripleHistogram);
-
-        //histogram responsible to measure the time spent in query execution
-        this.queryExecutionHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("query-execution", queryExecutionHistogram);
-
-        //histogram responsible to measure the time spent in query parsing
-        this.resultParsingHistogram = new Histogram(new SlidingTimeWindowArrayReservoir(10, TimeUnit.MINUTES));
-        metricRegistry.register("result-parsing", resultParsingHistogram);
-    }
-
-    /**
-     * Extract all query predicates from a given query String
-     * @param queryString
-     * @return
-     */
-    private static Set<String> extractQueryPredicates(String queryString) {
-        String[] extracts = StringUtils.substringsBetween(queryString, "<", ">");
-
-        Set<String> predicates = Sets.newHashSet(extracts);
-
-        return predicates;
     }
 
 }
