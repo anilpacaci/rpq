@@ -1,6 +1,7 @@
 package ca.uwaterloo.cs.streamingrpq.ddlog.virtuoso;
 
 import ca.uwaterloo.cs.streamingrpq.input.InputTuple;
+import ca.uwaterloo.cs.streamingrpq.stree.data.ResultPair;
 import ca.uwaterloo.cs.streamingrpq.stree.engine.RPQEngine;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -23,10 +24,7 @@ import org.slf4j.LoggerFactory;
 import virtuoso.jena.driver.VirtDataset;
 import virtuoso.jena.driver.VirtuosoQueryExecutionFactory;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -50,6 +48,8 @@ public class DDlogWindowedRPQ extends RPQEngine<String> {
 
     private String queryPredicate;
 
+    private Set<ResultPair<Long>> results;
+
     private DDlogAPI api;
 
     public DDlogWindowedRPQ(String label, int capacity, int numberOfThreads, long windowSize, long slideSize)  {
@@ -60,6 +60,8 @@ public class DDlogWindowedRPQ extends RPQEngine<String> {
 
         // extract query predicates from the query string
         queryPredicate = label;
+
+        results = new HashSet<>();
 
         logger.info("Initializing DDlog engine for label {} with {} threads", label, numberOfThreads );
 
@@ -129,6 +131,7 @@ public class DDlogWindowedRPQ extends RPQEngine<String> {
             tcUpdateParser.transactionCommitDumpChanges(this.api, r -> ddlogCommitCallback(r));
             long updateTime = System.nanoTime() - updateStartTime;
             logger.info("Window: " + this.lastExpiry+ "\tUpdate time " + updateTime );
+            logger.info("# of results {}", results.size());
 
             //update histogram
             windowManagementHistogram.update(updateTime);
@@ -146,7 +149,12 @@ public class DDlogWindowedRPQ extends RPQEngine<String> {
         switch (relid) {
             case tcRelation.Path:
                 PathReader path = (PathReader)r.value();
-                System.out.println("From " + relid + " " + r.kind() + " Path{" + path.s1() + "," + path.s2() + "}");
+                r.kind();
+                if(r.kind().equals(DDlogCommand.Kind.Insert)) {
+                    results.add(new ResultPair<Long>(path.s1(), path.s2()));
+                } else {
+                    results.remove(new ResultPair<Long>(path.s1(), path.s2()));
+                }
                 break;
             default: throw new IllegalArgumentException("Unknown relation id " + relid);
         }
